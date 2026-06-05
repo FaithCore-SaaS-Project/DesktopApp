@@ -1,0 +1,60 @@
+{
+  "name": "fc-desktop-app",
+  "version": "1.0.0",
+  "description": "FC Software Hybrid Multi-Tenant Church Management Desktop Client",
+  "main": "dist/main/main.js",
+  "author": "FC Software Team",
+  "license": "UNLICENSED",
+  "scripts": {
+    "dev:next": "next dev src/renderer",
+    "build:next": "next build src/renderer",
+    "start:next": "next start src/renderer",
+    "dev:electron": "tsc -p tsconfig.json && electron .",
+    "build:electron": "tsc -p tsconfig.json",
+    "dev": "concurrently -k \"npm run dev:next\" \"wait-on http://127.0.0.1:3000 && npm run dev:electron\"",
+    "build": "npm run build:next && npm run build:electron",
+    "dist": "npm run build && electron-builder"
+  },
+  "dependencies": {
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "next": "^15.1.0",
+    "sql.js": "^1.12.0",
+    "electron-updater": "^6.1.4",
+    "lucide-react": "^0.468.0"
+  },
+  "devDependencies": {
+    "electron": "^33.0.0",
+    "electron-builder": "^24.13.3",
+    "concurrently": "^9.1.0",
+    "wait-on": "^8.0.1",
+    "typescript": "^5.7.2",
+    "@types/node": "^22.10.1",
+    "@types/react": "^19.0.1",
+    "@types/react-dom": "^19.0.1",
+    "@types/sql.js": "^1.4.9",
+    "tailwindcss": "^3.4.16",
+    "postcss": "^8.4.49",
+    "autoprefixer": "^10.4.20"
+  },
+  "build": {
+    "appId": "com.fcsoftware.desktop",
+    "productName": "FC Desktop",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**/*",
+      "src/renderer/out/**/*",
+      "package.json"
+    ],
+    "win": {
+      "target": "nsis",
+      "icon": "public/icon.ico"
+    },
+    "mac": {
+      "target": "dmg",
+      "icon": "public/icon.icns"
+    }
+  }
+}
