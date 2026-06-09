@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
 import { apiService } from '../services/api';
 import { MemberMock } from '../services/mockData';
-import { UserPlus, Search, Edit3, Trash2, Mail, Phone, UserCheck, ShieldAlert } from 'lucide-react';
+import { UserPlus, Search, Edit3, Trash2, Mail, Phone, UserCheck, ShieldAlert, Eye } from 'lucide-react';
+import Link from 'next/link';
 
 export default function MembersPage() {
   const { currentTenant, isOnline } = useApp();
@@ -164,7 +165,9 @@ export default function MembersPage() {
                         {member.name.charAt(0)}
                       </div>
                       <div className="flex flex-col">
-                        <span className="text-slate-200 font-bold text-sm">{member.name}</span>
+                        <Link href={`/members/${member.id}`} className="text-slate-200 hover:text-indigo-400 font-bold text-sm transition-colors cursor-pointer">
+                          {member.name}
+                        </Link>
                         <span className="flex items-center space-x-1.5 mt-0.5">
                           <span className={`inline-block h-1.5 w-1.5 rounded-full ${
                             member.status === 'Active' ? 'bg-emerald-500' : member.status === 'Inactive' ? 'bg-amber-500' : 'bg-slate-600'
@@ -194,16 +197,24 @@ export default function MembersPage() {
                     </td>
                     <td className="p-4 text-slate-400">{member.joinedDate}</td>
                     <td className="p-4 pr-6 text-right space-x-2">
+                      <Link href={`/members/${member.id}`} passHref legacyBehavior>
+                        <a
+                          className="p-2 rounded-lg bg-slate-800 hover:bg-slate-700/80 text-slate-400 hover:text-white transition-colors inline-block align-middle"
+                          title="View Profile"
+                        >
+                          <Eye className="h-3.5 w-3.5" />
+                        </a>
+                      </Link>
                       <button
                         onClick={() => handleOpenEditModal(member)}
-                        className="p-2 rounded-lg bg-slate-800 hover:bg-slate-700/80 text-slate-400 hover:text-white transition-colors"
+                        className="p-2 rounded-lg bg-slate-800 hover:bg-slate-700/80 text-slate-400 hover:text-white transition-colors inline-block align-middle"
                         title="Edit Profile"
                       >
                         <Edit3 className="h-3.5 w-3.5" />
                       </button>
                       <button
                         onClick={() => handleDelete(member.id)}
-                        className="p-2 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-500/80 hover:text-red-400 transition-colors"
+                        className="p-2 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-500/80 hover:text-red-400 transition-colors inline-block align-middle"
                         title="Delete Profile"
                       >
                         <Trash2 className="h-3.5 w-3.5" />

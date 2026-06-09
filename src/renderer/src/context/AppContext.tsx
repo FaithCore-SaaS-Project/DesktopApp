@@ -8,12 +8,16 @@ interface User {
 }
 
 interface AppContextType {
+  isActivated: boolean;
+  tenantId: string | null;
+  churchName: string | null;
   currentTenant: Tenant | null;
   tenants: Tenant[];
   switchTenant: (tenantId: string) => void;
   user: User | null;
-  login: (username: string, tenantId: string) => boolean;
+  login: (username: string, token: string) => void;
   logout: () => void;
+  activateApp: (tenantId: string, churchName: string) => void;
   isOnline: boolean;
   toggleNetworkStatus: () => void;
 }
@@ -21,25 +25,53 @@ interface AppContextType {
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [isActivated, setIsActivated] = useState<boolean>(false);
+  const [tenantId, setTenantId] = useState<string | null>(null);
+  const [churchName, setChurchName] = useState<string | null>(null);
   const [currentTenant, setCurrentTenant] = useState<Tenant | null>(null);
+  const [tenants, setTenants] = useState<Tenant[]>(mockTenants);
   const [user, setUser] = useState<User | null>(null);
   const [isOnline, setIsOnline] = useState<boolean>(true);
 
-  // Set default tenant
+  // Read initial states from localStorage on mount (client-side only)
   useEffect(() => {
-    if (mockTenants.length > 0) {
-      setCurrentTenant(mockTenants[0]);
+    if (typeof window !== 'undefined') {
+      const tid = localStorage.getItem('tenantId');
+      const cname = localStorage.getItem('churchName');
+      const token = localStorage.getItem('token');
+      const savedUser = localStorage.getItem('username');
+
+      if (tid && cname) {
+        setIsActivated(true);
+        setTenantId(tid);
+        setChurchName(cname);
+        
+        const activeTenant = { id: tid, name: cname, location: 'Colombo, LK' };
+        setTenants(prev => {
+          const list = prev.find(t => t.id === tid) ? prev : [activeTenant, ...prev];
+          setCurrentTenant(list.find(t => t.id === tid) || list[0]);
+          return list;
+        });
+      } else {
+        setIsActivated(false);
+        if (mockTenants.length > 0) {
+          setCurrentTenant(mockTenants[0]);
+        }
+      }
+
+      if (token && savedUser) {
+        setUser({ username: savedUser, role: 'Super Admin' });
+      }
     }
   }, []);
 
-  const switchTenant = (tenantId: string) => {
-    const selected = mockTenants.find((t) => t.id === tenantId);
+  const switchTenant = (selectedTenantId: string) => {
+    const selected = tenants.find((t) => t.id === selectedTenantId);
     if (selected) {
       setCurrentTenant(selected);
-      // Notify main process if running in electron
       if (isElectron()) {
         try {
-          // Send update (if configured in main)
+          // Optional IPC notification to main process
         } catch (e) {
           console.error(e);
         }
@@ -47,16 +79,30 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }
   };
 
-  const login = (username: string, tenantId: string): boolean => {
-    if (username.trim()) {
-      setUser({ username, role: 'Administrator' });
-      switchTenant(tenantId);
-      return true;
-    }
-    return false;
+  const activateApp = (activatedTenantId: string, activatedChurchName: string) => {
+    localStorage.setItem('tenantId', activatedTenantId);
+    localStorage.setItem('churchName', activatedChurchName);
+    setTenantId(activatedTenantId);
+    setChurchName(activatedChurchName);
+    setIsActivated(true);
+
+    const newTenant = { id: activatedTenantId, name: activatedChurchName, location: 'Colombo, LK' };
+    setTenants(prev => {
+      const list = prev.find(t => t.id === activatedTenantId) ? prev : [newTenant, ...prev];
+      setCurrentTenant(newTenant);
+      return list;
+    });
+  };
+
+  const login = (username: string, token: string) => {
+    localStorage.setItem('token', token);
+    localStorage.setItem('username', username);
+    setUser({ username, role: 'Super Admin' });
   };
 
   const logout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('username');
     setUser(null);
   };
 
@@ -67,12 +113,16 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   return (
     <AppContext.Provider
       value={{
+        isActivated,
+        tenantId,
+        churchName,
         currentTenant,
-        tenants: mockTenants,
+        tenants,
         switchTenant,
         user,
         login,
         logout,
+        activateApp,
         isOnline,
         toggleNetworkStatus,
       }}

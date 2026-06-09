@@ -26,6 +26,8 @@ export interface FinanceRecord {
   date: string;
   description: string;
   tenantId: string;
+  method?: string;
+  receipt?: string;
   syncStatus: 'synced' | 'pending';
 }
 
@@ -76,9 +78,24 @@ export async function initDatabase(): Promise<any> {
       date TEXT NOT NULL,
       description TEXT,
       tenantId TEXT,
+      method TEXT,
+      receipt TEXT,
       syncStatus TEXT DEFAULT 'pending'
     );
   `);
+
+  // Migrate columns in case the DB existed before they were added
+  try {
+    db.run("ALTER TABLE finance ADD COLUMN method TEXT;");
+  } catch (e) {
+    // Column might already exist
+  }
+  try {
+    db.run("ALTER TABLE finance ADD COLUMN receipt TEXT;");
+  } catch (e) {
+    // Column might already exist
+  }
+
 
   if (!fileBuffer) {
     saveDatabase();
@@ -155,8 +172,8 @@ export const dbOperations = {
 
   saveFinanceRecord: (record: FinanceRecord): void => {
     runQuery(
-      `INSERT OR REPLACE INTO finance (id, type, category, amount, date, description, tenantId, syncStatus)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+      `INSERT OR REPLACE INTO finance (id, type, category, amount, date, description, tenantId, method, receipt, syncStatus)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         record.id,
         record.type,
@@ -165,6 +182,8 @@ export const dbOperations = {
         record.date,
         record.description,
         record.tenantId,
+        record.method || 'Cash',
+        record.receipt || '',
         record.syncStatus || 'pending',
       ]
     );

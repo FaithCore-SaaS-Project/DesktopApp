@@ -1,132 +1,163 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
 import { useRouter } from 'next/router';
-import { Shield, KeyRound, Building2 } from 'lucide-react';
+import { Shield, KeyRound, Building2, AlertCircle } from 'lucide-react';
 
 export default function LoginPage() {
-  const { tenants, login } = useApp();
+  const { login, churchName, isActivated } = useApp();
   const router = useRouter();
-  const [username, setUsername] = useState('Admin User');
-  const [password, setPassword] = useState('••••••••');
-  const [selectedTenant, setSelectedTenant] = useState(tenants[0]?.id || '');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [rememberMe, setRememberMe] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // If not activated, our AppLayout route guard will redirect to /activation,
+  // but we also double-check here just in case.
+  useEffect(() => {
+    if (isActivated === false && typeof window !== 'undefined') {
+      const tid = localStorage.getItem('tenantId');
+      if (!tid) {
+        router.replace('/activation');
+      }
+    }
+  }, [isActivated]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError('');
 
-    setTimeout(() => {
-      const success = login(username, selectedTenant);
-      if (success) {
-        router.push('/dashboard');
-      } else {
-        setError('Please enter a valid username');
-        setLoading(false);
+    // Simulate API POST /api/login
+    try {
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      if (!email.trim() || !password.trim()) {
+        throw new Error('Please enter both email and password.');
       }
-    }, 800);
+
+      // Simple mock email check for demo purposes
+      if (email.includes('@') && password.length >= 4) {
+        const mockResponse = {
+          token: "jwt_token_" + Math.random().toString(36).substring(2),
+          user: email.split('@')[0] || "Admin"
+        };
+
+        // Save session
+        login(mockResponse.user, mockResponse.token);
+        
+        // Redirect to dashboard
+        router.replace('/dashboard');
+      } else {
+        throw new Error('Invalid email address or password. Try admin@church.org / password.');
+      }
+    } catch (err: any) {
+      setError(err.message || 'Login failed. Please verify your credentials.');
+      setLoading(false);
+    }
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 flex items-center justify-center p-4 selection:bg-indigo-500 selection:text-white">
+    <div className="min-h-screen bg-slate-950 flex items-center justify-center p-4 selection:bg-[#5B3DF5] selection:text-white relative overflow-hidden">
       {/* Background ambient glows */}
-      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-indigo-500/10 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-[#3224B8]/10 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-[#5B3DF5]/10 rounded-full blur-[120px] pointer-events-none" />
 
-      <div className="w-full max-w-md bg-slate-900/40 border border-slate-800/80 p-8 rounded-2xl shadow-2xl backdrop-blur-xl relative z-10">
+      <div className="w-full max-w-md bg-slate-900/40 border border-slate-800/80 p-8 rounded-3xl shadow-2xl backdrop-blur-xl relative z-10">
         <div className="flex flex-col items-center mb-8">
-          <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center font-extrabold text-white text-xl shadow-lg shadow-indigo-500/20 mb-4 animate-pulse">
-            FC
+          <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-[#3224B8] to-[#5B3DF5] flex items-center justify-center font-extrabold text-white text-3xl shadow-lg shadow-[#5B3DF5]/20 mb-4 select-none">
+            KC
           </div>
-          <h1 className="text-2xl font-extrabold bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent">
-            Church Management Suite
+          <h1 className="text-3xl font-black bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent select-none">
+            Kingdom Connect
           </h1>
-          <p className="text-xs text-slate-500 mt-1 uppercase tracking-widest font-semibold">
-            Secure Administrator Login
+          <p className="text-xs text-gray-400 mt-2 font-bold tracking-wide flex items-center gap-1.5 bg-white/5 border border-white/10 px-3 py-1 rounded-full">
+            <Building2 size={12} className="text-[#5B3DF5]" />
+            <span>{churchName || 'Beracah Christian Ministry'}</span>
           </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-5">
           {error && (
-            <div className="p-3 bg-red-500/10 border border-red-500/20 text-red-400 rounded-lg text-xs font-semibold">
-              {error}
+            <div className="p-4 bg-red-500/10 border border-red-500/20 text-red-400 rounded-xl text-xs font-semibold flex items-center gap-2.5 animate-fade-in">
+              <AlertCircle size={16} className="min-w-4" />
+              <span>{error}</span>
             </div>
           )}
 
-          {/* Tenant Dropdown */}
-          <div className="space-y-1.5">
-            <label htmlFor="tenant" className="text-xs font-bold text-slate-400 flex items-center space-x-1.5">
-              <Building2 className="h-3.5 w-3.5 text-indigo-400" />
-              <span>Multi-Tenant Branch</span>
-            </label>
-            <select
-              id="tenant"
-              value={selectedTenant}
-              onChange={(e) => setSelectedTenant(e.target.value)}
-              className="w-full bg-slate-950/80 border border-slate-800 hover:border-slate-700 focus:border-indigo-500 rounded-xl px-4 py-3 text-sm text-slate-200 font-medium focus:outline-none transition-all cursor-pointer"
-            >
-              {tenants.map((t) => (
-                <option key={t.id} value={t.id}>
-                  {t.name}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* Username Input */}
-          <div className="space-y-1.5">
-            <label htmlFor="username" className="text-xs font-bold text-slate-400 flex items-center space-x-1.5">
-              <Shield className="h-3.5 w-3.5 text-indigo-400" />
-              <span>Username</span>
+          {/* Email input */}
+          <div className="space-y-2">
+            <label htmlFor="email" className="text-xs font-bold text-gray-400 flex items-center space-x-1.5">
+              <Shield className="h-3.5 w-3.5 text-[#5B3DF5]" />
+              <span>Email Address</span>
             </label>
             <input
-              id="username"
-              type="text"
+              id="email"
+              type="email"
               required
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              placeholder="e.g. administrator"
-              className="w-full bg-slate-950/80 border border-slate-800 hover:border-slate-700 focus:border-indigo-500 rounded-xl px-4 py-3 text-sm text-slate-200 focus:outline-none transition-all placeholder:text-slate-600"
+              disabled={loading}
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="admin@kingdomconnect.org"
+              className="w-full bg-slate-950/80 border border-slate-800 hover:border-slate-700 focus:border-[#5B3DF5] focus:ring-1 focus:ring-[#5B3DF5] rounded-xl px-4 py-3.5 text-sm text-slate-200 focus:outline-none transition-all placeholder:text-slate-600"
             />
           </div>
 
-          {/* Password Input */}
-          <div className="space-y-1.5">
-            <label htmlFor="password" className="text-xs font-bold text-slate-400 flex items-center space-x-1.5">
-              <KeyRound className="h-3.5 w-3.5 text-indigo-400" />
-              <span>Security Password</span>
+          {/* Password input */}
+          <div className="space-y-2">
+            <label htmlFor="password" className="text-xs font-bold text-gray-400 flex items-center space-x-1.5">
+              <KeyRound className="h-3.5 w-3.5 text-[#5B3DF5]" />
+              <span>Password</span>
             </label>
             <input
               id="password"
               type="password"
               required
+              disabled={loading}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full bg-slate-950/80 border border-slate-800 hover:border-slate-700 focus:border-indigo-500 rounded-xl px-4 py-3 text-sm text-slate-200 focus:outline-none transition-all placeholder:text-slate-600"
+              placeholder="••••••••"
+              className="w-full bg-slate-950/80 border border-slate-800 hover:border-slate-700 focus:border-[#5B3DF5] focus:ring-1 focus:ring-[#5B3DF5] rounded-xl px-4 py-3.5 text-sm text-slate-200 focus:outline-none transition-all placeholder:text-slate-600"
             />
+          </div>
+
+          {/* Remember Me */}
+          <div className="flex items-center justify-between py-1">
+            <label className="flex items-center gap-2 cursor-pointer text-xs font-semibold text-gray-405 select-none">
+              <input
+                type="checkbox"
+                disabled={loading}
+                checked={rememberMe}
+                onChange={(e) => setRememberMe(e.target.checked)}
+                className="rounded border-slate-850 bg-slate-950 text-[#5B3DF5] focus:ring-0 cursor-pointer h-4 w-4"
+              />
+              <span>Remember Me</span>
+            </label>
+            <a href="#" className="text-xs font-semibold text-[#5B3DF5] hover:underline">
+              Forgot Password?
+            </a>
           </div>
 
           {/* Submit Button */}
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-500 hover:to-indigo-600 text-white font-bold text-sm shadow-lg shadow-indigo-600/15 hover:shadow-indigo-600/25 active:scale-[0.98] transition-all disabled:opacity-50 flex items-center justify-center space-x-2"
+            className="w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-[#3224B8] to-[#5B3DF5] hover:from-[#2e21ad] hover:to-[#4e32e0] text-white font-bold text-sm shadow-lg shadow-[#5B3DF5]/15 hover:shadow-[#5B3DF5]/25 active:scale-[0.98] transition-all duration-150 disabled:opacity-50 flex items-center justify-center space-x-2"
           >
             {loading ? (
-              <div className="h-4 w-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+              <div className="h-5 w-5 border-2 border-white/20 border-t-white rounded-full animate-spin" />
             ) : (
-              <span>Decrypt & Log In</span>
+              <span>Sign In</span>
             )}
           </button>
         </form>
 
         <p className="text-[10px] text-slate-600 text-center mt-8 font-mono">
-          Secured with SHA-256 local isolation. Offline DB is encrypted.
+          Secured with SHA-256 local isolation. Offline DB is active.
         </p>
       </div>
     </div>
   );
 }
-// Set layout mode to render without standard navbar/sidebar
+// Do not render default sidebar layout for login page
 LoginPage.noLayout = true;

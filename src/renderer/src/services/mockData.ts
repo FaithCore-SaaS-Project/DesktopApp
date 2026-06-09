@@ -19,11 +19,13 @@ export interface MemberMock {
 export interface FinanceMock {
   id: string;
   type: 'income' | 'expense';
-  category: 'Tithe' | 'Offering' | 'Building Fund' | 'Missions' | 'Salary' | 'Utilities' | 'Maintenance' | 'Events';
+  category: string;
   amount: number;
   date: string;
   description: string;
   tenantId: string;
+  method?: string;
+  receipt?: string;
 }
 
 export interface CertificateTemplate {
@@ -127,74 +129,68 @@ export const mockFinanceRecords: FinanceMock[] = [
   {
     id: 'fin-1',
     type: 'income',
-    category: 'Tithe',
-    amount: 1250.00,
-    date: '2026-06-01',
-    description: 'Sunday morning service Tithes - Batch A',
+    category: 'Tithes',
+    amount: 25000.00,
+    date: '2025-05-24',
+    description: 'Sunday Tithe - Saman Perera',
     tenantId: 'tenant-ny',
+    method: 'Cash',
+    receipt: 'RCP-2025-1058',
   },
   {
     id: 'fin-2',
     type: 'income',
-    category: 'Offering',
-    amount: 680.50,
-    date: '2026-06-01',
-    description: 'Sunday morning service General Offering',
+    category: 'Offerings',
+    amount: 15000.00,
+    date: '2025-05-24',
+    description: 'Sunday Offering',
     tenantId: 'tenant-ny',
+    method: 'Cash',
+    receipt: 'RCP-2025-1057',
   },
   {
     id: 'fin-3',
-    type: 'expense',
-    category: 'Utilities',
-    amount: 420.15,
-    date: '2026-05-28',
-    description: 'Monthly electric and power bill (ConEd)',
+    type: 'income',
+    category: 'Donations',
+    amount: 50000.00,
+    date: '2025-05-24',
+    description: 'Building Fund Donation',
     tenantId: 'tenant-ny',
+    method: 'Bank Transfer',
+    receipt: 'RCP-2025-1056',
   },
   {
     id: 'fin-4',
     type: 'expense',
-    category: 'Salary',
-    amount: 3200.00,
-    date: '2026-05-25',
-    description: 'Staff Payroll - pastoral and administrative',
+    category: 'Ministry',
+    amount: 12500.00,
+    date: '2025-05-23',
+    description: 'Youth Program Expenses',
     tenantId: 'tenant-ny',
+    method: 'Bank Transfer',
+    receipt: 'EXP-2025-0542',
   },
   {
     id: 'fin-5',
-    type: 'income',
-    category: 'Building Fund',
-    amount: 5000.00,
-    date: '2026-05-20',
-    description: 'Special donation for main sanctuary renovation',
+    type: 'expense',
+    category: 'Utilities',
+    amount: 18750.00,
+    date: '2025-05-23',
+    description: 'Electricity Bill Payment',
     tenantId: 'tenant-ny',
+    method: 'Bank Transfer',
+    receipt: 'EXP-2025-0541',
   },
   {
     id: 'fin-6',
-    type: 'expense',
-    category: 'Maintenance',
-    amount: 180.00,
-    date: '2026-05-18',
-    description: 'Sanctuary HVAC filter replacement & checkup',
-    tenantId: 'tenant-ny',
-  },
-  {
-    id: 'fin-7',
-    type: 'income',
-    category: 'Missions',
-    amount: 450.00,
-    date: '2026-05-15',
-    description: 'Monthly Mission support donation',
-    tenantId: 'tenant-ny',
-  },
-  {
-    id: 'fin-8',
     type: 'income',
     category: 'Tithe',
     amount: 2100.00,
     date: '2026-06-02',
     description: 'Direct deposit tithes',
     tenantId: 'tenant-la',
+    method: 'Bank Transfer',
+    receipt: 'RCP-2026-0001',
   }
 ];
 
