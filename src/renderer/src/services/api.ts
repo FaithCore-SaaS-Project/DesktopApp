@@ -1,4 +1,4 @@
-import { mockMembers, mockFinanceRecords, MemberMock, FinanceMock } from './mockData';
+import { mockMembers, mockFinanceRecords, mockReceipts, MemberMock, FinanceMock, ReceiptMock } from './mockData';
 
 // Helper to check if running inside Electron
 export const isElectron = (): boolean => {
@@ -14,11 +14,31 @@ const initializeLocalStorage = () => {
   if (!localStorage.getItem('fc_finance')) {
     localStorage.setItem('fc_finance', JSON.stringify(mockFinanceRecords));
   }
+  if (!localStorage.getItem('fc_receipts')) {
+    localStorage.setItem('fc_receipts', JSON.stringify(mockReceipts));
+  }
 };
 
 initializeLocalStorage();
 
 export const apiService = {
+  // --- E-Receipts API ---
+  getReceipts: async (tenantId: string): Promise<ReceiptMock[]> => {
+    const receipts = JSON.parse(localStorage.getItem('fc_receipts') || '[]');
+    return receipts.filter((r: ReceiptMock) => r.tenantId === tenantId);
+  },
+
+  saveReceipt: async (receipt: ReceiptMock): Promise<void> => {
+    const receipts = JSON.parse(localStorage.getItem('fc_receipts') || '[]');
+    const index = receipts.findIndex((r: ReceiptMock) => r.id === receipt.id);
+    if (index >= 0) {
+      receipts[index] = receipt;
+    } else {
+      receipts.push(receipt);
+    }
+    localStorage.setItem('fc_receipts', JSON.stringify(receipts));
+  },
+
   // --- Members API ---
   getMembers: async (tenantId: string): Promise<MemberMock[]> => {
     if (isElectron()) {

@@ -325,3 +325,173 @@ export const mockCertificateTemplates: CertificateTemplate[] = [
     `,
   }
 ];
+
+export interface ReceiptMock {
+  id: string;
+  receiptNo: string;
+  date: string;
+  memberName: string;
+  memberEmail: string;
+  memberPhone?: string;
+  category: string;
+  amount: number;
+  method: 'Cash' | 'Bank Transfer' | 'Card' | 'Online';
+  status: 'Emailed' | 'Printed';
+  receivedBy: string;
+  description?: string;
+  tenantId: string;
+}
+
+export const mockReceipts: ReceiptMock[] = [
+  {
+    id: 'rcp-1',
+    receiptNo: 'RCP-2025-1082',
+    date: '2025-05-24',
+    memberName: 'Saman Perera',
+    memberEmail: 'saman@email.com',
+    memberPhone: '+94 77 123 4567',
+    category: 'Tithes',
+    amount: 25000.00,
+    method: 'Cash',
+    status: 'Emailed',
+    receivedBy: 'Pastor John',
+    description: 'Tithes - May 2025',
+    tenantId: 'tenant-ny'
+  },
+  {
+    id: 'rcp-2',
+    receiptNo: 'RCP-2025-1081',
+    date: '2025-05-24',
+    memberName: 'Kumara Family',
+    memberEmail: 'kumara@email.com',
+    memberPhone: '+94 77 987 6543',
+    category: 'Offerings',
+    amount: 15000.00,
+    method: 'Cash',
+    status: 'Emailed',
+    receivedBy: 'Pastor John',
+    description: 'Sunday Offering',
+    tenantId: 'tenant-ny'
+  },
+  {
+    id: 'rcp-3',
+    receiptNo: 'RCP-2025-1080',
+    date: '2025-05-24',
+    memberName: 'Nadeesha Fernando',
+    memberEmail: 'nadeesha@email.com',
+    memberPhone: '+94 71 222 3333',
+    category: 'Donations',
+    amount: 50000.00,
+    method: 'Bank Transfer',
+    status: 'Emailed',
+    receivedBy: 'Pastor John',
+    description: 'Building Fund Donation',
+    tenantId: 'tenant-ny'
+  },
+  {
+    id: 'rcp-4',
+    receiptNo: 'RCP-2025-1079',
+    date: '2025-05-23',
+    memberName: 'Isuru Jayasinghe',
+    memberEmail: 'isuru@email.com',
+    memberPhone: '+94 77 444 5555',
+    category: 'Tithes',
+    amount: 20000.00,
+    method: 'Bank Transfer',
+    status: 'Emailed',
+    receivedBy: 'Pastor John',
+    description: 'Tithes - May 2025',
+    tenantId: 'tenant-ny'
+  },
+  {
+    id: 'rcp-5',
+    receiptNo: 'RCP-2025-1078',
+    date: '2025-05-23',
+    memberName: 'De Silva Family',
+    memberEmail: 'desilva@email.com',
+    memberPhone: '+94 76 555 4444',
+    category: 'Thanksgiving',
+    amount: 12000.00,
+    method: 'Cash',
+    status: 'Printed',
+    receivedBy: 'Pastor John',
+    description: 'Thanksgiving Offering',
+    tenantId: 'tenant-ny'
+  },
+  {
+    id: 'rcp-6',
+    receiptNo: 'RCP-2025-1077',
+    date: '2025-05-22',
+    memberName: 'Shenal Perera',
+    memberEmail: 'shenal@email.com',
+    memberPhone: '+94 77 666 7777',
+    category: 'Offerings',
+    amount: 10000.00,
+    method: 'Cash',
+    status: 'Emailed',
+    receivedBy: 'Pastor John',
+    description: 'General Offering',
+    tenantId: 'tenant-ny'
+  },
+  {
+    id: 'rcp-7',
+    receiptNo: 'RCP-2025-1076',
+    date: '2025-05-22',
+    memberName: 'Anonymous',
+    memberEmail: 'anonymous',
+    memberPhone: 'N/A',
+    category: 'Donations',
+    amount: 30000.00,
+    method: 'Bank Transfer',
+    status: 'Emailed',
+    receivedBy: 'Pastor John',
+    description: 'Anonymous Donation',
+    tenantId: 'tenant-ny'
+  },
+  {
+    id: 'rcp-8',
+    receiptNo: 'RCP-2025-1075',
+    date: '2025-05-21',
+    memberName: 'Fernando Family',
+    memberEmail: 'fernando@email.com',
+    memberPhone: '+94 77 888 9999',
+    category: 'Other Income',
+    amount: 25000.00,
+    method: 'Cash',
+    status: 'Emailed',
+    receivedBy: 'Pastor John',
+    description: 'Special Contribution',
+    tenantId: 'tenant-ny'
+  },
+  {
+    id: 'rcp-9',
+    receiptNo: 'RCP-2025-1074',
+    date: '2025-05-21',
+    memberName: 'Perera Family',
+    memberEmail: 'perera@email.com',
+    memberPhone: '+94 77 999 0000',
+    category: 'Tithes',
+    amount: 18000.00,
+    method: 'Cash',
+    status: 'Printed',
+    receivedBy: 'Pastor John',
+    description: 'Monthly Tithe',
+    tenantId: 'tenant-ny'
+  },
+  {
+    id: 'rcp-10',
+    receiptNo: 'RCP-2025-1073',
+    date: '2025-05-20',
+    memberName: 'Youth Group',
+    memberEmail: 'youthgroup@email.com',
+    memberPhone: '+94 71 111 2222',
+    category: 'Event',
+    amount: 8000.00,
+    method: 'Cash',
+    status: 'Emailed',
+    receivedBy: 'Pastor John',
+    description: 'Youth Event Ticket Sale',
+    tenantId: 'tenant-ny'
+  }
+];
+
