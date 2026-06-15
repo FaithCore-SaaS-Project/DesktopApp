@@ -51,24 +51,46 @@ const menuItems: MenuItem[] = [
   { icon: FolderOpen, label: "Documents", path: "/documents" },
   { icon: Building2, label: "Departments", path: "/departments" },
   { icon: UserCog, label: "Users & Roles", path: "/users-roles" },
-  { icon: Settings, label: "Settings", path: "/settings" },
+  {
+    icon: Settings,
+    label: "Settings",
+    path: "/settings",
+    subItems: [
+      { label: "General", path: "/settings/general" },
+      { label: "Finance", path: "/settings/finance" },
+      { label: "Notifications", path: "/settings/notifications" },
+      { label: "Security", path: "/settings/security" },
+      { label: "Integrations", path: "/settings/integrations" },
+      { label: "Backup", path: "/settings/backup" }
+    ]
+  },
   { icon: Headphones, label: "Support", path: "/support" },
 ];
 
 export default function Sidebar() {
   const router = useRouter();
-  const [isFinanceOpen, setIsFinanceOpen] = useState(false);
+  const [openMenus, setOpenMenus] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
-    if (router.pathname.startsWith('/finance')) {
-      setIsFinanceOpen(true);
+    const newOpenMenus = { ...openMenus };
+    let changed = false;
+    menuItems.forEach(item => {
+      if (item.subItems && router.pathname.startsWith(item.path)) {
+        if (!newOpenMenus[item.path]) {
+          newOpenMenus[item.path] = true;
+          changed = true;
+        }
+      }
+    });
+    if (changed) {
+      setOpenMenus(newOpenMenus);
     }
   }, [router.pathname]);
 
-  const handleFinanceClick = (e: React.MouseEvent) => {
-    setIsFinanceOpen(!isFinanceOpen);
-    if (!router.pathname.startsWith('/finance')) {
-      router.push('/finance');
+  const handleMenuClick = (e: React.MouseEvent, path: string) => {
+    setOpenMenus(prev => ({ ...prev, [path]: !prev[path] }));
+    if (!router.pathname.startsWith(path)) {
+      router.push(path);
     } else {
       e.preventDefault();
     }
@@ -91,14 +113,14 @@ export default function Sidebar() {
         {menuItems.map((item, index) => {
           const Icon = item.icon;
           const hasSubItems = !!item.subItems;
-          const isFinance = item.path === '/finance';
+          const isOpen = !!openMenus[item.path];
           const isActive = router.pathname === item.path || (item.path !== '/dashboard' && router.pathname.startsWith(item.path));
           
           const itemContent = (
             <a
               onClick={(e) => {
-                if (isFinance) {
-                  handleFinanceClick(e);
+                if (hasSubItems) {
+                  handleMenuClick(e, item.path);
                 }
               }}
               className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 cursor-pointer text-sm font-medium group
@@ -114,7 +136,7 @@ export default function Sidebar() {
                 <ChevronDown 
                   size={16} 
                   className={`transition-transform duration-200 ${
-                    isFinanceOpen ? 'rotate-180 text-white' : 'text-slate-400 group-hover:text-white'
+                    isOpen ? 'rotate-180 text-white' : 'text-slate-400 group-hover:text-white'
                   }`} 
                 />
               )}
@@ -123,8 +145,8 @@ export default function Sidebar() {
 
           return (
             <div key={index} className="space-y-1">
-              {isFinance ? (
-                <div onClick={(e) => isFinance && e.stopPropagation()}>
+              {hasSubItems ? (
+                <div onClick={(e) => hasSubItems && e.stopPropagation()}>
                   {itemContent}
                 </div>
               ) : (
@@ -134,15 +156,15 @@ export default function Sidebar() {
               )}
 
               {/* Collapsible Subparts Menu */}
-              {isFinance && isFinanceOpen && item.subItems && (
+              {hasSubItems && isOpen && item.subItems && (
                 <div className="relative pl-6 pr-2 pb-2 mt-1 space-y-1 transition-all duration-300">
                   {/* Vertical dotted line running down */}
                   <div className="absolute left-[20px] top-0 bottom-4 w-[1px] bg-slate-700/60" />
                   
                   {item.subItems.map((sub, sIdx) => {
                     const isSubActive = router.pathname === sub.path || 
-                      (sub.path === '/finance' && router.pathname === '/finance') ||
-                      (sub.path !== '/finance' && router.pathname.startsWith(sub.path));
+                      (sub.path === item.path && router.pathname === item.path) ||
+                      (sub.path !== item.path && router.pathname.startsWith(sub.path));
                     
                     return (
                       <Link href={sub.path} key={sIdx} passHref legacyBehavior>

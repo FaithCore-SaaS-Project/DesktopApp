@@ -6,12 +6,12 @@
   "author": "FC Software Team",
   "license": "UNLICENSED",
   "scripts": {
-    "dev:next": "next dev src/renderer",
+    "dev:next": "next dev src/renderer -p 3080",
     "build:next": "next build src/renderer",
     "start:next": "next start src/renderer",
     "dev:electron": "tsc -p tsconfig.json && electron .",
     "build:electron": "tsc -p tsconfig.json",
-    "dev": "concurrently -k \"npm run dev:next\" \"wait-on http://127.0.0.1:3000 && npm run dev:electron\"",
+    "dev": "concurrently -k \"npm run dev:next\" \"wait-on http://127.0.0.1:3080 && npm run dev:electron\"",
     "build": "npm run build:next && npm run build:electron",
     "dist": "npm run build && electron-builder"
   },

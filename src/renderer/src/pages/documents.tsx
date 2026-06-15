@@ -1,16 +1,56 @@
 import React from 'react';
-import { FolderOpen } from 'lucide-react';
+import Link from 'next/link';
+import { ChevronRight, ChevronDown } from 'lucide-react';
+
+import DocumentsStats from '../components/documents/DocumentsStats';
+import DocumentsFilters from '../components/documents/DocumentsFilters';
+import DocumentsTable from '../components/documents/DocumentsTable';
+import DocumentsSidebar from '../components/documents/DocumentsSidebar';
 
 export default function DocumentsPage() {
   return (
-    <div className="p-8 flex flex-col items-center justify-center min-h-[75vh] text-center select-none">
-      <div className="h-16 w-16 bg-[#5B3DF5]/10 rounded-2xl flex items-center justify-center text-[#5B3DF5] mb-4">
-        <FolderOpen size={32} />
+    <div className="space-y-0 pb-10">
+      {/* Page Header */}
+      <div className="flex items-center justify-between mb-8">
+        <div>
+          <h1 className="text-3xl font-black text-gray-900 tracking-tight">Documents</h1>
+          <nav className="flex items-center gap-1.5 text-xs text-gray-400 font-semibold mt-1.5">
+            <Link href="/dashboard" className="hover:text-[#5B3DF5] transition-colors">Dashboard</Link>
+            <ChevronRight size={12} />
+            <span className="text-gray-600">Documents</span>
+            <ChevronRight size={12} />
+            <span className="text-[#5B3DF5]">All Documents</span>
+          </nav>
+        </div>
+        
+        <div className="flex bg-[#5B3DF5] rounded-2xl shadow-lg shadow-[#5B3DF5]/20 overflow-hidden text-white font-bold text-sm cursor-pointer active:scale-[0.98] transition-all">
+          <button
+            type="button"
+            className="flex items-center gap-2 px-5 py-2.5 hover:bg-[#4a30db] transition-colors"
+          >
+            <span className="text-lg leading-none mb-0.5">+</span> Upload Document
+          </button>
+          <button className="px-3 border-l border-white/20 hover:bg-[#4a30db] transition-colors flex items-center justify-center">
+            <ChevronDown size={14} />
+          </button>
+        </div>
       </div>
-      <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight mb-2">Documents Repository</h1>
-      <p className="text-gray-550 text-sm font-medium max-w-md">
-        This module will let you upload and manage local PDF attachments, agreement notes, and ministry curriculum documents securely.
-      </p>
+
+      {/* Stats */}
+      <DocumentsStats />
+      
+      {/* Filters */}
+      <DocumentsFilters />
+
+      {/* Main Grid */}
+      <div className="grid lg:grid-cols-12 gap-6">
+        <div className="lg:col-span-9 h-full">
+          <DocumentsTable />
+        </div>
+        <div className="lg:col-span-3">
+          <DocumentsSidebar />
+        </div>
+      </div>
     </div>
   );
 }

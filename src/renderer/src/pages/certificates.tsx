@@ -1,305 +1,450 @@
 import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
+import { ChevronRight, Plus, X } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { apiService } from '../services/api';
-import { mockCertificateTemplates, CertificateTemplate } from '../services/mockData';
-import { FileText, Printer, FileDown, Eye, CheckCircle2, AlertCircle } from 'lucide-react';
+import { CertificateMock } from '../services/mockData';
 
-interface PrinterInfo {
-  name: string;
-  isDefault: boolean;
-  status: number;
-}
+import CertificateStats from '../components/certificates/CertificateStats';
+import CertificateFilters from '../components/certificates/CertificateFilters';
+import CertificatesTable from '../components/certificates/CertificatesTable';
+import CertificateDetails from '../components/certificates/CertificateDetails';
+import CategoriesPagination from '../components/finance/categories/CategoriesPagination';
+
+const CERT_TYPE_TEMPLATES: Record<CertificateMock['type'], string> = {
+  Membership: 'This certifies that [Recipient] is a faithful member of Kingdom Connect Church.',
+  Baptism: 'This certifies that [Recipient] has been baptized in the name of the Father, the Son, and the Holy Spirit.',
+  Confirmation: 'This certifies that [Recipient] has confirmed their faith at Kingdom Connect Church.',
+  Appreciation: 'This certificate is awarded to [Recipient] in appreciation of dedicated service to Kingdom Connect Church.',
+  Volunteer: 'This certifies that [Recipient] has faithfully served as a volunteer at Kingdom Connect Church.',
+  Ministry: 'This certifies that [Recipient] has successfully completed ministry training at Kingdom Connect Church.',
+  Appointment: 'This certifies that [Recipient] has been officially appointed to serve at Kingdom Connect Church.',
+  Training: 'This certifies that [Recipient] has successfully completed training at Kingdom Connect Church.',
+  Marriage: 'This certifies that [Recipient] were joined in holy matrimony at Kingdom Connect Church.',
+  'Sunday School': 'This certifies that [Recipient] has successfully completed the Sunday School program.',
+};
 
 export default function CertificatesPage() {
   const { currentTenant } = useApp();
-  const [templates] = useState<CertificateTemplate[]>(mockCertificateTemplates);
-  const [selectedTemplate, setSelectedTemplate] = useState<CertificateTemplate>(mockCertificateTemplates[0]);
-  
-  // Template parameters
-  const [recipientName, setRecipientName] = useState('Sarah Elizabeth Vance');
-  const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
-  const [amount, setAmount] = useState('250.00');
-  const [category, setCategory] = useState('Tithe');
-  
-  // Hardware/Printer states
-  const [printers, setPrinters] = useState<PrinterInfo[]>([]);
-  const [selectedPrinter, setSelectedPrinter] = useState('');
-  
-  // Feedback states
-  const [actionStatus, setActionStatus] = useState<{ type: 'success' | 'error' | null; message: string }>({ type: null, message: '' });
-  const [printing, setPrinting] = useState(false);
+  const [certificates, setCertificates] = useState<CertificateMock[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  // Load physical/virtual printers on mount
-  useEffect(() => {
-    const fetchPrinters = async () => {
-      try {
-        const list = await apiService.getPrinters();
-        setPrinters(list);
-        const defaultPrinter = list.find((p) => p.isDefault) || list[0];
-        if (defaultPrinter) {
-          setSelectedPrinter(defaultPrinter.name);
-        }
-      } catch (err) {
-        console.error('Error fetching hardware printers:', err);
-      }
-    };
-    fetchPrinters();
-  }, []);
+  // Selection
+  const [selectedCertificate, setSelectedCertificate] = useState<CertificateMock | null>(null);
 
-  // Helper to compile placeholders in template HTML
-  const getRenderedHTML = () => {
-    if (!currentTenant) return '';
-    let html = selectedTemplate.defaultContent;
-    html = html.replace(/{{name}}/g, recipientName);
-    html = html.replace(/{{date}}/g, date);
-    html = html.replace(/{{amount}}/g, amount);
-    html = html.replace(/{{category}}/g, category);
-    html = html.replace(/{{id}}/g, Date.now().toString().slice(-6));
-    html = html.replace(/{{tenantName}}/g, currentTenant.name);
-    html = html.replace(/{{tenantLocation}}/g, currentTenant.location);
-    return html;
-  };
+  // Filters
+  const [searchTerm, setSearchTerm] = useState('');
+  const [dateFilter, setDateFilter] = useState('');
+  const [typeFilter, setTypeFilter] = useState('all');
+  const [statusFilter, setStatusFilter] = useState('all');
 
-  const handleExportPDF = async () => {
-    setPrinting(true);
-    setActionStatus({ type: null, message: '' });
-    const html = getRenderedHTML();
-    const fileName = `${selectedTemplate.type}_${recipientName.toLowerCase().replace(/\s+/g, '_')}.pdf`;
-    
+  // Pagination
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 10;
+
+  // Modal
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalMode, setModalMode] = useState<'add' | 'edit'>('add');
+  const [editId, setEditId] = useState('');
+
+  // Form Fields
+  const [formName, setFormName] = useState('');
+  const [formType, setFormType] = useState<CertificateMock['type']>('Membership');
+  const [formRecipient, setFormRecipient] = useState('');
+  const [formRecipientEmail, setFormRecipientEmail] = useState('');
+  const [formRecipientPhone, setFormRecipientPhone] = useState('');
+  const [formIssuedDate, setFormIssuedDate] = useState('');
+  const [formIssuedBy, setFormIssuedBy] = useState('Pastor John');
+  const [formStatus, setFormStatus] = useState<CertificateMock['status']>('Draft');
+
+  const loadData = async () => {
+    if (!currentTenant) return;
+    setLoading(true);
     try {
-      const result = await apiService.printToPDF(html, fileName);
-      if (result.success) {
-        setActionStatus({ 
-          type: 'success', 
-          message: `PDF exported successfully! File saved.` 
-        });
+      const list = await apiService.getCertificates(currentTenant.id);
+      setCertificates(list);
+      if (list.length > 0) {
+        setSelectedCertificate(list[0]);
       } else {
-        setActionStatus({ type: 'error', message: result.error || 'Failed to export PDF.' });
+        setSelectedCertificate(null);
       }
-    } catch (err: any) {
-      setActionStatus({ type: 'error', message: err.message || 'Error occurred.' });
+    } catch (err) {
+      console.error('Error loading certificates:', err);
     } finally {
-      setPrinting(false);
+      setLoading(false);
     }
   };
 
-  const handleDirectPrint = async () => {
-    setPrinting(true);
-    setActionStatus({ type: null, message: '' });
-    const html = getRenderedHTML();
+  useEffect(() => {
+    loadData();
+  }, [currentTenant]);
 
-    try {
-      const result = await apiService.printDirect(html, selectedPrinter);
-      if (result.success) {
-        setActionStatus({ 
-          type: 'success', 
-          message: `Document dispatched to printer: ${selectedPrinter || 'System Default'}` 
-        });
-      } else {
-        setActionStatus({ type: 'error', message: result.error || 'Direct printing failed.' });
-      }
-    } catch (err: any) {
-      setActionStatus({ type: 'error', message: err.message || 'Error printing document.' });
-    } finally {
-      setPrinting(false);
+  // ─── Filtering ────────────────────────────────────────────────────────────
+  const filteredCertificates = certificates.filter((c) => {
+    const q = searchTerm.toLowerCase();
+    const matchSearch =
+      !q ||
+      c.name.toLowerCase().includes(q) ||
+      c.recipient.toLowerCase().includes(q) ||
+      c.id.toLowerCase().includes(q) ||
+      c.type.toLowerCase().includes(q);
+
+    const matchDate = !dateFilter || c.issuedDate === dateFilter;
+    const matchType = typeFilter === 'all' || c.type === typeFilter;
+    const matchStatus = statusFilter === 'all' || c.status === statusFilter;
+
+    return matchSearch && matchDate && matchType && matchStatus;
+  });
+
+  // ─── Pagination ───────────────────────────────────────────────────────────
+  const totalPages = Math.max(1, Math.ceil(filteredCertificates.length / pageSize));
+  const paginatedCertificates = filteredCertificates.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize
+  );
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  // ─── CRUD Handlers ────────────────────────────────────────────────────────
+  const openAddModal = () => {
+    setModalMode('add');
+    setEditId('');
+    setFormName('');
+    setFormType('Membership');
+    setFormRecipient('');
+    setFormRecipientEmail('');
+    setFormRecipientPhone('');
+    setFormIssuedDate(new Date().toISOString().split('T')[0]);
+    setFormIssuedBy('Pastor John');
+    setFormStatus('Draft');
+    setIsModalOpen(true);
+  };
+
+  const openEditModal = (cert: CertificateMock) => {
+    setModalMode('edit');
+    setEditId(cert.id);
+    setFormName(cert.name);
+    setFormType(cert.type);
+    setFormRecipient(cert.recipient);
+    setFormRecipientEmail(cert.recipientEmail);
+    setFormRecipientPhone(cert.recipientPhone);
+    setFormIssuedDate(cert.issuedDate);
+    setFormIssuedBy(cert.issuedBy);
+    setFormStatus(cert.status);
+    setIsModalOpen(true);
+  };
+
+  const handleSaveModal = async () => {
+    if (!currentTenant || !formName.trim() || !formRecipient.trim() || !formIssuedDate) return;
+
+    const now = new Date().toISOString().split('T')[0];
+    const cert: CertificateMock = {
+      id: modalMode === 'edit' ? editId : `CERT-${Date.now().toString().slice(-6)}`,
+      name: formName.trim(),
+      type: formType,
+      recipient: formRecipient.trim(),
+      recipientEmail: formRecipientEmail.trim(),
+      recipientPhone: formRecipientPhone.trim(),
+      issuedDate: formIssuedDate,
+      issuedBy: formIssuedBy.trim(),
+      status: formStatus,
+      tenantId: currentTenant.id,
+      createdOn: modalMode === 'edit' ? editId.split('-')[0] || now : now,
+    };
+
+    await apiService.saveCertificate(cert);
+    setIsModalOpen(false);
+    await loadData();
+
+    // Re-select the saved certificate
+    const updated = await apiService.getCertificates(currentTenant.id);
+    const saved = updated.find((c) => c.id === cert.id) || null;
+    setSelectedCertificate(saved);
+  };
+
+  const handleDelete = async (cert: CertificateMock) => {
+    if (!window.confirm(`Delete "${cert.name}"? This cannot be undone.`)) return;
+    await apiService.deleteCertificate(cert.id);
+    if (selectedCertificate?.id === cert.id) setSelectedCertificate(null);
+    await loadData();
+  };
+
+  const handleDownload = async (cert: CertificateMock) => {
+    const html = `
+      <div style="font-family: Georgia, serif; padding: 48px; text-align: center; background: #fffdf4;">
+        <div style="border: 6px solid #f0c060; border-radius: 12px; padding: 36px;">
+          <h1 style="font-size: 13px; letter-spacing: 3px; color: #64748b; text-transform: uppercase;">Kingdom Connect Church</h1>
+          <h2 style="font-size: 22px; font-weight: 900; color: #4C1D95; text-transform: uppercase;">${cert.type} Certificate</h2>
+          <p style="font-style: italic; color: #64748b;">This is to certify that</p>
+          <h3 style="font-size: 28px; font-style: italic;">${cert.recipient}</h3>
+          <p style="color: #5B3DF5; font-weight: 800;">Kingdom Connect Church</p>
+          <div style="border-top: 1px dashed #d1d5db; margin-top: 20px; padding-top: 12px;">
+            <p style="color: #94a3b8; font-size: 12px;">Issued by: <strong>${cert.issuedBy}</strong></p>
+            <p style="color: #94a3b8; font-size: 12px;">${cert.issuedDate}</p>
+          </div>
+        </div>
+      </div>
+    `;
+    const fileName = `${cert.id}_${cert.name.replace(/\s+/g, '_')}.pdf`;
+    await apiService.printToPDF(html, fileName);
+  };
+
+  const handleArchive = async (id: string) => {
+    const cert = certificates.find((c) => c.id === id);
+    if (!cert) return;
+    const updated = { ...cert, status: 'Archived' as const };
+    await apiService.saveCertificate(updated);
+    await loadData();
+    setSelectedCertificate(updated);
+  };
+
+  // Auto-fill certificate name when type changes on the add modal
+  const handleTypeChange = (type: CertificateMock['type']) => {
+    setFormType(type);
+    if (modalMode === 'add' || !formName.trim()) {
+      const defaultName = `${type} Certificate`;
+      setFormName(defaultName);
     }
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-0">
       {/* Page Header */}
-      <div>
-        <h1 className="text-3xl font-extrabold tracking-tight bg-gradient-to-r from-white to-slate-400 bg-clip-text text-transparent">
-          Certificates & receipts
-        </h1>
-        <p className="text-xs text-slate-500 mt-1">Render print-ready documents and interface directly with connected printer hardware.</p>
+      <div className="flex items-center justify-between mb-8">
+        <div>
+          <h1 className="text-3xl font-black text-gray-900 tracking-tight">Certificates</h1>
+          <nav className="flex items-center gap-1.5 text-xs text-gray-400 font-semibold mt-1.5">
+            <Link href="/dashboard" className="hover:text-[#5B3DF5] transition-colors">Dashboard</Link>
+            <ChevronRight size={12} />
+            <span className="text-gray-600">Certificates</span>
+            <ChevronRight size={12} />
+            <span className="text-[#5B3DF5]">All Certificates</span>
+          </nav>
+        </div>
+        <button
+          type="button"
+          onClick={openAddModal}
+          className="flex items-center gap-2 bg-[#5B3DF5] hover:bg-[#4a30db] text-white px-5 py-2.5 rounded-2xl text-sm font-bold shadow-lg shadow-[#5B3DF5]/20 active:scale-[0.98] transition-all cursor-pointer"
+        >
+          <Plus size={16} />
+          Create New Certificate
+        </button>
       </div>
 
-      {/* Main panel layout splits form settings & live render preview */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        
-        {/* Left Control Panel: Template Selector & Parameters */}
-        <div className="lg:col-span-4 space-y-6">
-          
-          {/* Template Select Card */}
-          <div className="bg-slate-900/40 border border-slate-800/60 p-5 rounded-2xl space-y-4">
-            <h2 className="text-sm font-bold text-white uppercase tracking-wider flex items-center space-x-2">
-              <FileText className="h-4 w-4 text-indigo-400" />
-              <span>Select Template</span>
-            </h2>
-            
-            <div className="space-y-2">
-              {templates.map((tpl) => (
-                <button
-                  key={tpl.id}
-                  onClick={() => setSelectedTemplate(tpl)}
-                  className={`w-full text-left p-3 rounded-xl border transition-all text-xs font-semibold ${
-                    selectedTemplate.id === tpl.id
-                      ? 'bg-indigo-600/10 border-indigo-500 text-white'
-                      : 'bg-slate-950/60 border-slate-850 text-slate-400 hover:border-slate-800'
-                  }`}
+      {/* Stats */}
+      <CertificateStats certificates={certificates} />
+
+      {/* Filters */}
+      <CertificateFilters
+        searchTerm={searchTerm}
+        onSearchChange={(v) => { setSearchTerm(v); setCurrentPage(1); }}
+        dateFilter={dateFilter}
+        onDateFilterChange={(v) => { setDateFilter(v); setCurrentPage(1); }}
+        typeFilter={typeFilter}
+        onTypeFilterChange={(v) => { setTypeFilter(v); setCurrentPage(1); }}
+        statusFilter={statusFilter}
+        onStatusFilterChange={(v) => { setStatusFilter(v); setCurrentPage(1); }}
+        onResetFilters={() => {
+          setSearchTerm('');
+          setDateFilter('');
+          setTypeFilter('all');
+          setStatusFilter('all');
+          setCurrentPage(1);
+        }}
+      />
+
+      {/* Main Content */}
+      {loading ? (
+        <div className="flex justify-center items-center py-24 text-gray-400 text-sm font-bold">
+          Loading certificates...
+        </div>
+      ) : (
+        <div className="grid lg:grid-cols-12 gap-6">
+          {/* Table + Pagination */}
+          <div className="lg:col-span-9">
+            <CertificatesTable
+              certificates={paginatedCertificates}
+              selectedCertificate={selectedCertificate}
+              onSelectCertificate={setSelectedCertificate}
+              onEditCertificate={openEditModal}
+              onDeleteCertificate={handleDelete}
+              onDownloadCertificate={handleDownload}
+            />
+            <CategoriesPagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              totalCategoriesCount={filteredCertificates.length}
+              pageSize={pageSize}
+              onPageChange={handlePageChange}
+              itemName="certificates"
+            />
+          </div>
+
+          {/* Sidebar Details */}
+          <div className="lg:col-span-3">
+            <CertificateDetails
+              certificate={selectedCertificate}
+              onArchive={handleArchive}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* Add / Edit Modal */}
+      {isModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between p-6 border-b border-gray-100">
+              <h2 className="text-lg font-black text-gray-900">
+                {modalMode === 'add' ? 'Create New Certificate' : 'Edit Certificate'}
+              </h2>
+              <button
+                type="button"
+                onClick={() => setIsModalOpen(false)}
+                className="h-8 w-8 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition-colors cursor-pointer"
+              >
+                <X size={16} className="text-gray-500" />
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            <div className="p-6 space-y-4">
+              {/* Certificate Type */}
+              <div>
+                <label className="block text-xs font-bold text-gray-600 mb-1.5">Certificate Type</label>
+                <select
+                  value={formType}
+                  onChange={(e) => handleTypeChange(e.target.value as CertificateMock['type'])}
+                  className="w-full rounded-xl border border-gray-200 py-2.5 px-3.5 text-xs font-bold text-gray-700 outline-none focus:border-[#5B3DF5] transition-all bg-white cursor-pointer"
                 >
-                  <p className="font-bold">{tpl.title}</p>
-                  <p className="text-[10px] text-slate-500 font-normal mt-0.5">{tpl.description}</p>
-                </button>
-              ))}
-            </div>
-          </div>
+                  {['Membership', 'Baptism', 'Confirmation', 'Appreciation', 'Volunteer', 'Ministry', 'Appointment', 'Training', 'Marriage', 'Sunday School'].map((t) => (
+                    <option key={t} value={t}>{t}</option>
+                  ))}
+                </select>
+                {/* Auto-template hint */}
+                <p className="text-[10px] text-gray-400 mt-1.5 italic leading-relaxed">
+                  {CERT_TYPE_TEMPLATES[formType]}
+                </p>
+              </div>
 
-          {/* Form Fields Card */}
-          <div className="bg-slate-900/40 border border-slate-800/60 p-5 rounded-2xl space-y-4">
-            <h2 className="text-sm font-bold text-white uppercase tracking-wider">
-              Document Parameters
-            </h2>
-
-            <div className="space-y-3.5 text-xs">
-              {/* Recipient */}
-              <div className="space-y-1">
-                <label htmlFor="param-name" className="font-bold text-slate-400">Recipient/Member Name</label>
+              {/* Certificate Name */}
+              <div>
+                <label className="block text-xs font-bold text-gray-600 mb-1.5">Certificate Name</label>
                 <input
-                  id="param-name"
                   type="text"
-                  value={recipientName}
-                  onChange={(e) => setRecipientName(e.target.value)}
-                  className="w-full bg-slate-950/60 border border-slate-800 focus:border-indigo-500 rounded-xl px-3 py-2 text-slate-200 focus:outline-none"
+                  value={formName}
+                  onChange={(e) => setFormName(e.target.value)}
+                  placeholder="e.g. Membership Certificate"
+                  className="w-full rounded-xl border border-gray-200 py-2.5 px-3.5 text-xs font-semibold text-gray-700 outline-none focus:border-[#5B3DF5] transition-all bg-white"
                 />
               </div>
 
-              {/* Date */}
-              <div className="space-y-1">
-                <label htmlFor="param-date" className="font-bold text-slate-400">Effective Date</label>
+              {/* Recipient */}
+              <div>
+                <label className="block text-xs font-bold text-gray-600 mb-1.5">Recipient Name</label>
                 <input
-                  id="param-date"
-                  type="date"
-                  value={date}
-                  onChange={(e) => setDate(e.target.value)}
-                  className="w-full bg-slate-950/60 border border-slate-800 focus:border-indigo-500 rounded-xl px-3 py-2 text-slate-200 focus:outline-none"
+                  type="text"
+                  value={formRecipient}
+                  onChange={(e) => setFormRecipient(e.target.value)}
+                  placeholder="e.g. Kumara Family"
+                  className="w-full rounded-xl border border-gray-200 py-2.5 px-3.5 text-xs font-semibold text-gray-700 outline-none focus:border-[#5B3DF5] transition-all bg-white"
                 />
               </div>
 
-              {/* Conditional parameters based on type */}
-              {selectedTemplate.type === 'donation_receipt' && (
-                <>
-                  {/* Category */}
-                  <div className="space-y-1">
-                    <label htmlFor="param-category" className="font-bold text-slate-400">Giving Category</label>
-                    <select
-                      id="param-category"
-                      value={category}
-                      onChange={(e) => setCategory(e.target.value)}
-                      className="w-full bg-slate-950/60 border border-slate-800 focus:border-indigo-500 rounded-xl px-3 py-2 text-slate-200 focus:outline-none cursor-pointer"
-                    >
-                      <option value="Tithe">Tithe</option>
-                      <option value="Offering">Offering</option>
-                      <option value="Building Fund">Building Fund</option>
-                      <option value="Missions">Missions</option>
-                    </select>
-                  </div>
-
-                  {/* Amount */}
-                  <div className="space-y-1">
-                    <label htmlFor="param-amount" className="font-bold text-slate-400">Donation Amount ($ USD)</label>
-                    <input
-                      id="param-amount"
-                      type="number"
-                      value={amount}
-                      onChange={(e) => setAmount(e.target.value)}
-                      className="w-full bg-slate-950/60 border border-slate-800 focus:border-indigo-500 rounded-xl px-3 py-2 text-slate-200 focus:outline-none"
-                    />
-                  </div>
-                </>
-              )}
-            </div>
-          </div>
-
-          {/* Print Options Card */}
-          <div className="bg-slate-900/40 border border-slate-800/60 p-5 rounded-2xl space-y-4">
-            <h2 className="text-sm font-bold text-white uppercase tracking-wider flex items-center space-x-2">
-              <Printer className="h-4 w-4 text-indigo-400" />
-              <span>Direct Print Dispatch</span>
-            </h2>
-
-            {/* Select Printer */}
-            <div className="space-y-2 text-xs">
-              <label htmlFor="printer-select" className="font-bold text-slate-400">Active Printer Hardware</label>
-              <select
-                id="printer-select"
-                value={selectedPrinter}
-                onChange={(e) => setSelectedPrinter(e.target.value)}
-                className="w-full bg-slate-950/60 border border-slate-800 focus:border-indigo-500 rounded-xl px-3 py-2 text-slate-200 focus:outline-none cursor-pointer"
-              >
-                {printers.length === 0 ? (
-                  <option value="">No printers detected</option>
-                ) : (
-                  printers.map((p) => (
-                    <option key={p.name} value={p.name}>
-                      {p.name} {p.isDefault ? '(Default)' : ''}
-                    </option>
-                  ))
-                )}
-              </select>
-            </div>
-
-            {/* Print Action Buttons */}
-            <div className="grid grid-cols-2 gap-3 pt-2 text-xs">
-              <button
-                onClick={handleExportPDF}
-                disabled={printing}
-                className="py-2.5 px-3 rounded-xl border border-slate-700/80 hover:bg-slate-800 text-slate-250 font-bold transition-all disabled:opacity-50 flex items-center justify-center space-x-2"
-              >
-                <FileDown className="h-4 w-4" />
-                <span>Export PDF</span>
-              </button>
-
-              <button
-                onClick={handleDirectPrint}
-                disabled={printing || printers.length === 0}
-                className="py-2.5 px-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold transition-all disabled:opacity-50 flex items-center justify-center space-x-2 shadow-lg shadow-indigo-600/10"
-              >
-                <Printer className="h-4 w-4" />
-                <span>Print Paper</span>
-              </button>
-            </div>
-
-            {/* Feedback notifications */}
-            {actionStatus.type && (
-              <div className={`p-3 rounded-lg border text-xs flex items-start space-x-2 font-medium ${
-                actionStatus.type === 'success'
-                  ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400'
-                  : 'bg-rose-500/10 border-rose-500/20 text-rose-400'
-              }`}>
-                {actionStatus.type === 'success' ? (
-                  <CheckCircle2 className="h-4 w-4 flex-shrink-0 mt-0.5" />
-                ) : (
-                  <AlertCircle className="h-4 w-4 flex-shrink-0 mt-0.5" />
-                )}
-                <span>{actionStatus.message}</span>
+              {/* Email + Phone row */}
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-bold text-gray-600 mb-1.5">Recipient Email</label>
+                  <input
+                    type="email"
+                    value={formRecipientEmail}
+                    onChange={(e) => setFormRecipientEmail(e.target.value)}
+                    placeholder="email@example.com"
+                    className="w-full rounded-xl border border-gray-200 py-2.5 px-3.5 text-xs font-semibold text-gray-700 outline-none focus:border-[#5B3DF5] transition-all bg-white"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-gray-600 mb-1.5">Recipient Phone</label>
+                  <input
+                    type="tel"
+                    value={formRecipientPhone}
+                    onChange={(e) => setFormRecipientPhone(e.target.value)}
+                    placeholder="+94 77 123 4567"
+                    className="w-full rounded-xl border border-gray-200 py-2.5 px-3.5 text-xs font-semibold text-gray-700 outline-none focus:border-[#5B3DF5] transition-all bg-white"
+                  />
+                </div>
               </div>
-            )}
-          </div>
 
+              {/* Issued Date + Issued By */}
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-bold text-gray-600 mb-1.5">Issued Date</label>
+                  <input
+                    type="date"
+                    value={formIssuedDate}
+                    onChange={(e) => setFormIssuedDate(e.target.value)}
+                    className="w-full rounded-xl border border-gray-200 py-2.5 px-3.5 text-xs font-bold text-gray-700 outline-none focus:border-[#5B3DF5] transition-all bg-white cursor-pointer"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-gray-600 mb-1.5">Issued By</label>
+                  <input
+                    type="text"
+                    value={formIssuedBy}
+                    onChange={(e) => setFormIssuedBy(e.target.value)}
+                    placeholder="Pastor John"
+                    className="w-full rounded-xl border border-gray-200 py-2.5 px-3.5 text-xs font-semibold text-gray-700 outline-none focus:border-[#5B3DF5] transition-all bg-white"
+                  />
+                </div>
+              </div>
+
+              {/* Status */}
+              <div>
+                <label className="block text-xs font-bold text-gray-600 mb-1.5">Status</label>
+                <div className="flex gap-3">
+                  {(['Draft', 'Issued', 'Archived'] as CertificateMock['status'][]).map((s) => (
+                    <button
+                      key={s}
+                      type="button"
+                      onClick={() => setFormStatus(s)}
+                      className={`flex-1 py-2 rounded-xl border text-xs font-bold transition-all cursor-pointer ${
+                        formStatus === s
+                          ? 'bg-[#5B3DF5] text-white border-[#5B3DF5]'
+                          : 'border-gray-200 text-gray-500 hover:border-[#5B3DF5]'
+                      }`}
+                    >
+                      {s}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Modal Footer */}
+            <div className="p-6 border-t border-gray-100 flex gap-3">
+              <button
+                type="button"
+                onClick={() => setIsModalOpen(false)}
+                className="flex-1 border border-gray-200 hover:bg-gray-50 text-gray-600 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer active:scale-[0.98]"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleSaveModal}
+                disabled={!formName.trim() || !formRecipient.trim() || !formIssuedDate}
+                className="flex-1 bg-[#5B3DF5] hover:bg-[#4a30db] text-white py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer active:scale-[0.98] disabled:opacity-50 shadow-md shadow-[#5B3DF5]/15"
+              >
+                {modalMode === 'add' ? 'Create Certificate' : 'Save Changes'}
+              </button>
+            </div>
+          </div>
         </div>
-
-        {/* Right Preview Panel: High Fidelity Vector Rendering Preview */}
-        <div className="lg:col-span-8 bg-slate-900/30 border border-slate-800/60 p-6 rounded-2xl shadow-xl flex flex-col justify-between h-[680px]">
-          <div className="flex items-center justify-between pb-4 border-b border-slate-850">
-            <h2 className="text-sm font-bold text-white uppercase tracking-wider flex items-center space-x-2">
-              <Eye className="h-4 w-4 text-indigo-400" />
-              <span>Live Vector Print Preview</span>
-            </h2>
-            <span className="text-[10px] text-slate-500 bg-slate-950 border border-slate-850 px-2 py-1 rounded">
-              A4 Portrait Preview
-            </span>
-          </div>
-
-          {/* Actual Render Preview Box */}
-          <div className="flex-1 bg-slate-950/40 rounded-xl border border-slate-850/60 p-6 overflow-y-auto mt-4 scrollbar-thin">
-            {/* Inject compiled preview content */}
-            <div dangerouslySetInnerHTML={{ __html: getRenderedHTML() }} />
-          </div>
-        </div>
-
-      </div>
+      )}
     </div>
   );
 }

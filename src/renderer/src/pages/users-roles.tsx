@@ -1,16 +1,77 @@
-import React from 'react';
-import { UserCog } from 'lucide-react';
+import React, { useState } from 'react';
+import Link from 'next/link';
+import { ChevronDown, UserPlus } from 'lucide-react';
+
+import UsersStats from '../components/users/UsersStats';
+import UsersFilters from '../components/users/UsersFilters';
+import UsersTable from '../components/users/UsersTable';
+import UsersSidebar from '../components/users/UsersSidebar';
 
 export default function UsersRolesPage() {
+  const [activeTab, setActiveTab] = useState('Users');
+
   return (
-    <div className="p-8 flex flex-col items-center justify-center min-h-[75vh] text-center select-none">
-      <div className="h-16 w-16 bg-[#5B3DF5]/10 rounded-2xl flex items-center justify-center text-[#5B3DF5] mb-4">
-        <UserCog size={32} />
+    <div className="space-y-0 pb-10">
+      {/* Page Header */}
+      <div className="flex items-center justify-between mb-2">
+        <h1 className="text-3xl font-black text-gray-900 tracking-tight">Users & Roles</h1>
+        <div className="flex items-center gap-3">
+          <button className="bg-white border border-[#5B3DF5] text-[#5B3DF5] hover:bg-[#5B3DF5]/5 px-4 py-2 rounded-2xl text-sm font-bold transition-all cursor-pointer flex items-center gap-2">
+            <UserPlus size={16} />
+            Invite User
+          </button>
+          
+          <div className="flex bg-[#5B3DF5] rounded-2xl shadow-lg shadow-[#5B3DF5]/20 overflow-hidden text-white font-bold text-sm cursor-pointer active:scale-[0.98] transition-all">
+            <button
+              type="button"
+              className="flex items-center gap-2 px-5 py-2.5 hover:bg-[#4a30db] transition-colors"
+            >
+              <span className="text-lg leading-none mb-0.5">+</span> Add New User
+            </button>
+            <button className="px-3 border-l border-white/20 hover:bg-[#4a30db] transition-colors flex items-center justify-center">
+              <ChevronDown size={14} />
+            </button>
+          </div>
+        </div>
       </div>
-      <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight mb-2">Users & Roles</h1>
-      <p className="text-gray-550 text-sm font-medium max-w-md">
-        This module manages administrative credentials, defining security clearance levels (Super Admin, Pastor, Accountant, Clerk) for database access.
-      </p>
+
+      {/* Tabs */}
+      <div className="flex items-center gap-6 border-b border-gray-100 mb-6">
+        {['Users', 'Roles', 'Permissions'].map((tab) => (
+          <button
+            key={tab}
+            onClick={() => setActiveTab(tab)}
+            className={`py-3 text-sm font-bold border-b-2 transition-colors cursor-pointer ${
+              activeTab === tab
+                ? 'border-[#5B3DF5] text-[#5B3DF5]'
+                : 'border-transparent text-gray-500 hover:text-gray-900'
+            }`}
+          >
+            {tab}
+          </button>
+        ))}
+      </div>
+
+      {activeTab === 'Users' && (
+        <>
+          <UsersStats />
+          <UsersFilters />
+          <div className="grid lg:grid-cols-12 gap-6">
+            <div className="lg:col-span-9 h-full">
+              <UsersTable />
+            </div>
+            <div className="lg:col-span-3">
+              <UsersSidebar />
+            </div>
+          </div>
+        </>
+      )}
+      
+      {activeTab !== 'Users' && (
+        <div className="flex items-center justify-center h-64 bg-white rounded-2xl border border-gray-100 shadow-sm">
+          <p className="text-gray-400 font-bold">{activeTab} coming soon...</p>
+        </div>
+      )}
     </div>
   );
 }

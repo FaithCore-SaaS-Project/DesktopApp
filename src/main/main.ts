@@ -35,7 +35,7 @@ function createWindow() {
 
   if (isDev) {
     // Development Environment: Load Next.js dev server
-    mainWindow.loadURL('http://localhost:3000');
+    mainWindow.loadURL('http://localhost:3080');
   } else {
     // Production Environment: Load compiled static Next.js assets
     // Built by next build with output: 'export' in src/renderer/out/
