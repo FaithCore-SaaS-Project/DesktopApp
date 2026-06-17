@@ -3,7 +3,7 @@ workflows:
     name: Build FaithCore Mac App (.dmg)
     instance_type: mac_mini_m1
     environment:
-      node: 18.x
+      node: 18
     scripts:
       - name: Install Dependencies
         script: npm install
