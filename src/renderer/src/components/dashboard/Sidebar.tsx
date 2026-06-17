@@ -50,7 +50,16 @@ const menuItems: MenuItem[] = [
   { icon: BarChart3, label: "Reports", path: "/reports" },
   { icon: FolderOpen, label: "Documents", path: "/documents" },
   { icon: Building2, label: "Departments", path: "/departments" },
-  { icon: UserCog, label: "Users & Roles", path: "/users-roles" },
+  { 
+    icon: UserCog, 
+    label: "Users & Roles", 
+    path: "/users",
+    subItems: [
+      { label: "Users", path: "/users" },
+      { label: "Roles", path: "/roles" },
+      { label: "Permissions", path: "/permissions" }
+    ]
+  },
   {
     icon: Settings,
     label: "Settings",
@@ -75,8 +84,11 @@ export default function Sidebar() {
     const newOpenMenus = { ...openMenus };
     let changed = false;
     menuItems.forEach(item => {
-      if (item.subItems && router.pathname.startsWith(item.path)) {
-        if (!newOpenMenus[item.path]) {
+      if (item.subItems) {
+        const isChildActive = item.subItems.some(sub => 
+          router.pathname === sub.path || router.pathname.startsWith(sub.path)
+        );
+        if (isChildActive && !newOpenMenus[item.path]) {
           newOpenMenus[item.path] = true;
           changed = true;
         }
@@ -114,7 +126,8 @@ export default function Sidebar() {
           const Icon = item.icon;
           const hasSubItems = !!item.subItems;
           const isOpen = !!openMenus[item.path];
-          const isActive = router.pathname === item.path || (item.path !== '/dashboard' && router.pathname.startsWith(item.path));
+          const isAnyChildActive = hasSubItems && item.subItems!.some(sub => router.pathname === sub.path || router.pathname.startsWith(sub.path));
+          const isActive = router.pathname === item.path || (item.path !== '/dashboard' && router.pathname.startsWith(item.path)) || isAnyChildActive;
           
           const itemContent = (
             <a
@@ -162,9 +175,7 @@ export default function Sidebar() {
                   <div className="absolute left-[20px] top-0 bottom-4 w-[1px] bg-slate-700/60" />
                   
                   {item.subItems.map((sub, sIdx) => {
-                    const isSubActive = router.pathname === sub.path || 
-                      (sub.path === item.path && router.pathname === item.path) ||
-                      (sub.path !== item.path && router.pathname.startsWith(sub.path));
+                    const isSubActive = router.pathname === sub.path || router.pathname.startsWith(sub.path);
                     
                     return (
                       <Link href={sub.path} key={sIdx} passHref legacyBehavior>

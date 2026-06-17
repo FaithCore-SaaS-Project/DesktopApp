@@ -1,64 +1,86 @@
 import React from 'react';
-import { Pencil, MoreHorizontal } from 'lucide-react';
-import CategoriesPagination from '../finance/categories/CategoriesPagination';
+import { Pencil, MoreHorizontal, ChevronLeft, ChevronRight } from 'lucide-react';
 
 const users = [
-  { name: 'Pastor John', email: 'pastor.john@kingdomconnect.com', role: 'Super Admin', roleColor: 'bg-purple-100 text-purple-700', department: 'Administration', status: 'Active', login: 'Today, 09:15 AM', img: 'https://ui-avatars.com/api/?name=Pastor+John&background=random' },
-  { name: 'Sarah Johnson', email: 'sarah.johnson@kingdomconnect.com', role: 'Administrator', roleColor: 'bg-blue-100 text-blue-700', department: 'Education', status: 'Active', login: 'Today, 08:42 AM', img: 'https://ui-avatars.com/api/?name=Sarah+Johnson&background=random' },
-  { name: 'Michael Peters', email: 'michael.peters@kingdomconnect.com', role: 'Ministry Leader', roleColor: 'bg-teal-100 text-teal-700', department: 'Outreach Ministry', status: 'Active', login: 'Yesterday, 07:30 PM', img: 'https://ui-avatars.com/api/?name=Michael+Peters&background=random' },
-  { name: 'Emily Davis', email: 'emily.davis@kingdomconnect.com', role: 'Event Manager', roleColor: 'bg-orange-100 text-orange-700', department: 'Events Department', status: 'Active', login: 'Yesterday, 06:10 PM', img: 'https://ui-avatars.com/api/?name=Emily+Davis&background=random' },
-  { name: 'Daniel Wilson', email: 'daniel.wilson@kingdomconnect.com', role: 'Finance Manager', roleColor: 'bg-green-100 text-green-700', department: 'Finance Department', status: 'Active', login: 'Yesterday, 04:25 PM', img: 'https://ui-avatars.com/api/?name=Daniel+Wilson&background=random' },
-  { name: 'Lisa Anderson', email: 'lisa.anderson@kingdomconnect.com', role: 'Member Services', roleColor: 'bg-purple-100 text-purple-700', department: 'Care & Support', status: 'Active', login: 'Today, 07:50 AM', img: 'https://ui-avatars.com/api/?name=Lisa+Anderson&background=random' },
-  { name: 'Robert Miller', email: 'robert.miller@kingdomconnect.com', role: 'Department User', roleColor: 'bg-blue-100 text-blue-700', department: 'Administration', status: 'Inactive', login: '3 days ago', img: 'https://ui-avatars.com/api/?name=Robert+Miller&background=random' },
-  { name: 'Olivia Martinez', email: 'olivia.martinez@kingdomconnect.com', role: 'Event Manager', roleColor: 'bg-orange-100 text-orange-700', department: 'Events Department', status: 'Active', login: 'Today, 10:05 AM', img: 'https://ui-avatars.com/api/?name=Olivia+Martinez&background=random' }
+  { name: "Pastor John", email: "pastor.john@kingdomconnect.com", role: "Super Admin", department: "Administration", status: "Active", lastLogin: "Today, 09:15 AM", joinedDate: "15 Jan 2023", avatar: "/avatar.jpg" },
+  { name: "Sarah Johnson", email: "sarah.johnson@kingdomconnect.com", role: "Administrator", department: "Education", status: "Active", lastLogin: "Today, 08:42 AM", joinedDate: "22 Feb 2023", avatar: "/avatar2.jpg" },
+  { name: "Michael Peters", email: "michael.peters@kingdomconnect.com", role: "Ministry Leader", department: "Outreach Ministry", status: "Active", lastLogin: "Yesterday, 07:30 PM", joinedDate: "10 Mar 2023", avatar: "/avatar3.jpg" },
+  { name: "Emily Davis", email: "emily.davis@kingdomconnect.com", role: "Event Manager", department: "Events Department", status: "Active", lastLogin: "Yesterday, 06:10 PM", joinedDate: "18 Apr 2023", avatar: "/avatar4.jpg" },
+  { name: "Daniel Wilson", email: "daniel.wilson@kingdomconnect.com", role: "Finance Manager", department: "Finance Department", status: "Active", lastLogin: "Yesterday, 04:25 PM", joinedDate: "05 May 2023", avatar: "/avatar5.jpg" },
+  { name: "Lisa Anderson", email: "lisa.anderson@kingdomconnect.com", role: "Member Services", department: "Care & Support", status: "Active", lastLogin: "Today, 07:50 AM", joinedDate: "12 Jun 2023", avatar: "/avatar6.jpg" },
+  { name: "Robert Miller", email: "robert.miller@kingdomconnect.com", role: "Department User", department: "Administration", status: "Inactive", lastLogin: "3 days ago", joinedDate: "25 Jul 2023", initials: "RM", bg: "bg-purple-600" },
+  { name: "Olivia Martinez", email: "olivia.martinez@kingdomconnect.com", role: "Event Manager", department: "Events Department", status: "Active", lastLogin: "Today, 10:05 AM", joinedDate: "08 Aug 2023", avatar: "/avatar7.jpg" }
 ];
+
+const roleColor = {
+  "Super Admin": "bg-[#5B3DF5]/10 text-[#5B3DF5]",
+  "Administrator": "bg-blue-100 text-blue-700",
+  "Ministry Leader": "bg-green-100 text-green-700",
+  "Event Manager": "bg-orange-100 text-orange-700",
+  "Finance Manager": "bg-emerald-100 text-emerald-700",
+  "Member Services": "bg-pink-100 text-pink-700",
+  "Department User": "bg-indigo-100 text-indigo-700"
+};
 
 export default function UsersTable() {
   return (
-    <div className="bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden flex flex-col h-full">
-      <div className="p-5 border-b border-gray-100 flex justify-between items-center">
-        <h2 className="text-lg font-black text-gray-900">All Users</h2>
+    <div className="bg-white border border-gray-100 rounded-2xl shadow-sm flex flex-col">
+      <div className="px-6 py-5 border-b border-gray-100">
+        <h2 className="text-sm font-black text-gray-900">All Users</h2>
       </div>
-      <div className="overflow-x-auto flex-1">
-        <table className="w-full text-left whitespace-nowrap">
-          <thead className="bg-gray-50/50">
+      
+      <div className="overflow-x-auto">
+        <table className="w-full text-[13px] text-left">
+          <thead className="bg-gray-50/50 text-[10px] font-bold text-gray-500 uppercase tracking-wider">
             <tr>
-              <th className="px-5 py-3 text-[10px] font-bold text-gray-500 uppercase tracking-wider">User</th>
-              <th className="px-5 py-3 text-[10px] font-bold text-gray-500 uppercase tracking-wider">Role</th>
-              <th className="px-5 py-3 text-[10px] font-bold text-gray-500 uppercase tracking-wider">Department</th>
-              <th className="px-5 py-3 text-[10px] font-bold text-gray-500 uppercase tracking-wider">Status</th>
-              <th className="px-5 py-3 text-[10px] font-bold text-gray-500 uppercase tracking-wider">Last Login</th>
-              <th className="px-5 py-3 text-[10px] font-bold text-gray-500 uppercase tracking-wider text-right">Actions</th>
+              <th className="px-6 py-4">User</th>
+              <th className="px-6 py-4">Role</th>
+              <th className="px-6 py-4">Department</th>
+              <th className="px-6 py-4">Status</th>
+              <th className="px-6 py-4">Last Login</th>
+              <th className="px-6 py-4">Joined Date</th>
+              <th className="px-6 py-4 text-center">Actions</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-50">
+          <tbody className="divide-y divide-gray-100 text-gray-700 font-semibold">
             {users.map((user, index) => (
               <tr key={index} className="hover:bg-gray-50/50 transition-colors">
-                <td className="px-5 py-4">
-                  <div className="flex items-center gap-3">
-                    <img src={user.img} alt={user.name} className="w-8 h-8 rounded-full object-cover bg-gray-100" />
+                <td className="px-6 py-4">
+                  <div className="flex gap-3 items-center">
+                    {user.initials ? (
+                      <div className={`w-9 h-9 rounded-full flex items-center justify-center text-white font-bold text-xs shadow-sm ${user.bg}`}>
+                        {user.initials}
+                      </div>
+                    ) : (
+                      <img src={`https://ui-avatars.com/api/?name=${user.name.replace(' ', '+')}&background=random`} alt={user.name} className="w-9 h-9 rounded-full shadow-sm" />
+                    )}
                     <div>
-                      <h3 className="text-xs font-bold text-gray-900">{user.name}</h3>
-                      <p className="text-[10px] font-semibold text-gray-400">{user.email}</p>
+                      <h3 className="text-[12px] font-bold text-gray-900 leading-tight">{user.name}</h3>
+                      <p className="text-[10px] font-semibold text-gray-500 mt-0.5">{user.email}</p>
                     </div>
                   </div>
                 </td>
-                <td className="px-5 py-4">
-                  <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold ${user.roleColor}`}>{user.role}</span>
-                </td>
-                <td className="px-5 py-4 text-xs font-semibold text-gray-600">{user.department}</td>
-                <td className="px-5 py-4">
-                  <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold ${user.status === 'Active' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
-                    {user.status}
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <span className={`px-2.5 py-1 rounded-md text-[10px] font-bold ${roleColor[user.role as keyof typeof roleColor]}`}>
+                    {user.role}
                   </span>
                 </td>
-                <td className="px-5 py-4 text-xs font-semibold text-gray-600">{user.login}</td>
-                <td className="px-5 py-4">
-                  <div className="flex items-center justify-end gap-2">
-                    <button className="p-1.5 text-gray-400 hover:text-gray-700 transition-colors border border-gray-200 rounded hover:bg-gray-50">
+                <td className="px-6 py-4 whitespace-nowrap text-gray-600 text-[11px] font-bold">{user.department}</td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  {user.status === 'Active' ? (
+                    <span className="px-2.5 py-1 rounded-md text-[10px] font-bold bg-green-50 text-green-600">Active</span>
+                  ) : (
+                    <span className="px-2.5 py-1 rounded-md text-[10px] font-bold bg-red-50 text-red-600">Inactive</span>
+                  )}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-[11px] font-bold text-gray-700">{user.lastLogin}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-[11px] font-bold text-gray-500">{user.joinedDate}</td>
+                <td className="px-6 py-4">
+                  <div className="flex justify-center gap-2">
+                    <button className="w-8 h-8 bg-white border border-gray-200 rounded-lg flex items-center justify-center text-gray-500 hover:text-[#5B3DF5] hover:border-[#5B3DF5]/30 hover:bg-[#5B3DF5]/5 transition-colors shadow-sm cursor-pointer">
                       <Pencil size={14} />
                     </button>
-                    <button className="p-1.5 text-gray-400 hover:text-gray-700 transition-colors border border-gray-200 rounded hover:bg-gray-50">
+                    <button className="w-8 h-8 bg-white border border-gray-200 rounded-lg flex items-center justify-center text-gray-500 hover:text-gray-900 hover:bg-gray-50 transition-colors shadow-sm cursor-pointer">
                       <MoreHorizontal size={14} />
                     </button>
                   </div>
@@ -68,14 +90,40 @@ export default function UsersTable() {
           </tbody>
         </table>
       </div>
-      <CategoriesPagination
-        currentPage={1}
-        totalPages={11}
-        totalCategoriesCount={86}
-        pageSize={8}
-        onPageChange={() => {}}
-        itemName="users"
-      />
+
+      {/* Pagination */}
+      <div className="px-6 py-4 border-t border-gray-100 flex items-center justify-between mt-auto">
+        <p className="text-[11px] font-bold text-gray-500">Showing 1 to 8 of 86 users</p>
+        <div className="flex gap-1.5">
+          <button className="w-8 h-8 border border-gray-200 rounded-lg flex items-center justify-center text-gray-400 hover:bg-gray-50 hover:text-gray-600 transition-colors cursor-pointer shadow-sm">
+            <ChevronLeft size={14} />
+          </button>
+          <button className="w-8 h-8 bg-[#5B3DF5] rounded-lg flex items-center justify-center text-white text-[11px] font-bold shadow-sm shadow-[#5B3DF5]/30 cursor-pointer">
+            1
+          </button>
+          <button className="w-8 h-8 border border-gray-200 rounded-lg flex items-center justify-center text-gray-600 text-[11px] font-bold hover:bg-gray-50 transition-colors cursor-pointer shadow-sm">
+            2
+          </button>
+          <button className="w-8 h-8 border border-gray-200 rounded-lg flex items-center justify-center text-gray-600 text-[11px] font-bold hover:bg-gray-50 transition-colors cursor-pointer shadow-sm">
+            3
+          </button>
+          <button className="w-8 h-8 border border-gray-200 rounded-lg flex items-center justify-center text-gray-600 text-[11px] font-bold hover:bg-gray-50 transition-colors cursor-pointer shadow-sm">
+            4
+          </button>
+          <button className="w-8 h-8 border border-gray-200 rounded-lg flex items-center justify-center text-gray-600 text-[11px] font-bold hover:bg-gray-50 transition-colors cursor-pointer shadow-sm">
+            5
+          </button>
+          <div className="w-8 h-8 flex items-center justify-center text-gray-400 text-[11px] font-bold">
+            ...
+          </div>
+          <button className="w-8 h-8 border border-gray-200 rounded-lg flex items-center justify-center text-gray-600 text-[11px] font-bold hover:bg-gray-50 transition-colors cursor-pointer shadow-sm">
+            11
+          </button>
+          <button className="w-8 h-8 border border-gray-200 rounded-lg flex items-center justify-center text-gray-400 hover:bg-gray-50 hover:text-gray-600 transition-colors cursor-pointer shadow-sm">
+            <ChevronRight size={14} />
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
