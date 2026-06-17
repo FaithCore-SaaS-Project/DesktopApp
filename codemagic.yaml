@@ -1,0 +1,17 @@
+workflows:
+  build-mac-desktop-app:
+    name: Build FaithCore Mac App (.dmg)
+    instance_type: mac_mini_m1
+    environment:
+      node: 18.x
+    scripts:
+      - name: Install Dependencies
+        script: npm install
+      - name: Build Next.js Frontend
+        script: npm run build:next
+      - name: Build Electron Mac App
+        script: npx electron-builder --mac
+    artifacts:
+      - dist/*.dmg
+      - release/*.dmg
+      - out/**/*.dmg
