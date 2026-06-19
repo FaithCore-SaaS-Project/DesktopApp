@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useApp } from '../context/AppContext';
-import { apiService } from '../services/api';
+import api from '../lib/axios';
 import StatsCards from '../components/dashboard/StatsCards';
 import MonthlyOverview from '../components/dashboard/MonthlyOverview';
 import QuickActions from '../components/dashboard/QuickActions';
@@ -12,6 +12,14 @@ import { CalendarDays } from 'lucide-react';
 export default function DashboardPage() {
   const { user, currentTenant } = useApp();
   const [currentDateString, setCurrentDateString] = useState('');
+  const [stats, setStats] = useState({
+    total_members: 0,
+    total_families: 0,
+    monthly_income: 0,
+    monthly_expense: 0
+  });
+  const [dashboardData, setDashboardData] = useState<any>(null);
+  const [loadingStats, setLoadingStats] = useState(true);
 
   useEffect(() => {
     // Format date nicely on client side
@@ -23,7 +31,22 @@ export default function DashboardPage() {
       year: 'numeric',
     });
     setCurrentDateString(formatted);
-  }, []);
+
+    // Fetch live dashboard stats from the SaaS Backend
+    const fetchStats = async () => {
+      try {
+        const response = await api.get('/dashboard/stats');
+        setStats(response.data.stats);
+        setDashboardData(response.data);
+      } catch (error) {
+        console.error("Failed to load dashboard stats", error);
+      } finally {
+        setLoadingStats(false);
+      }
+    };
+
+    fetchStats();
+  }, [currentTenant?.id]);
 
   return (
     <div className="p-8 bg-[#f5f6fa] min-h-full animate-fade-in select-none">
@@ -45,7 +68,12 @@ export default function DashboardPage() {
 
       {/* Stats Cards Row */}
       <div className="mb-8">
-        <StatsCards />
+        <StatsCards 
+          totalMembers={stats.total_members}
+          families={stats.total_families}
+          monthlyIncome={stats.monthly_income}
+          monthlyExpense={stats.monthly_expense}
+        />
       </div>
 
       {/* Middle Section: Overview & Actions */}
@@ -61,13 +89,32 @@ export default function DashboardPage() {
       {/* Bottom Section: Members, Receipts, Events */}
       <div className="grid lg:grid-cols-3 gap-8">
         <div>
-          <RecentMembers />
+          <RecentMembers members={dashboardData?.recent_members?.map((m: any) => ({
+            name: `${m.first_name} ${m.last_name}`,
+            age: m.dob ? `${new Date().getFullYear() - new Date(m.dob).getFullYear()} Years` : 'N/A',
+            gender: m.gender ? m.gender.charAt(0).toUpperCase() + m.gender.slice(1) : 'N/A',
+            date: new Date(m.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
+          }))} />
         </div>
         <div>
-          <RecentReceipts />
+          <RecentReceipts receipts={dashboardData?.recent_donations?.map((d: any) => ({
+            number: `RCP-${new Date(d.income_date).getFullYear()}-${d.id}`,
+            member: d.description || d.category?.name || 'General Donation',
+            amount: `$${Number(d.amount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+            date: new Date(d.income_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
+          }))} />
         </div>
         <div>
-          <UpcomingEvents />
+          <UpcomingEvents events={dashboardData?.upcoming_events?.map((e: any) => {
+            const dateObj = new Date(e.event_date);
+            return {
+              day: dateObj.getDate().toString().padStart(2, '0'),
+              month: dateObj.toLocaleString('en-US', { month: 'short' }).toUpperCase(),
+              title: e.title,
+              time: e.time || 'TBA',
+              location: e.location || 'Church Campus'
+            };
+          })} />
         </div>
       </div>
     </div>

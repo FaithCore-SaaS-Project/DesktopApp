@@ -2,9 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
 import { useRouter } from 'next/router';
 import { Shield, KeyRound, Building2, AlertCircle } from 'lucide-react';
+import api from '../lib/axios';
 
 export default function LoginPage() {
-  const { login, churchName, isActivated } = useApp();
+  const { login, activateApp, churchName, isActivated } = useApp();
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -28,31 +29,38 @@ export default function LoginPage() {
     setLoading(true);
     setError('');
 
-    // Simulate API POST /api/login
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
       if (!email.trim() || !password.trim()) {
         throw new Error('Please enter both email and password.');
       }
 
-      // Simple mock email check for demo purposes
-      if (email.includes('@') && password.length >= 4) {
-        const mockResponse = {
-          token: "jwt_token_" + Math.random().toString(36).substring(2),
-          user: email.split('@')[0] || "Admin"
-        };
+      // Real API POST /api/login
+      const response = await api.post('/login', {
+        email,
+        password
+      });
 
-        // Save session
-        login(mockResponse.user, mockResponse.token);
-        
-        // Redirect to dashboard
-        router.replace('/dashboard');
-      } else {
-        throw new Error('Invalid email address or password. Try admin@church.org / password.');
+      const { token, user, church } = response.data;
+
+      if (!church) {
+        throw new Error('No church associated with this account. Please contact support.');
       }
+
+      // Activate the specific tenant scope for this user
+      activateApp(church.id.toString(), church.church_name);
+      
+      // Save the session token and username
+      login(user.first_name + ' ' + user.last_name, token);
+      
+      // Redirect to dashboard
+      router.replace('/dashboard');
+
     } catch (err: any) {
-      setError(err.message || 'Login failed. Please verify your credentials.');
+      if (err.response && err.response.data && err.response.data.message) {
+        setError(err.response.data.message);
+      } else {
+        setError(err.message || 'Login failed. Please verify your credentials or server connection.');
+      }
       setLoading(false);
     }
   };
