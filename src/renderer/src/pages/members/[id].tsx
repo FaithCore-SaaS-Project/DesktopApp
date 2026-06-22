@@ -49,26 +49,23 @@ export default function MemberProfilePage() {
           // Overlay extended mock fields dynamically
           const extendedMember = {
             ...baseMember,
-            memberId: baseMember.id === 'mem-1' ? 'MEM-2025-00101' : `MEM-2025-001${baseMember.id.replace('mem-', '').padStart(2, '0')}`,
-            photoUrl: baseMember.id === 'mem-1'
-              ? 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=250'
-              : baseMember.id === 'mem-2'
-              ? 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=250'
-              : `https://i.pravatar.cc/300?u=${baseMember.id}`,
-            nic: baseMember.id === 'mem-1' ? '751234567V' : '901234567V',
-            occupation: baseMember.role === 'Pastor' ? 'Lead Pastor' : 'Software Engineer',
-            address: baseMember.id === 'mem-1' ? 'New York, NY, USA' : 'Kandy, Sri Lanka',
-            dob: baseMember.id === 'mem-1' ? '12 Oct 1975' : '15 May 1990',
-            passportNumber: baseMember.id === 'mem-1' ? 'N1234567' : 'N/A',
-            gender: baseMember.name.includes('Sarah') || baseMember.name.includes('Rachel') || baseMember.name.includes('Rebecca') || baseMember.name.includes('Hannah') || baseMember.name.includes('Lin') ? 'Female' : 'Male',
+            memberId: baseMember.memberNo,
+            photoUrl: baseMember.photoUrl ? baseMember.photoUrl : `https://i.pravatar.cc/300?u=${baseMember.id}`,
+            nic: baseMember.id === '1' ? '751234567V' : '901234567V',
+            occupation: baseMember.occupation || 'Member',
+            address: baseMember.address || 'Kandy, Sri Lanka',
+            dob: baseMember.dob || '15 May 1990',
+            passportNumber: 'N/A',
+            gender: baseMember.gender || 'Male',
             nationality: 'Sri Lankan',
             church: currentTenant.name,
-            baptismDate: '12 March 2023',
+            baptismDate: baseMember.baptismDate || '12 March 2023',
             baptizedBy: 'Pastor Thomas J. Miller',
-            department: baseMember.role === 'Pastor' ? 'Pastoral Staff' : 'Worship Ministry',
+            department: 'Worship Ministry',
             cellGroup: 'Sanctuary Cell Group A',
-            spouse: baseMember.id === 'mem-1' ? 'Rachel Rose Miller' : 'Nadeesha Perera',
-            children: baseMember.id === 'mem-1' ? ['Logan Miller'] : ['Imesh Perera', 'Shenal Perera'],
+            spouse: 'Nadeesha Perera',
+            children: ['Imesh Perera', 'Shenal Perera'],
+            name: `${baseMember.firstName} ${baseMember.lastName}`, // keep for legacy references
           };
           setMember(extendedMember);
         } else {

@@ -7,13 +7,22 @@ export interface Tenant {
 
 export interface MemberMock {
   id: string;
-  name: string;
+  memberNo?: string;
+  firstName: string;
+  lastName: string;
   email: string;
   phone: string;
-  role: 'Pastor' | 'Elder' | 'Deacon' | 'Member' | 'Volunteer' | 'Visitor';
-  joinedDate: string;
-  status: 'Active' | 'Inactive' | 'Archived';
+  gender: string;
+  dob: string;
+  address: string;
+  baptismDate?: string;
+  membershipDate?: string;
+  occupation?: string;
+  status: boolean | string;
   tenantId: string;
+  photoUrl?: string;
+  familyId?: string;
+  photoFile?: File; // For uploading
 }
 
 export interface FinanceMock {

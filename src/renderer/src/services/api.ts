@@ -364,37 +364,93 @@ export const apiService = {
 
   // --- Members API ---
   getMembers: async (tenantId: string): Promise<MemberMock[]> => {
-    if (isElectron()) {
-      return window.electronAPI.getMembers(tenantId);
-    } else {
-      const members = JSON.parse(localStorage.getItem('fc_members') || '[]');
-      return members.filter((m: MemberMock) => m.tenantId === tenantId);
+    const res = await api.get('/members');
+    const data = res.data.data || res.data;
+    return data.map((m: any) => ({
+      id: m.id.toString(),
+      memberNo: m.member_no,
+      firstName: m.first_name,
+      lastName: m.last_name,
+      phone: m.phone || '',
+      email: m.email || '',
+      gender: m.gender || 'male',
+      dob: m.dob || '',
+      address: m.address || '',
+      baptismDate: m.baptism_date,
+      membershipDate: m.membership_date,
+      occupation: m.occupation || '',
+      status: m.status == 1 || m.status === 'active' || m.status === true,
+      tenantId: m.church_id ? m.church_id.toString() : tenantId,
+      photoUrl: m.photo_url,
+      familyId: m.family_id ? m.family_id.toString() : undefined
+    }));
+  },
+
+  getFamilies: async (tenantId: string): Promise<any[]> => {
+    try {
+      const res = await api.get('/families');
+      return res.data.data || res.data;
+    } catch (err) {
+      console.error('Error fetching families:', err);
+      return [];
     }
   },
 
-  saveMember: async (member: MemberMock): Promise<void> => {
-    if (isElectron()) {
-      return window.electronAPI.saveMember(member);
-    } else {
-      const members = JSON.parse(localStorage.getItem('fc_members') || '[]');
-      const index = members.findIndex((m: MemberMock) => m.id === member.id);
-      if (index >= 0) {
-        members[index] = member;
-      } else {
-        members.push(member);
+  saveMember: async (member: MemberMock): Promise<any> => {
+    let payload: any;
+    let headers = {};
+
+    if (member.photoFile) {
+      payload = new FormData();
+      payload.append('first_name', member.firstName);
+      payload.append('last_name', member.lastName);
+      payload.append('phone', member.phone);
+      payload.append('email', member.email);
+      payload.append('gender', member.gender);
+      if (member.dob) payload.append('dob', member.dob);
+      if (member.address) payload.append('address', member.address);
+      if (member.baptismDate) payload.append('baptism_date', member.baptismDate);
+      if (member.membershipDate) payload.append('membership_date', member.membershipDate);
+      if (member.occupation) payload.append('occupation', member.occupation);
+      payload.append('status', member.status ? 'active' : 'inactive');
+      if (member.familyId) payload.append('family_id', member.familyId);
+      payload.append('photo', member.photoFile);
+      headers = { 'Content-Type': 'multipart/form-data' };
+      
+      // Laravel handles PUT with file uploads badly via FormData, so spoof method
+      if (!member.id.startsWith('MEM-')) {
+        payload.append('_method', 'PUT');
       }
-      localStorage.setItem('fc_members', JSON.stringify(members));
+    } else {
+      payload = {
+        first_name: member.firstName,
+        last_name: member.lastName,
+        phone: member.phone,
+        email: member.email,
+        gender: member.gender,
+        dob: member.dob,
+        address: member.address,
+        baptism_date: member.baptismDate,
+        membership_date: member.membershipDate,
+        occupation: member.occupation,
+        status: member.status ? 'active' : 'inactive',
+        family_id: member.familyId
+      };
+    }
+
+    if (member.id.startsWith('MEM-')) {
+      const res = await api.post('/members', payload, { headers });
+      return res.data;
+    } else {
+      const endpoint = member.photoFile ? `/members/${member.id}` : `/members/${member.id}`;
+      const method = member.photoFile ? 'post' : 'put';
+      const res = await api[method](endpoint, payload, { headers });
+      return res.data;
     }
   },
 
   deleteMember: async (id: string): Promise<void> => {
-    if (isElectron()) {
-      return window.electronAPI.deleteMember(id);
-    } else {
-      const members = JSON.parse(localStorage.getItem('fc_members') || '[]');
-      const filtered = members.filter((m: MemberMock) => m.id !== id);
-      localStorage.setItem('fc_members', JSON.stringify(filtered));
-    }
+    await api.delete(`/members/${id}`);
   },
 
   // --- Finance API ---
