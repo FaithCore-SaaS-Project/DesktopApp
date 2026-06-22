@@ -15,7 +15,6 @@ import {
   UserCog,
   Settings,
   Headphones,
-  Crown,
   ChevronDown
 } from "lucide-react";
 
@@ -202,24 +201,6 @@ export default function Sidebar() {
         })}
       </div>
 
-      {/* Premium Card */}
-      <div className="p-4 border-t border-white/5">
-        <div className="rounded-3xl bg-gradient-to-br from-[#3224B8] to-[#5B3DF5] p-6 shadow-xl relative overflow-hidden group">
-          <div className="absolute -right-4 -bottom-4 w-24 h-24 bg-white/5 rounded-full blur-xl pointer-events-none group-hover:bg-white/10 transition-colors" />
-          <div className="flex justify-center">
-            <Crown size={40} className="text-white animate-pulse" />
-          </div>
-          <h3 className="mt-4 text-center font-bold text-xl text-white">
-            Premium Plan
-          </h3>
-          <p className="text-center text-sm mt-2 text-indigo-100 font-medium">
-            Valid Until 31 Dec 2025
-          </p>
-          <button className="mt-5 w-full rounded-xl bg-white text-[#5B3DF5] hover:bg-slate-50 font-bold py-3 transition-colors active:scale-[0.98] cursor-pointer">
-            View Plan Details
-          </button>
-        </div>
-      </div>
     </aside>
   );
 }

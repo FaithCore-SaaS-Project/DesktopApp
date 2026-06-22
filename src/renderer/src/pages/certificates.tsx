@@ -173,23 +173,13 @@ export default function CertificatesPage() {
   };
 
   const handleDownload = async (cert: CertificateMock) => {
-    const html = `
-      <div style="font-family: Georgia, serif; padding: 48px; text-align: center; background: #fffdf4;">
-        <div style="border: 6px solid #f0c060; border-radius: 12px; padding: 36px;">
-          <h1 style="font-size: 13px; letter-spacing: 3px; color: #64748b; text-transform: uppercase;">Kingdom Connect Church</h1>
-          <h2 style="font-size: 22px; font-weight: 900; color: #4C1D95; text-transform: uppercase;">${cert.type} Certificate</h2>
-          <p style="font-style: italic; color: #64748b;">This is to certify that</p>
-          <h3 style="font-size: 28px; font-style: italic;">${cert.recipient}</h3>
-          <p style="color: #5B3DF5; font-weight: 800;">Kingdom Connect Church</p>
-          <div style="border-top: 1px dashed #d1d5db; margin-top: 20px; padding-top: 12px;">
-            <p style="color: #94a3b8; font-size: 12px;">Issued by: <strong>${cert.issuedBy}</strong></p>
-            <p style="color: #94a3b8; font-size: 12px;">${cert.issuedDate}</p>
-          </div>
-        </div>
-      </div>
-    `;
-    const fileName = `${cert.id}_${cert.name.replace(/\s+/g, '_')}.pdf`;
-    await apiService.printToPDF(html, fileName);
+    try {
+      const fileName = `${cert.id}_${cert.name.replace(/\s+/g, '_')}.pdf`;
+      await apiService.downloadCertificatePdf(cert.id, fileName);
+    } catch (err) {
+      console.error('Failed to download certificate PDF:', err);
+      alert('Error downloading certificate.');
+    }
   };
 
   const handleArchive = async (id: string) => {

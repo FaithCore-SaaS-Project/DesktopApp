@@ -1,4 +1,5 @@
 import { mockMembers, mockFinanceRecords, mockReceipts, mockCategories, mockBankAccounts, mockBudgets, mockLetters, mockCertificates, mockEvents, mockSavedReports, MemberMock, FinanceMock, ReceiptMock, CategoryMock, BankAccountMock, BudgetMock, LetterMock, CertificateMock, EventMock, SavedReportMock } from './mockData';
+import api from '../lib/axios';
 
 // Helper to check if running inside Electron
 export const isElectron = (): boolean => {
@@ -62,140 +63,286 @@ export const apiService = {
 
   // --- Events API ---
   getEvents: async (tenantId: string): Promise<EventMock[]> => {
-    const evts = JSON.parse(localStorage.getItem('fc_events') || '[]');
-    return evts.filter((e: EventMock) => e.tenantId === tenantId);
+    const res = await api.get('/events');
+    return res.data.map((e: any) => ({
+      id: e.id,
+      name: e.name,
+      subtitle: e.subtitle || undefined,
+      type: e.type,
+      date: e.date,
+      time: e.time,
+      location: e.location,
+      attendees: e.attendees,
+      maxCapacity: e.maxCapacity,
+      status: e.status,
+      organizer: e.organizer,
+      description: e.description || undefined,
+      tenantId: e.tenantId,
+      createdOn: e.createdOn
+    }));
   },
 
   saveEvent: async (evt: EventMock): Promise<void> => {
-    const evts = JSON.parse(localStorage.getItem('fc_events') || '[]');
-    const index = evts.findIndex((e: EventMock) => e.id === evt.id);
-    if (index >= 0) {
-      evts[index] = evt;
+    const payload = {
+      name: evt.name,
+      subtitle: evt.subtitle,
+      type: evt.type,
+      date: evt.date,
+      time: evt.time,
+      location: evt.location,
+      attendees: evt.attendees,
+      maxCapacity: evt.maxCapacity,
+      status: evt.status,
+      organizer: evt.organizer,
+      description: evt.description,
+      createdOn: evt.createdOn
+    };
+
+    if (evt.id.startsWith('EVT-2025-')) {
+      await api.post('/events', payload);
     } else {
-      evts.push(evt);
+      await api.put(`/events/${evt.id}`, payload);
     }
-    localStorage.setItem('fc_events', JSON.stringify(evts));
   },
 
   deleteEvent: async (id: string): Promise<void> => {
-    const evts = JSON.parse(localStorage.getItem('fc_events') || '[]');
-    const filtered = evts.filter((e: EventMock) => e.id !== id);
-    localStorage.setItem('fc_events', JSON.stringify(filtered));
+    await api.delete(`/events/${id}`);
+  },
+
+  registerForEvent: async (eventId: string, memberId: string, status: string = 'registered'): Promise<any> => {
+    const res = await api.post('/events/register', {
+      event_id: eventId,
+      member_id: memberId,
+      status: status
+    });
+    return res.data;
   },
 
   // --- Certificates API ---
   getCertificates: async (tenantId: string): Promise<CertificateMock[]> => {
-    const certs = JSON.parse(localStorage.getItem('fc_certificates') || '[]');
-    return certs.filter((c: CertificateMock) => c.tenantId === tenantId);
+    const res = await api.get('/certificates');
+    return res.data.map((c: any) => ({
+      id: c.id,
+      name: c.name,
+      type: c.type,
+      recipient: c.recipient,
+      recipientEmail: c.recipientEmail || '',
+      recipientPhone: c.recipientPhone || '',
+      issuedDate: c.issuedDate,
+      issuedBy: c.issuedBy,
+      status: c.status,
+      tenantId: c.tenantId,
+      createdOn: c.createdOn
+    }));
   },
 
   saveCertificate: async (cert: CertificateMock): Promise<void> => {
-    const certs = JSON.parse(localStorage.getItem('fc_certificates') || '[]');
-    const index = certs.findIndex((c: CertificateMock) => c.id === cert.id);
-    if (index >= 0) {
-      certs[index] = cert;
+    const payload = {
+      name: cert.name,
+      type: cert.type,
+      recipient: cert.recipient,
+      recipientEmail: cert.recipientEmail,
+      recipientPhone: cert.recipientPhone,
+      issuedDate: cert.issuedDate,
+      issuedBy: cert.issuedBy,
+      status: cert.status,
+    };
+    if (cert.id.startsWith('CERT-')) {
+      await api.post('/certificates', payload);
     } else {
-      certs.push(cert);
+      await api.put(`/certificates/${cert.id}`, payload);
     }
-    localStorage.setItem('fc_certificates', JSON.stringify(certs));
   },
 
   deleteCertificate: async (id: string): Promise<void> => {
-    const certs = JSON.parse(localStorage.getItem('fc_certificates') || '[]');
-    const filtered = certs.filter((c: CertificateMock) => c.id !== id);
-    localStorage.setItem('fc_certificates', JSON.stringify(filtered));
+    await api.delete(`/certificates/${id}`);
+  },
+
+  downloadCertificatePdf: async (id: string, fileName: string): Promise<void> => {
+    const res = await api.get(`/certificates/${id}/pdf`, { responseType: 'blob' });
+    const url = window.URL.createObjectURL(new Blob([res.data]));
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', fileName);
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
   },
 
   // --- Letters API ---
   getLetters: async (tenantId: string): Promise<LetterMock[]> => {
-    const letters = JSON.parse(localStorage.getItem('fc_letters') || '[]');
-    return letters.filter((l: LetterMock) => l.tenantId === tenantId);
+    const res = await api.get('/letters');
+    return res.data.map((l: any) => ({
+      id: l.id,
+      title: l.title,
+      type: l.type,
+      recipient: l.recipient,
+      recipientEmail: l.recipientEmail || '',
+      recipientPhone: l.recipientPhone || '',
+      date: l.date,
+      status: l.status,
+      sentBy: l.sentBy,
+      content: l.content,
+      tenantId: l.tenantId,
+      createdOn: l.createdOn
+    }));
   },
 
   saveLetter: async (letter: LetterMock): Promise<void> => {
-    const letters = JSON.parse(localStorage.getItem('fc_letters') || '[]');
-    const index = letters.findIndex((l: LetterMock) => l.id === letter.id);
-    if (index >= 0) {
-      letters[index] = letter;
+    const payload = {
+      title: letter.title,
+      type: letter.type,
+      recipient: letter.recipient,
+      recipientEmail: letter.recipientEmail,
+      recipientPhone: letter.recipientPhone,
+      date: letter.date,
+      status: letter.status,
+      sentBy: letter.sentBy,
+      content: letter.content,
+    };
+    if (letter.id.startsWith('LTR-')) {
+      await api.post('/letters', payload);
     } else {
-      letters.push(letter);
+      await api.put(`/letters/${letter.id}`, payload);
     }
-    localStorage.setItem('fc_letters', JSON.stringify(letters));
   },
 
   deleteLetter: async (id: string): Promise<void> => {
-    const letters = JSON.parse(localStorage.getItem('fc_letters') || '[]');
-    const filtered = letters.filter((l: LetterMock) => l.id !== id);
-    localStorage.setItem('fc_letters', JSON.stringify(filtered));
+    await api.delete(`/letters/${id}`);
+  },
+
+  downloadLetterPdf: async (id: string, fileName: string): Promise<void> => {
+    const res = await api.get(`/letters/${id}/pdf`, { responseType: 'blob' });
+    const url = window.URL.createObjectURL(new Blob([res.data]));
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', fileName);
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
   },
 
   // --- Budgets API ---
   getBudgets: async (tenantId: string): Promise<BudgetMock[]> => {
-    const budgets = JSON.parse(localStorage.getItem('fc_budgets') || '[]');
-    return budgets.filter((b: BudgetMock) => b.tenantId === tenantId);
+    const res = await api.get('/budgets');
+    return res.data.map((b: any) => ({
+      id: b.id.toString(),
+      name: b.name,
+      type: b.type,
+      budgetAmount: parseFloat(b.budget_amount),
+      spentAmount: parseFloat(b.spent_amount),
+      periodStart: b.period_start,
+      periodEnd: b.period_end,
+      status: b.status,
+      description: b.description || '',
+      tenantId: b.church_id.toString(),
+      createdOn: b.created_on || b.created_at?.split('T')[0] || ''
+    }));
   },
 
   saveBudget: async (budget: BudgetMock): Promise<void> => {
-    const budgets = JSON.parse(localStorage.getItem('fc_budgets') || '[]');
-    const index = budgets.findIndex((b: BudgetMock) => b.id === budget.id);
-    if (index >= 0) {
-      budgets[index] = budget;
+    const payload = {
+      name: budget.name,
+      type: budget.type,
+      budget_amount: budget.budgetAmount,
+      spent_amount: budget.spentAmount,
+      period_start: budget.periodStart,
+      period_end: budget.periodEnd,
+      status: budget.status,
+      description: budget.description,
+      created_on: budget.createdOn
+    };
+    if (budget.id.startsWith('bud-')) {
+      await api.post('/budgets', payload);
     } else {
-      budgets.push(budget);
+      await api.put(`/budgets/${budget.id}`, payload);
     }
-    localStorage.setItem('fc_budgets', JSON.stringify(budgets));
   },
 
   deleteBudget: async (id: string): Promise<void> => {
-    const budgets = JSON.parse(localStorage.getItem('fc_budgets') || '[]');
-    const filtered = budgets.filter((b: BudgetMock) => b.id !== id);
-    localStorage.setItem('fc_budgets', JSON.stringify(filtered));
+    await api.delete(`/budgets/${id}`);
   },
 
   // --- Bank Accounts API ---
   getBankAccounts: async (tenantId: string): Promise<BankAccountMock[]> => {
-    const accounts = JSON.parse(localStorage.getItem('fc_bank_accounts') || '[]');
-    return accounts.filter((a: BankAccountMock) => a.tenantId === tenantId);
+    const res = await api.get('/bank-accounts');
+    return res.data.map((a: any) => ({
+      id: a.id.toString(),
+      bankName: a.bank_name,
+      accountName: a.account_name,
+      accountNumber: a.account_number,
+      accountType: a.account_type,
+      balance: parseFloat(a.balance),
+      status: a.status,
+      branch: a.branch || '',
+      currency: a.currency || 'LKR',
+      ledgerBalance: parseFloat(a.ledger_balance),
+      lastStatementDate: a.last_statement_date,
+      createdOn: a.created_on || a.created_at?.split('T')[0] || '',
+      createdBy: a.created_by || '',
+      tenantId: a.church_id.toString()
+    }));
   },
 
   saveBankAccount: async (account: BankAccountMock): Promise<void> => {
-    const accounts = JSON.parse(localStorage.getItem('fc_bank_accounts') || '[]');
-    const index = accounts.findIndex((a: BankAccountMock) => a.id === account.id);
-    if (index >= 0) {
-      accounts[index] = account;
+    const payload = {
+      bank_name: account.bankName,
+      account_name: account.accountName,
+      account_number: account.accountNumber,
+      account_type: account.accountType,
+      balance: account.balance,
+      ledger_balance: account.ledgerBalance,
+      status: account.status,
+      branch: account.branch,
+      currency: account.currency,
+      last_statement_date: account.lastStatementDate,
+      created_on: account.createdOn,
+      created_by: account.createdBy
+    };
+    if (account.id.startsWith('bank-')) {
+      await api.post('/bank-accounts', payload);
     } else {
-      accounts.push(account);
+      await api.put(`/bank-accounts/${account.id}`, payload);
     }
-    localStorage.setItem('fc_bank_accounts', JSON.stringify(accounts));
   },
 
   deleteBankAccount: async (id: string): Promise<void> => {
-    const accounts = JSON.parse(localStorage.getItem('fc_bank_accounts') || '[]');
-    const filtered = accounts.filter((a: BankAccountMock) => a.id !== id);
-    localStorage.setItem('fc_bank_accounts', JSON.stringify(filtered));
+    await api.delete(`/bank-accounts/${id}`);
   },
 
   // --- Categories API ---
   getCategories: async (tenantId: string): Promise<CategoryMock[]> => {
-    const categories = JSON.parse(localStorage.getItem('fc_categories') || '[]');
-    return categories.filter((c: CategoryMock) => c.tenantId === tenantId);
+    const res = await api.get('/finance-categories');
+    return res.data.map((c: any) => ({
+      id: c.id.toString(),
+      name: c.name,
+      type: c.type,
+      description: c.description || '',
+      status: c.status,
+      createdOn: c.created_on || c.created_at?.split('T')[0] || '',
+      createdBy: c.created_by || '',
+      tenantId: c.church_id.toString()
+    }));
   },
 
   saveCategory: async (category: CategoryMock): Promise<void> => {
-    const categories = JSON.parse(localStorage.getItem('fc_categories') || '[]');
-    const index = categories.findIndex((c: CategoryMock) => c.id === category.id);
-    if (index >= 0) {
-      categories[index] = category;
+    const payload = {
+      name: category.name,
+      type: category.type,
+      description: category.description,
+      status: category.status,
+      created_on: category.createdOn,
+      created_by: category.createdBy
+    };
+    if (category.id.startsWith('cat-')) {
+      await api.post('/finance-categories', payload);
     } else {
-      categories.push(category);
+      await api.put(`/finance-categories/${category.id}`, payload);
     }
-    localStorage.setItem('fc_categories', JSON.stringify(categories));
   },
 
   deleteCategory: async (id: string): Promise<void> => {
-    const categories = JSON.parse(localStorage.getItem('fc_categories') || '[]');
-    const filtered = categories.filter((c: CategoryMock) => c.id !== id);
-    localStorage.setItem('fc_categories', JSON.stringify(filtered));
+    await api.delete(`/finance-categories/${id}`);
   },
 
   // --- E-Receipts API ---
@@ -252,37 +399,60 @@ export const apiService = {
 
   // --- Finance API ---
   getFinanceRecords: async (tenantId: string): Promise<FinanceMock[]> => {
-    if (isElectron()) {
-      return window.electronAPI.getFinanceRecords(tenantId);
-    } else {
-      const records = JSON.parse(localStorage.getItem('fc_finance') || '[]');
-      return records.filter((r: FinanceMock) => r.tenantId === tenantId);
-    }
+    const res = await api.get('/finance/records');
+    return res.data.map((r: any) => ({
+      id: r.id,
+      type: r.type,
+      category: r.category,
+      amount: parseFloat(r.amount),
+      date: r.date,
+      description: r.description || '',
+      tenantId: r.tenantId,
+      method: r.method,
+      receipt: r.receipt || ''
+    }));
   },
 
   saveFinanceRecord: async (record: FinanceMock): Promise<void> => {
-    if (isElectron()) {
-      return window.electronAPI.saveFinanceRecord(record);
-    } else {
-      const records = JSON.parse(localStorage.getItem('fc_finance') || '[]');
-      const index = records.findIndex((r: FinanceMock) => r.id === record.id);
-      if (index >= 0) {
-        records[index] = record;
+    const payload = {
+      category: record.category,
+      amount: record.amount,
+      description: record.description,
+      method: record.method || (record.type === 'income' ? 'Cash' : 'Bank Transfer'),
+      receipt: record.receipt
+    };
+
+    if (record.type === 'income') {
+      if (record.id.startsWith('fin-')) {
+        await api.post('/income', {
+          ...payload,
+          income_date: record.date
+        });
       } else {
-        records.push(record);
+        const cleanId = record.id.replace('income-', '');
+        await api.put(`/income/${cleanId}`, {
+          ...payload,
+          income_date: record.date
+        });
       }
-      localStorage.setItem('fc_finance', JSON.stringify(records));
+    } else {
+      if (record.id.startsWith('fin-')) {
+        await api.post('/expenses', {
+          ...payload,
+          expense_date: record.date
+        });
+      } else {
+        const cleanId = record.id.replace('expense-', '');
+        await api.put(`/expenses/${cleanId}`, {
+          ...payload,
+          expense_date: record.date
+        });
+      }
     }
   },
 
   deleteFinanceRecord: async (id: string): Promise<void> => {
-    if (isElectron()) {
-      return window.electronAPI.deleteFinanceRecord(id);
-    } else {
-      const records = JSON.parse(localStorage.getItem('fc_finance') || '[]');
-      const filtered = records.filter((r: FinanceMock) => r.id !== id);
-      localStorage.setItem('fc_finance', JSON.stringify(filtered));
-    }
+    await api.delete(`/finance/records/${id}`);
   },
 
   // --- Printing & PDF Services ---

@@ -82,14 +82,9 @@ export default function LetterDetails({ letter, onSendStatusChange }: LetterDeta
   const handleDownloadPDF = async () => {
     setDownloadStatus('downloading');
     try {
-      const html = generateLetterHTML();
       const fileName = `${letter.id}_${letter.title.replace(/\s+/g, '_')}.pdf`;
-      const res = await apiService.printToPDF(html, fileName);
-      if (res.success) {
-        setDownloadStatus('success');
-      } else {
-        setDownloadStatus('error');
-      }
+      await apiService.downloadLetterPdf(letter.id, fileName);
+      setDownloadStatus('success');
     } catch {
       setDownloadStatus('error');
     }
