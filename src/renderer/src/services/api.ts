@@ -36,9 +36,6 @@ const initializeLocalStorage = () => {
   if (!localStorage.getItem('fc_events')) {
     localStorage.setItem('fc_events', JSON.stringify(mockEvents));
   }
-  if (!localStorage.getItem('fc_saved_reports')) {
-    localStorage.setItem('fc_saved_reports', JSON.stringify(mockSavedReports));
-  }
 };
 
 initializeLocalStorage();
@@ -46,19 +43,48 @@ initializeLocalStorage();
 export const apiService = {
   // --- Reports API ---
   getSavedReports: async (tenantId: string): Promise<SavedReportMock[]> => {
-    const rpts = JSON.parse(localStorage.getItem('fc_saved_reports') || '[]');
-    return rpts.filter((r: SavedReportMock) => r.tenantId === tenantId);
+    try {
+      const response = await api.get('/reports/saved');
+      return response.data;
+    } catch (err) {
+      console.error('Failed to fetch saved reports', err);
+      return [];
+    }
   },
 
   saveSavedReport: async (report: SavedReportMock): Promise<void> => {
-    const rpts = JSON.parse(localStorage.getItem('fc_saved_reports') || '[]');
-    const index = rpts.findIndex((r: SavedReportMock) => r.id === report.id);
-    if (index >= 0) {
-      rpts[index] = report;
-    } else {
-      rpts.push(report);
+    await api.post('/reports/saved', {
+      name: report.name,
+      type: report.type,
+      category: report.category,
+      dateRange: report.dateRange
+    });
+  },
+
+  // --- Settings API ---
+  getSettings: async (): Promise<Record<string, string>> => {
+    try {
+      const response = await api.get('/settings');
+      return response.data;
+    } catch (err) {
+      console.error('Failed to fetch settings', err);
+      return {};
     }
-    localStorage.setItem('fc_saved_reports', JSON.stringify(rpts));
+  },
+
+  updateSettings: async (settings: Record<string, string>): Promise<void> => {
+    await api.post('/settings', settings);
+  },
+
+  // --- Dashboard API ---
+  getDashboardStats: async (): Promise<any> => {
+    try {
+      const response = await api.get('/dashboard/stats');
+      return response.data;
+    } catch (err) {
+      console.error('Failed to fetch dashboard stats', err);
+      return null;
+    }
   },
 
   // --- Events API ---

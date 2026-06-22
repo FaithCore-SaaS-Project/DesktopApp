@@ -46,23 +46,21 @@ export default function ReportsPage() {
       const list = await apiService.getSavedReports(currentTenant.id);
       setSavedReports(list);
 
-      // 2. Fetch live metrics to offset showcase numbers dynamically
-      const members = await apiService.getMembers(currentTenant.id);
-      setMembersCount(1240 + members.length);
+      // 2. Fetch live metrics from DashboardController
+      const dashboardData = await apiService.getDashboardStats();
+      if (dashboardData && dashboardData.stats) {
+        setMembersCount(dashboardData.stats.total_members || 0);
+        
+        const inc = Number(dashboardData.stats.monthly_income) || 0;
+        const exp = Number(dashboardData.stats.monthly_expense) || 0;
+        setIncomeAmount(inc);
+        setExpensesAmount(exp);
+        setSurplusAmount(inc - exp);
+      }
 
+      // Also grab events count (Dashboard usually returns upcoming_events but let's grab actual from events api)
       const events = await apiService.getEvents(currentTenant.id);
-      setEventsCount(events.length > 0 ? events.length : 48);
-
-      const finance = await apiService.getFinanceRecords(currentTenant.id);
-      // Compute additional custom transactions from local storage (if any)
-      const extraInc = finance.filter(r => r.type === 'income' && r.id.startsWith('custom-')).reduce((sum, r) => sum + r.amount, 0);
-      const extraExp = finance.filter(r => r.type === 'expense' && r.id.startsWith('custom-')).reduce((sum, r) => sum + r.amount, 0);
-
-      const inc = 4125750 + extraInc;
-      const exp = 2430750 + extraExp;
-      setIncomeAmount(inc);
-      setExpensesAmount(exp);
-      setSurplusAmount(inc - exp);
+      setEventsCount(events.length);
 
     } catch (err) {
       console.error('Error loading reports details:', err);

@@ -1,11 +1,16 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { ChevronDown } from 'lucide-react';
 
-export default function FinanceGeneralSettings() {
-  const [budgeting, setBudgeting] = useState(true);
-  const [fundAccounting, setFundAccounting] = useState(true);
-  const [multiCurrency, setMultiCurrency] = useState(false);
-  const [largeTxn, setLargeTxn] = useState(true);
+interface FinanceGeneralSettingsProps {
+  settings: Record<string, string>;
+  updateSetting: (key: string, value: string) => void;
+}
+
+export default function FinanceGeneralSettings({ settings, updateSetting }: FinanceGeneralSettingsProps) {
+  const budgeting = settings['finance_budgeting'] === 'true';
+  const fundAccounting = settings['finance_fund_accounting'] === 'true';
+  const multiCurrency = settings['finance_multi_currency'] === 'true';
+  const largeTxn = settings['finance_large_txn'] === 'true';
 
   const Toggle = ({ checked, onChange }: { checked: boolean, onChange: () => void }) => (
     <button
@@ -32,8 +37,14 @@ export default function FinanceGeneralSettings() {
         <div>
           <label className="text-[11px] font-bold text-gray-900 mb-1.5 block">Currency</label>
           <div className="relative">
-            <select className="w-full appearance-none bg-white border border-gray-200 rounded-xl py-2.5 pl-3 pr-10 text-xs font-semibold text-gray-700 outline-none hover:border-gray-300 focus:border-[#5B3DF5] cursor-pointer shadow-sm">
-              <option>US Dollar (USD) - $</option>
+            <select
+              value={settings['finance_currency'] || 'USD'}
+              onChange={(e) => updateSetting('finance_currency', e.target.value)}
+              className="w-full appearance-none bg-white border border-gray-200 rounded-xl py-2.5 pl-3 pr-10 text-xs font-semibold text-gray-700 outline-none hover:border-gray-300 focus:border-[#5B3DF5] cursor-pointer shadow-sm"
+            >
+              <option value="USD">US Dollar (USD) - $</option>
+              <option value="EUR">Euro (EUR) - €</option>
+              <option value="GBP">British Pound (GBP) - £</option>
             </select>
             <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
           </div>
@@ -42,8 +53,14 @@ export default function FinanceGeneralSettings() {
         <div>
           <label className="text-[11px] font-bold text-gray-900 mb-1.5 block">Date Format</label>
           <div className="relative">
-            <select className="w-full appearance-none bg-white border border-gray-200 rounded-xl py-2.5 pl-3 pr-10 text-xs font-semibold text-gray-700 outline-none hover:border-gray-300 focus:border-[#5B3DF5] cursor-pointer shadow-sm">
-              <option>31 Dec 2025 (DD MMM YYYY)</option>
+            <select
+              value={settings['finance_date_format'] || 'DD MMM YYYY'}
+              onChange={(e) => updateSetting('finance_date_format', e.target.value)}
+              className="w-full appearance-none bg-white border border-gray-200 rounded-xl py-2.5 pl-3 pr-10 text-xs font-semibold text-gray-700 outline-none hover:border-gray-300 focus:border-[#5B3DF5] cursor-pointer shadow-sm"
+            >
+              <option value="DD MMM YYYY">31 Dec 2025 (DD MMM YYYY)</option>
+              <option value="MM/DD/YYYY">12/31/2025 (MM/DD/YYYY)</option>
+              <option value="YYYY-MM-DD">2025-12-31 (YYYY-MM-DD)</option>
             </select>
             <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
           </div>
@@ -52,8 +69,15 @@ export default function FinanceGeneralSettings() {
         <div>
           <label className="text-[11px] font-bold text-gray-900 mb-1.5 block">Fiscal Year Start</label>
           <div className="relative">
-            <select className="w-full appearance-none bg-white border border-gray-200 rounded-xl py-2.5 pl-3 pr-10 text-xs font-semibold text-gray-700 outline-none hover:border-gray-300 focus:border-[#5B3DF5] cursor-pointer shadow-sm">
-              <option>January</option>
+            <select
+              value={settings['finance_fiscal_year_start'] || 'January'}
+              onChange={(e) => updateSetting('finance_fiscal_year_start', e.target.value)}
+              className="w-full appearance-none bg-white border border-gray-200 rounded-xl py-2.5 pl-3 pr-10 text-xs font-semibold text-gray-700 outline-none hover:border-gray-300 focus:border-[#5B3DF5] cursor-pointer shadow-sm"
+            >
+              <option value="January">January</option>
+              <option value="April">April</option>
+              <option value="July">July</option>
+              <option value="October">October</option>
             </select>
             <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
           </div>
@@ -62,8 +86,13 @@ export default function FinanceGeneralSettings() {
         <div>
           <label className="text-[11px] font-bold text-gray-900 mb-1.5 block">Financial Year Display</label>
           <div className="relative">
-            <select className="w-full appearance-none bg-white border border-gray-200 rounded-xl py-2.5 pl-3 pr-10 text-xs font-semibold text-gray-700 outline-none hover:border-gray-300 focus:border-[#5B3DF5] cursor-pointer shadow-sm">
-              <option>2025</option>
+            <select
+              value={settings['finance_year_display'] || '2025'}
+              onChange={(e) => updateSetting('finance_year_display', e.target.value)}
+              className="w-full appearance-none bg-white border border-gray-200 rounded-xl py-2.5 pl-3 pr-10 text-xs font-semibold text-gray-700 outline-none hover:border-gray-300 focus:border-[#5B3DF5] cursor-pointer shadow-sm"
+            >
+              <option value="2025">2025</option>
+              <option value="2025-2026">2025-2026</option>
             </select>
             <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
           </div>
@@ -72,8 +101,13 @@ export default function FinanceGeneralSettings() {
         <div>
           <label className="text-[11px] font-bold text-gray-900 mb-1.5 block">Default Income Account</label>
           <div className="relative">
-            <select className="w-full appearance-none bg-white border border-gray-200 rounded-xl py-2.5 pl-3 pr-10 text-xs font-semibold text-gray-700 outline-none hover:border-gray-300 focus:border-[#5B3DF5] cursor-pointer shadow-sm">
-              <option>Main Operating Account</option>
+            <select
+              value={settings['finance_default_income'] || 'Main Operating Account'}
+              onChange={(e) => updateSetting('finance_default_income', e.target.value)}
+              className="w-full appearance-none bg-white border border-gray-200 rounded-xl py-2.5 pl-3 pr-10 text-xs font-semibold text-gray-700 outline-none hover:border-gray-300 focus:border-[#5B3DF5] cursor-pointer shadow-sm"
+            >
+              <option value="Main Operating Account">Main Operating Account</option>
+              <option value="Building Fund">Building Fund</option>
             </select>
             <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
           </div>
@@ -82,8 +116,13 @@ export default function FinanceGeneralSettings() {
         <div>
           <label className="text-[11px] font-bold text-gray-900 mb-1.5 block">Default Expense Account</label>
           <div className="relative">
-            <select className="w-full appearance-none bg-white border border-gray-200 rounded-xl py-2.5 pl-3 pr-10 text-xs font-semibold text-gray-700 outline-none hover:border-gray-300 focus:border-[#5B3DF5] cursor-pointer shadow-sm">
-              <option>Operating Expenses</option>
+            <select
+              value={settings['finance_default_expense'] || 'Operating Expenses'}
+              onChange={(e) => updateSetting('finance_default_expense', e.target.value)}
+              className="w-full appearance-none bg-white border border-gray-200 rounded-xl py-2.5 pl-3 pr-10 text-xs font-semibold text-gray-700 outline-none hover:border-gray-300 focus:border-[#5B3DF5] cursor-pointer shadow-sm"
+            >
+              <option value="Operating Expenses">Operating Expenses</option>
+              <option value="Payroll">Payroll</option>
             </select>
             <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
           </div>
@@ -93,7 +132,7 @@ export default function FinanceGeneralSettings() {
       <div className="grid md:grid-cols-2 gap-8 mt-8">
         <div className="space-y-6">
           <div className="flex items-start gap-4">
-            <div className="pt-0.5"><Toggle checked={budgeting} onChange={() => setBudgeting(!budgeting)} /></div>
+            <div className="pt-0.5"><Toggle checked={budgeting} onChange={() => updateSetting('finance_budgeting', (!budgeting).toString())} /></div>
             <div>
               <h4 className="text-xs font-bold text-gray-900">Enable Budgeting</h4>
               <p className="text-[10px] font-semibold text-gray-500 mt-0.5">Allow creating and tracking budgets.</p>
@@ -101,7 +140,7 @@ export default function FinanceGeneralSettings() {
           </div>
           
           <div className="flex items-start gap-4">
-            <div className="pt-0.5"><Toggle checked={fundAccounting} onChange={() => setFundAccounting(!fundAccounting)} /></div>
+            <div className="pt-0.5"><Toggle checked={fundAccounting} onChange={() => updateSetting('finance_fund_accounting', (!fundAccounting).toString())} /></div>
             <div>
               <h4 className="text-xs font-bold text-gray-900">Enable Fund Accounting</h4>
               <p className="text-[10px] font-semibold text-gray-500 mt-0.5">Track transactions by funds and accounts.</p>
@@ -111,7 +150,7 @@ export default function FinanceGeneralSettings() {
         
         <div className="space-y-6">
           <div className="flex items-start gap-4">
-            <div className="pt-0.5"><Toggle checked={multiCurrency} onChange={() => setMultiCurrency(!multiCurrency)} /></div>
+            <div className="pt-0.5"><Toggle checked={multiCurrency} onChange={() => updateSetting('finance_multi_currency', (!multiCurrency).toString())} /></div>
             <div>
               <h4 className="text-xs font-bold text-gray-900">Enable Multi-Currency</h4>
               <p className="text-[10px] font-semibold text-gray-500 mt-0.5">Allow transactions in multiple currencies.</p>
@@ -119,7 +158,7 @@ export default function FinanceGeneralSettings() {
           </div>
           
           <div className="flex items-start gap-4">
-            <div className="pt-0.5"><Toggle checked={largeTxn} onChange={() => setLargeTxn(!largeTxn)} /></div>
+            <div className="pt-0.5"><Toggle checked={largeTxn} onChange={() => updateSetting('finance_large_txn', (!largeTxn).toString())} /></div>
             <div className="flex-1">
               <h4 className="text-xs font-bold text-gray-900">Require Approval for Large Transactions</h4>
               <p className="text-[10px] font-semibold text-gray-500 mt-0.5">Require approval for transactions above a set amount.</p>
@@ -132,7 +171,8 @@ export default function FinanceGeneralSettings() {
                   </span>
                   <input
                     type="text"
-                    defaultValue="1,000.00"
+                    value={settings['finance_large_txn_limit'] || '1,000.00'}
+                    onChange={(e) => updateSetting('finance_large_txn_limit', e.target.value)}
                     className="flex-1 border border-gray-200 py-2 px-3 text-xs font-semibold text-gray-900 outline-none focus:border-[#5B3DF5]"
                   />
                 </div>
