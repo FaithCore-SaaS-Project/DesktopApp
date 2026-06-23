@@ -46,8 +46,9 @@ const emptyForm = {
 };
 
 import { useRouter } from 'next/router';
-import { Download, UploadCloud, Image as ImageIcon } from 'lucide-react';
+import { Download, UploadCloud, Image as ImageIcon, MessageSquare } from 'lucide-react';
 import { apiService } from '../services/api';
+import SendNotificationModal from '../components/settings/notifications/SendNotificationModal';
 
 export default function MembersPage() {
   const router = useRouter();
@@ -58,6 +59,7 @@ export default function MembersPage() {
   const [filterGender, setFilterGender] = useState('all');
   const [filterStatus, setFilterStatus] = useState('all');
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isSendModalOpen, setIsSendModalOpen] = useState(false);
   const [editingMember, setEditingMember] = useState<Member | null>(null);
   const [form, setForm] = useState(emptyForm);
   const [photoFile, setPhotoFile] = useState<File | null>(null);
@@ -230,6 +232,13 @@ export default function MembersPage() {
               }} 
             />
           </label>
+          <button
+            onClick={() => setIsSendModalOpen(true)}
+            className="bg-white border border-gray-200 hover:bg-gray-50 text-[#5B3DF5] px-5 py-2.5 rounded-xl font-bold text-xs transition-all flex items-center gap-2 justify-center"
+          >
+            <MessageSquare className="h-4 w-4" />
+            <span>Send Message</span>
+          </button>
           <button
             onClick={handleExportCSV}
             className="bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 px-5 py-2.5 rounded-xl font-bold text-xs transition-all flex items-center gap-2 justify-center"
@@ -565,6 +574,26 @@ export default function MembersPage() {
             </form>
           </div>
         </div>
+      )}
+
+      {isSendModalOpen && (
+        <SendNotificationModal 
+          members={members.map(m => ({
+            id: m.id.toString(),
+            memberNo: m.member_no,
+            firstName: m.first_name,
+            lastName: m.last_name,
+            phone: m.phone || '',
+            email: m.email || '',
+            gender: m.gender,
+            dob: m.dob || '',
+            address: m.address || '',
+            status: m.status === 'active',
+            tenantId: 'tenant',
+          }))}
+          onClose={() => setIsSendModalOpen(false)}
+          onSuccess={() => setIsSendModalOpen(false)}
+        />
       )}
     </div>
   );
