@@ -17,13 +17,15 @@ interface EventsSidebarProps {
   selectedEvent: EventMock | null;
   onSelectEvent: (evt: EventMock) => void;
   onViewDetails?: (evt: EventMock) => void;
+  onTrackAttendance?: (evt: EventMock) => void;
 }
 
 export default function EventsSidebar({
   events,
   selectedEvent,
   onSelectEvent,
-  onViewDetails
+  onViewDetails,
+  onTrackAttendance
 }: EventsSidebarProps) {
   // 1. Dynamic Counts
   const upcomingCount = events.filter(e => e.status === 'Upcoming' || e.status === 'Ongoing').length;
@@ -322,13 +324,22 @@ export default function EventsSidebar({
             </p>
           )}
 
-          <button
-            type="button"
-            onClick={() => onSelectEvent(displayEvent)}
-            className="w-full mt-5 bg-[#5B3DF5] hover:bg-[#4a30db] text-white py-2.5 rounded-2xl text-xs font-bold shadow-md shadow-[#5B3DF5]/15 transition-all cursor-pointer"
-          >
-            Select in Table
-          </button>
+          <div className="flex gap-2 w-full mt-5">
+            <button
+              type="button"
+              onClick={() => onSelectEvent(displayEvent)}
+              className="flex-1 bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 py-2.5 rounded-2xl text-xs font-bold transition-all cursor-pointer"
+            >
+              Select in Table
+            </button>
+            <button
+              type="button"
+              onClick={() => onTrackAttendance?.(displayEvent)}
+              className="flex-1 bg-[#5B3DF5] hover:bg-[#4a30db] text-white py-2.5 rounded-2xl text-xs font-bold shadow-md shadow-[#5B3DF5]/15 transition-all cursor-pointer"
+            >
+              Track Attendance
+            </button>
+          </div>
         </div>
       )}
 

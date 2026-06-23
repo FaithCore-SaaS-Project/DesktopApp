@@ -144,6 +144,20 @@ export const apiService = {
     return res.data;
   },
 
+  getEventAttendance: async (eventId: string): Promise<any[]> => {
+    const res = await api.get(`/events/${eventId}/attendance`);
+    return res.data;
+  },
+
+  markEventAttendance: async (eventId: string, memberId: string, status: string, notes?: string): Promise<any> => {
+    const res = await api.post(`/events/${eventId}/attendance`, {
+      member_id: memberId,
+      status: status,
+      notes: notes
+    });
+    return res.data;
+  },
+
   // --- Certificates API ---
   getCertificates: async (tenantId: string): Promise<CertificateMock[]> => {
     const res = await api.get('/certificates');
@@ -420,6 +434,15 @@ export const apiService = {
       console.error('Error fetching families:', err);
       return [];
     }
+  },
+
+  importMembers: async (file: File): Promise<any> => {
+    const formData = new FormData();
+    formData.append('file', file);
+    const res = await api.post('/members/import', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    });
+    return res.data;
   },
 
   saveMember: async (member: MemberMock): Promise<any> => {

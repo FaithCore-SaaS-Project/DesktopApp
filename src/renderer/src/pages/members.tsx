@@ -205,6 +205,31 @@ export default function MembersPage() {
           <p className="text-xs text-gray-500 mt-2 font-medium">Manage profiles, roles, and contact information — all synced to the live database.</p>
         </div>
         <div className="flex gap-2 w-full sm:w-auto">
+          <label className="bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 px-5 py-2.5 rounded-xl font-bold text-xs transition-all flex items-center gap-2 justify-center cursor-pointer">
+            <UploadCloud className="h-4 w-4 text-gray-500" />
+            <span>Import CSV</span>
+            <input 
+              type="file" 
+              accept=".csv,.xlsx,.xls" 
+              className="hidden" 
+              onChange={async (e) => {
+                if (e.target.files && e.target.files[0]) {
+                  try {
+                    setLoading(true);
+                    await apiService.importMembers(e.target.files[0]);
+                    alert('Members imported successfully!');
+                    loadMembers();
+                  } catch (err) {
+                    alert('Failed to import members.');
+                    console.error(err);
+                  } finally {
+                    setLoading(false);
+                  }
+                }
+                e.target.value = ''; // Reset input
+              }} 
+            />
+          </label>
           <button
             onClick={handleExportCSV}
             className="bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 px-5 py-2.5 rounded-xl font-bold text-xs transition-all flex items-center gap-2 justify-center"

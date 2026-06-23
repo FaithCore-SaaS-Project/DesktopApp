@@ -10,6 +10,7 @@ import EventFilters from '../components/events/EventFilters';
 import EventsTable from '../components/events/EventsTable';
 import EventsSidebar from '../components/events/EventsSidebar';
 import CategoriesPagination from '../components/finance/categories/CategoriesPagination';
+import EventAttendanceModal from '../components/events/EventAttendanceModal';
 
 export default function EventsPage() {
   const { currentTenant } = useApp();
@@ -33,6 +34,9 @@ export default function EventsPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState<'add' | 'edit'>('add');
   const [editId, setEditId] = useState('');
+
+  // Attendance Modal
+  const [isAttendanceModalOpen, setIsAttendanceModalOpen] = useState(false);
 
   // Form Fields
   const [formName, setFormName] = useState('');
@@ -318,9 +322,17 @@ export default function EventsPage() {
             events={events}
             selectedEvent={selectedEvent}
             onSelectEvent={setSelectedEvent}
+            onTrackAttendance={() => setIsAttendanceModalOpen(true)}
           />
         </div>
       </div>
+
+      {isAttendanceModalOpen && selectedEvent && (
+        <EventAttendanceModal 
+          event={selectedEvent} 
+          onClose={() => setIsAttendanceModalOpen(false)} 
+        />
+      )}
 
       {/* Add / Edit Event Dialog Modal */}
       {isModalOpen && (
