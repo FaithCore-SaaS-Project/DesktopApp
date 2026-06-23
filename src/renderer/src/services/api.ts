@@ -262,6 +262,17 @@ export const apiService = {
     link.remove();
   },
 
+  downloadLetterPdf: async (id: string, fileName: string): Promise<void> => {
+    const res = await api.get(`/letters/${id}/pdf`, { responseType: 'blob' });
+    const url = window.URL.createObjectURL(new Blob([res.data]));
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', fileName);
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+  },
+
   // --- Budgets API ---
   getBudgets: async (tenantId: string): Promise<BudgetMock[]> => {
     const res = await api.get('/budgets');
