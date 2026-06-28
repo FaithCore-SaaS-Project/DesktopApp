@@ -3,6 +3,9 @@ import * as path from 'path';
 import * as fs from 'fs';
 import { initDatabase, dbOperations } from './database';
 import { initAutoUpdater } from './autoUpdater';
+import serve from 'electron-serve';
+
+const loadURL = serve({ directory: path.join(__dirname, '..', '..', 'src', 'renderer', 'out') });
 
 let mainWindow: BrowserWindow | null = null;
 
@@ -37,11 +40,9 @@ function createWindow() {
     // Development Environment: Load Next.js dev server
     mainWindow.loadURL('http://localhost:3080');
   } else {
-    // Production Environment: Load compiled static Next.js assets
-    // Built by next build with output: 'export' in src/renderer/out/
-    const indexPath = path.join(__dirname, '..', '..', 'src', 'renderer', 'out', 'index.html');
-    mainWindow.loadFile(indexPath).catch((err) => {
-      console.error('[Main] Failed to load index.html from path:', indexPath, err);
+    // Production Environment: Load via electron-serve to fix Next.js routing
+    loadURL(mainWindow).catch((err: any) => {
+      console.error('[Main] Failed to load via electron-serve:', err);
     });
   }
 

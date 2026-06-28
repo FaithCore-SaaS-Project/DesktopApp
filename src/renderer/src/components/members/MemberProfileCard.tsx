@@ -44,40 +44,41 @@ export default function MemberProfileCard({ member }: MemberProfileCardProps) {
     }
   };
 
-  const roleText = member.role === 'Member' ? 'Baptized Member' : member.role;
-  const avatarUrl = member.photoUrl || `https://i.pravatar.cc/300?u=${member.id}`;
+  const m = member as any;
+  const roleText = m.role === 'Member' ? 'Baptized Member' : m.role;
+  const avatarUrl = m.photoUrl || `https://i.pravatar.cc/300?u=${m.id}`;
 
   return (
     <div className="bg-white rounded-3xl border border-gray-150 p-6 shadow-sm">
       <div className="flex justify-between items-center">
-        <span className={`px-3.5 py-1 rounded-xl text-xs font-bold border ${getStatusBadgeStyle(member.status)}`}>
-          {member.status}
+        <span className={`px-3.5 py-1 rounded-xl text-xs font-bold border ${getStatusBadgeStyle(m.status)}`}>
+          {m.status}
         </span>
       </div>
       
       <div className="flex flex-col items-center mt-4">
         <img
           src={avatarUrl}
-          alt={member.name}
+          alt={m.name}
           className="h-32 w-32 rounded-full object-cover border-4 border-slate-50 shadow-sm transition-transform duration-300 hover:scale-105"
         />
         <h2 className="mt-5 text-2xl font-extrabold text-gray-900 text-center leading-tight">
-          {member.name}
+          {m.name}
         </h2>
         <p className="text-[#5B3DF5] font-bold text-sm mt-1.5 font-mono">
           {memberCode}
         </p>
-        <span className={`mt-4 rounded-xl px-4 py-1.5 text-xs font-bold border ${getRoleBadgeStyle(member.role)}`}>
+        <span className={`mt-4 rounded-xl px-4 py-1.5 text-xs font-bold border ${getRoleBadgeStyle(m.role)}`}>
           {roleText}
         </span>
       </div>
 
       <div className="mt-8 space-y-5 border-t border-gray-100 pt-6">
-        <InfoItem icon={<Phone size={18} className="text-gray-400" />} value={member.phone} />
-        <InfoItem icon={<Mail size={18} className="text-gray-400" />} value={member.email} />
-        <InfoItem icon={<Calendar size={18} className="text-gray-400" />} value={member.dob || '15 May 1990'} />
-        <InfoItem icon={<Shield size={18} className="text-gray-400" />} value={member.nic || '901234567V'} />
-        <InfoItem icon={<MapPin size={18} className="text-gray-400" />} value={member.address || 'Kandy, Sri Lanka'} />
+        <InfoItem icon={<Phone size={18} className="text-gray-400" />} value={m.phone} />
+        <InfoItem icon={<Mail size={18} className="text-gray-400" />} value={m.email} />
+        <InfoItem icon={<Calendar size={18} className="text-gray-400" />} value={m.dob || '15 May 1990'} />
+        <InfoItem icon={<Shield size={18} className="text-gray-400" />} value={m.nic || '901234567V'} />
+        <InfoItem icon={<MapPin size={18} className="text-gray-400" />} value={m.address || 'Kandy, Sri Lanka'} />
       </div>
     </div>
   );

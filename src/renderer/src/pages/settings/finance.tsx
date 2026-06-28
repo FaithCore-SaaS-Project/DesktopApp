@@ -8,7 +8,7 @@ import FinanceGeneralSettings from '../../components/settings/finance/FinanceGen
 import RoundingPrecisionCard from '../../components/settings/finance/RoundingPrecisionCard';
 import SettingsHelpCard from '../../components/settings/SettingsHelpCard';
 
-import { apiService } from '../../../services/api';
+import { apiService } from '../../services/api';
 
 export default function FinanceSettingsPage() {
   const [activeTab, setActiveTab] = useState('General');

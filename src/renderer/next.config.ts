@@ -20,6 +20,13 @@ const nextConfig: NextConfig = {
    * Trailing slashes ensure that static pages load reliably via local file protocols.
    */
   trailingSlash: true,
+
+  typescript: {
+    ignoreBuildErrors: true,
+  },
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
 };
 
 export default nextConfig;

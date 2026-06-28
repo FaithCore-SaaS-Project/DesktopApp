@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { X, Send, Mail, MessageSquare, Loader2, Search } from 'lucide-react';
-import { apiService } from '../../services/api';
-import { MemberMock } from '../../services/mockData';
+import { apiService } from '../../../services/api';
+import { MemberMock } from '../../../services/mockData';
 
 interface SendNotificationModalProps {
   members: MemberMock[];
