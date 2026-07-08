@@ -51,7 +51,7 @@ export default function MemberProfilePage() {
             ...baseMember,
             memberId: baseMember.memberNo,
             photoUrl: baseMember.photoUrl ? baseMember.photoUrl : `https://i.pravatar.cc/300?u=${baseMember.id}`,
-            nic: baseMember.id === '1' ? '751234567V' : '901234567V',
+            nic: baseMember.nic || 'N/A',
             occupation: baseMember.occupation || 'Member',
             address: baseMember.address || 'Kandy, Sri Lanka',
             dob: baseMember.dob || '15 May 1990',
@@ -59,8 +59,14 @@ export default function MemberProfilePage() {
             gender: baseMember.gender || 'Male',
             nationality: 'Sri Lankan',
             church: currentTenant.name,
-            baptismDate: baseMember.baptismDate || '12 March 2023',
-            baptizedBy: 'Pastor Thomas J. Miller',
+            baptismDate: baseMember.baptismDate || 'N/A',
+            baptizedBy: baseMember.baptismPartnerName || 'N/A',
+            baptismChurch: baseMember.baptismChurch || 'N/A',
+            baptismCertificateUrl: baseMember.baptismCertificateUrl || null,
+            maritalStatus: baseMember.maritalStatus || 'single',
+            marriageDate: baseMember.marriageDate || 'N/A',
+            marriageCertificateUrl: baseMember.marriageCertificateUrl || null,
+            birthCertificateUrl: baseMember.birthCertificateUrl || null,
             department: 'Worship Ministry',
             cellGroup: 'Sanctuary Cell Group A',
             spouse: 'Nadeesha Perera',
@@ -197,6 +203,29 @@ export default function MemberProfilePage() {
           </div>
         );
       case 'Documents':
+        const documentsList: any[] = [];
+        if (member.birthCertificateUrl) {
+          documentsList.push({
+            name: 'Birth Certificate',
+            url: member.birthCertificateUrl,
+            type: member.birthCertificateUrl.split('.').pop()?.toUpperCase() || 'PDF'
+          });
+        }
+        if (member.baptismCertificateUrl) {
+          documentsList.push({
+            name: 'Baptism Certificate',
+            url: member.baptismCertificateUrl,
+            type: member.baptismCertificateUrl.split('.').pop()?.toUpperCase() || 'PDF'
+          });
+        }
+        if (member.marriageCertificateUrl) {
+          documentsList.push({
+            name: 'Marriage Certificate',
+            url: member.marriageCertificateUrl,
+            type: member.marriageCertificateUrl.split('.').pop()?.toUpperCase() || 'PDF'
+          });
+        }
+
         return (
           <div className="bg-white rounded-3xl border border-gray-150 p-8 shadow-sm space-y-6 animate-fade-in">
             <div>
@@ -204,36 +233,34 @@ export default function MemberProfilePage() {
               <p className="text-xs text-gray-500 mt-0.5">Upload, download, or review official documents/records.</p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="p-4 border border-gray-150 rounded-2xl flex items-center justify-between hover:border-indigo-150 transition-colors">
-                <div className="flex items-center gap-3">
-                  <div className="p-3 bg-indigo-50 text-indigo-600 rounded-xl border border-indigo-100">
-                    <FileText size={20} />
+            {documentsList.length === 0 ? (
+              <p className="text-xs text-gray-400 font-semibold italic">No certificates uploaded for this member.</p>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {documentsList.map((doc, idx) => (
+                  <div key={idx} className="p-4 border border-gray-150 rounded-2xl flex items-center justify-between hover:border-indigo-150 transition-colors">
+                    <div className="flex items-center gap-3">
+                      <div className="p-3 bg-indigo-50 text-indigo-600 rounded-xl border border-indigo-100">
+                        <FileText size={20} />
+                      </div>
+                      <div>
+                        <p className="text-sm font-semibold text-gray-800">{doc.name}</p>
+                        <p className="text-xs text-gray-400">{doc.type} Document</p>
+                      </div>
+                    </div>
+                    <a
+                      href={doc.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="p-2 hover:bg-gray-55 rounded-lg text-gray-500 hover:text-gray-900 border border-gray-100 inline-flex"
+                      title="Download/View"
+                    >
+                      <FileDown size={16} />
+                    </a>
                   </div>
-                  <div>
-                    <p className="text-sm font-semibold text-gray-800">Holy Baptism Record.pdf</p>
-                    <p className="text-xs text-gray-400">PDF Document • 1.2 MB</p>
-                  </div>
-                </div>
-                <button className="p-2 hover:bg-gray-50 rounded-lg text-gray-500 hover:text-gray-900 border border-gray-100">
-                  <FileDown size={16} />
-                </button>
+                ))}
               </div>
-              <div className="p-4 border border-gray-150 rounded-2xl flex items-center justify-between hover:border-indigo-150 transition-colors">
-                <div className="flex items-center gap-3">
-                  <div className="p-3 bg-indigo-50 text-indigo-600 rounded-xl border border-indigo-100">
-                    <FileText size={20} />
-                  </div>
-                  <div>
-                    <p className="text-sm font-semibold text-gray-800">Membership Pledge Letter.pdf</p>
-                    <p className="text-xs text-gray-400">PDF Document • 840 KB</p>
-                  </div>
-                </div>
-                <button className="p-2 hover:bg-gray-50 rounded-lg text-gray-500 hover:text-gray-900 border border-gray-100">
-                  <FileDown size={16} />
-                </button>
-              </div>
-            </div>
+            )}
           </div>
         );
       case 'Attendance':

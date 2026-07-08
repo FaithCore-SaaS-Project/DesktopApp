@@ -152,7 +152,7 @@ export default function FinancePage() {
   const totalPages = Math.ceil(sortedRecords.length / pageSize);
 
   return (
-    <div className="p-8 bg-[#f5f6fa] min-h-full select-none animate-fade-in relative">
+    <div className="p-8 bg-gradient-to-tr from-slate-50 via-slate-100 to-indigo-50/20 min-h-full select-none animate-fade-in relative">
       <FinanceHeader onAddTransactionClick={handleOpenAddModal} />
       
       {/* Overview Stats Row */}

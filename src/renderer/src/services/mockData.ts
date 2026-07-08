@@ -23,6 +23,24 @@ export interface MemberMock {
   photoUrl?: string;
   familyId?: string;
   photoFile?: File; // For uploading
+  nic?: string;
+  addressType?: string;
+  permanentAddress?: string;
+  postalAddress?: string;
+  isBaptized?: boolean;
+  baptismChurch?: string;
+  baptismPartnerName?: string;
+  baptismCertificate?: string;
+  baptismCertificateUrl?: string | null;
+  baptismCertFile?: File;
+  maritalStatus?: string;
+  marriageDate?: string;
+  marriageCertificate?: string;
+  marriageCertificateUrl?: string | null;
+  marriageCertFile?: File;
+  birthCertificate?: string;
+  birthCertificateUrl?: string | null;
+  birthCertFile?: File;
 }
 
 export interface FinanceMock {

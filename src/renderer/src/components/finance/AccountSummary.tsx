@@ -34,18 +34,18 @@ export default function AccountSummary({
   const totalBalance = mainAccountBalance + missionAccountBalance + buildingFundBalance;
 
   return (
-    <div className="rounded-3xl border border-gray-150 bg-white p-6 shadow-sm flex flex-col h-full">
-      <h2 className="mb-6 text-lg font-extrabold text-gray-900">
+    <div className="rounded-[2rem] border border-slate-100 bg-white p-6 shadow-sm shadow-slate-100/50 flex flex-col h-full">
+      <h2 className="mb-6 text-base font-extrabold text-slate-800 tracking-tight">
         Account Summary
       </h2>
       <div className="space-y-4 flex-1">
         {accounts.map((acc, i) => (
           <div
             key={i}
-            className="flex justify-between items-center text-sm border-b border-gray-50 pb-3 last:pb-0 last:border-0"
+            className="flex justify-between items-center text-xs border-b border-slate-50 pb-3 last:pb-0 last:border-0"
           >
             <div>
-              <h4 className="font-semibold text-gray-750">
+              <h4 className="font-bold text-slate-600">
                 {acc.name}
               </h4>
             </div>
@@ -56,9 +56,9 @@ export default function AccountSummary({
         ))}
       </div>
       
-      <div className="mt-6 pt-4 border-t border-gray-100 flex justify-between items-center text-sm font-bold text-gray-900 bg-gray-50/50 p-4 rounded-2xl">
+      <div className="mt-6 pt-3.5 border-t border-slate-100 flex justify-between items-center text-xs font-bold text-slate-700 bg-slate-50/60 p-4 rounded-2xl">
         <span>Total Portfolio Balance</span>
-        <span className="text-base font-black text-gray-950">{formatLKR(totalBalance)}</span>
+        <span className="text-sm font-black text-slate-800">{formatLKR(totalBalance)}</span>
       </div>
     </div>
   );

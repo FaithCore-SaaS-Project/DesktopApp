@@ -58,31 +58,31 @@ export default function BankAccountRow({
   return (
     <tr
       onClick={onSelect}
-      className={`hover:bg-gray-55/45 border-t border-gray-100 group transition-colors cursor-pointer select-none ${
-        isSelected ? 'bg-indigo-50/35 group-hover:bg-indigo-50/50' : ''
+      className={`hover:bg-slate-50/50 border-t border-slate-100 group transition-colors cursor-pointer select-none ${
+        isSelected ? 'bg-violet-50/40 hover:bg-violet-50/60' : ''
       }`}
     >
       {/* Bank Name with custom styled logo */}
-      <td className="p-4 pl-6 font-bold text-gray-900 group-hover:text-[#5B3DF5] transition-colors flex items-center gap-3">
+      <td className="p-4 pl-6 font-bold text-slate-800 group-hover:text-violet-600 transition-colors flex items-center gap-3">
         <div className={`h-8 w-8 rounded-full ${logoBg} ${logoText} flex items-center justify-center font-bold shrink-0 shadow-sm`}>
           <Icon size={14} />
         </div>
-        <span>{item.bankName}</span>
+        <span className="text-xs">{item.bankName}</span>
       </td>
 
       {/* Account Name */}
-      <td className="p-4 text-gray-750 text-xs font-semibold">{item.accountName}</td>
+      <td className="p-4 text-slate-600 text-xs font-semibold">{item.accountName}</td>
 
       {/* Account Number */}
-      <td className="p-4 text-gray-500 text-xs font-semibold font-mono">{item.accountNumber}</td>
+      <td className="p-4 text-slate-400 text-xs font-semibold font-mono">{item.accountNumber}</td>
 
       {/* Account Type */}
       <td className="p-4">
         <span
-          className={`rounded-xl px-2.5 py-1 text-xs font-bold border ${
+          className={`rounded-xl px-2.5 py-1 text-[10px] font-bold border ${
             item.accountType === 'Current'
-              ? 'bg-purple-50 text-purple-750 border-purple-150'
-              : 'bg-blue-55 text-blue-750 border-blue-150'
+              ? 'bg-purple-50 text-purple-600 border-purple-100'
+              : 'bg-blue-50 text-blue-600 border-blue-100'
           }`}
         >
           {item.accountType}
@@ -90,17 +90,17 @@ export default function BankAccountRow({
       </td>
 
       {/* Balance */}
-      <td className="p-4 font-black text-emerald-600 text-xs">
+      <td className="p-4 font-extrabold text-emerald-600 text-xs">
         {formatCurrency(item.balance)}
       </td>
 
       {/* Status */}
       <td className="p-4">
         <span
-          className={`rounded-xl px-2.5 py-1 text-xs font-bold border ${
+          className={`rounded-xl px-2.5 py-1 text-[10px] font-bold border ${
             item.status === 'Active'
-              ? 'bg-emerald-50 text-emerald-700 border-emerald-100'
-              : 'bg-slate-55 text-slate-500 border-slate-200'
+              ? 'bg-emerald-50 text-emerald-600 border-emerald-100'
+              : 'bg-slate-50 text-slate-455 text-slate-400 border-slate-200'
           }`}
         >
           {item.status}
@@ -112,17 +112,17 @@ export default function BankAccountRow({
         <div className="flex gap-2 justify-center">
           <button
             onClick={onEdit}
-            className="rounded-lg border border-gray-200 p-2 hover:bg-gray-50 text-gray-500 hover:text-[#5B3DF5] transition-colors cursor-pointer"
+            className="rounded-lg border border-slate-150 p-2 hover:bg-slate-50 text-slate-400 hover:text-violet-600 transition-colors cursor-pointer bg-white"
             title="Edit Account"
           >
-            <Pencil size={14} />
+            <Pencil size={13} />
           </button>
           <button
             onClick={onToggleStatus}
-            className="rounded-lg border border-gray-200 p-2 hover:bg-gray-50 text-gray-500 hover:text-gray-800 transition-colors cursor-pointer"
+            className="rounded-lg border border-slate-150 p-2 hover:bg-slate-50 text-slate-400 hover:text-slate-700 transition-colors cursor-pointer bg-white"
             title="Toggle Status"
           >
-            <MoreVertical size={14} />
+            <MoreVertical size={13} />
           </button>
         </div>
       </td>

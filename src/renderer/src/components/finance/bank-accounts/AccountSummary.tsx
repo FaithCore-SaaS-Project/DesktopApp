@@ -6,14 +6,14 @@ interface AccountSummaryProps {
 }
 
 const BANK_COLORS = [
-  '#5B3DF5', // Hatton National Bank (purple/indigo)
-  '#3B82F6', // Commercial Bank (blue)
-  '#10B981', // People's Bank (emerald green)
-  '#F59E0B', // BOC (yellow/amber)
-  '#EC4899', // Nations Trust Bank (pink)
-  '#8B5CF6', // Fallbacks
-  '#F43F5E',
-  '#06B6D4',
+  '#8B5CF6', // Indigo/Violet
+  '#3B82F6', // Blue
+  '#10B981', // Emerald
+  '#F59E0B', // Amber
+  '#EC4899', // Pink
+  '#14B8A6', // Teal
+  '#6366F1', // Indigo Accent
+  '#06B6D4', // Cyan
 ];
 
 export default function AccountSummary({ accounts }: AccountSummaryProps) {
@@ -57,23 +57,23 @@ export default function AccountSummary({ accounts }: AccountSummaryProps) {
   });
 
   return (
-    <div className="bg-white border border-gray-150 rounded-3xl p-6 shadow-sm select-none">
-      <h2 className="text-lg font-bold text-gray-900 mb-6">
-        Account Summary
+    <div className="bg-white border border-slate-100 rounded-[2rem] p-6 shadow-sm shadow-slate-100/50 select-none">
+      <h2 className="text-base font-extrabold text-slate-800 tracking-tight mb-6">
+        Portfolio Allocation
       </h2>
       
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
         {/* Doughnut Chart */}
         <div className="lg:col-span-5 flex justify-center py-4 relative">
-          <div className="relative h-64 w-64 flex items-center justify-center">
+          <div className="relative h-60 w-60 flex items-center justify-center">
             {/* SVG circle container */}
-            <svg width="240" height="240" viewBox="0 0 120 120" className="transform -scale-x-100">
+            <svg width="220" height="220" viewBox="0 0 120 120" className="transform -scale-x-100">
               <circle
                 cx="60"
                 cy="60"
                 r={radius}
                 fill="transparent"
-                stroke="#f3f4f6"
+                stroke="#f8fafc"
                 strokeWidth={strokeWidth}
               />
               {portfolio.map((slice) => (
@@ -96,10 +96,10 @@ export default function AccountSummary({ accounts }: AccountSummaryProps) {
             
             {/* Inner text block */}
             <div className="absolute text-center select-none pointer-events-none">
-              <p className="text-gray-400 text-[10px] font-bold uppercase tracking-wider">
+              <p className="text-slate-400 text-[9px] font-bold uppercase tracking-wider">
                 Total Portfolio
               </p>
-              <h3 className="text-lg font-black text-gray-900 mt-0.5">
+              <h3 className="text-sm font-black text-slate-800 mt-1">
                 {formatCurrency(totalBalance)}
               </h3>
             </div>
@@ -111,24 +111,24 @@ export default function AccountSummary({ accounts }: AccountSummaryProps) {
           {portfolio.map((item) => (
             <div
               key={item.id}
-              className="flex items-center justify-between text-xs border-b border-gray-50 pb-2.5 last:pb-0 last:border-0"
+              className="flex items-center justify-between text-xs border-b border-slate-50 pb-2.5 last:pb-0 last:border-0"
             >
               <div className="flex items-center gap-2.5 min-w-0">
                 {/* Dot */}
                 <div
-                  className="h-3 w-3 rounded-full shrink-0"
+                  className="h-2.5 w-2.5 rounded-full shrink-0"
                   style={{ backgroundColor: item.color }}
                 />
-                <span className="font-semibold text-gray-700 truncate max-w-[220px]">
+                <span className="font-bold text-slate-600 truncate max-w-[200px]">
                   {item.name}
                 </span>
               </div>
               
-              <div className="flex items-center gap-5 shrink-0 text-right">
-                <span className="font-bold text-gray-800">
+              <div className="flex items-center gap-4 shrink-0 text-right">
+                <span className="font-bold text-slate-700">
                   {formatCurrency(item.amount)}
                 </span>
-                <span className="font-bold text-gray-400 w-12">
+                <span className="font-bold text-slate-400 w-12 text-[10px]">
                   {item.pct.toFixed(2)}%
                 </span>
               </div>
@@ -136,16 +136,16 @@ export default function AccountSummary({ accounts }: AccountSummaryProps) {
           ))}
 
           {portfolio.length === 0 && (
-            <p className="text-xs text-gray-400 text-center py-6">
+            <p className="text-xs text-slate-400 text-center py-6">
               No active bank accounts to display portfolio metrics.
             </p>
           )}
 
-          <hr className="border-gray-100 my-3" />
+          <hr className="border-slate-100 my-3" />
           
-          <div className="flex justify-between font-bold text-sm text-gray-850 pt-1">
+          <div className="flex justify-between font-bold text-xs text-slate-700 pt-1 select-none">
             <span>Total Portfolio Balance</span>
-            <span>{formatCurrency(totalBalance)}</span>
+            <span className="font-extrabold text-slate-800">{formatCurrency(totalBalance)}</span>
           </div>
         </div>
       </div>

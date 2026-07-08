@@ -87,25 +87,31 @@ export const apiService = {
     }
   },
 
-  // --- Events API ---
   getEvents: async (tenantId: string): Promise<EventMock[]> => {
-    const res = await api.get('/events');
-    return res.data.map((e: any) => ({
-      id: e.id,
-      name: e.name,
-      subtitle: e.subtitle || undefined,
-      type: e.type,
-      date: e.date,
-      time: e.time,
-      location: e.location,
-      attendees: e.attendees,
-      maxCapacity: e.maxCapacity,
-      status: e.status,
-      organizer: e.organizer,
-      description: e.description || undefined,
-      tenantId: e.tenantId,
-      createdOn: e.createdOn
-    }));
+    try {
+      const res = await api.get('/events');
+      const data = res.data.data || res.data;
+      if (!Array.isArray(data)) return [];
+      return data.map((e: any) => ({
+        id: e.id,
+        name: e.name,
+        subtitle: e.subtitle || undefined,
+        type: e.type,
+        date: e.date,
+        time: e.time,
+        location: e.location,
+        attendees: e.attendees,
+        maxCapacity: e.maxCapacity,
+        status: e.status,
+        organizer: e.organizer,
+        description: e.description || undefined,
+        tenantId: e.tenantId,
+        createdOn: e.createdOn
+      }));
+    } catch (err) {
+      console.error('Failed to load events from backend', err);
+      return [];
+    }
   },
 
   saveEvent: async (evt: EventMock): Promise<void> => {
@@ -158,22 +164,28 @@ export const apiService = {
     return res.data;
   },
 
-  // --- Certificates API ---
   getCertificates: async (tenantId: string): Promise<CertificateMock[]> => {
-    const res = await api.get('/certificates');
-    return res.data.map((c: any) => ({
-      id: c.id,
-      name: c.name,
-      type: c.type,
-      recipient: c.recipient,
-      recipientEmail: c.recipientEmail || '',
-      recipientPhone: c.recipientPhone || '',
-      issuedDate: c.issuedDate,
-      issuedBy: c.issuedBy,
-      status: c.status,
-      tenantId: c.tenantId,
-      createdOn: c.createdOn
-    }));
+    try {
+      const res = await api.get('/certificates');
+      const data = res.data.data || res.data;
+      if (!Array.isArray(data)) return [];
+      return data.map((c: any) => ({
+        id: c.id,
+        name: c.name,
+        type: c.type,
+        recipient: c.recipient,
+        recipientEmail: c.recipientEmail || '',
+        recipientPhone: c.recipientPhone || '',
+        issuedDate: c.issuedDate,
+        issuedBy: c.issuedBy,
+        status: c.status,
+        tenantId: c.tenantId,
+        createdOn: c.createdOn
+      }));
+    } catch (err) {
+      console.error('Failed to load certificates from backend', err);
+      return [];
+    }
   },
 
   saveCertificate: async (cert: CertificateMock): Promise<void> => {
@@ -209,23 +221,29 @@ export const apiService = {
     link.remove();
   },
 
-  // --- Letters API ---
   getLetters: async (tenantId: string): Promise<LetterMock[]> => {
-    const res = await api.get('/letters');
-    return res.data.map((l: any) => ({
-      id: l.id,
-      title: l.title,
-      type: l.type,
-      recipient: l.recipient,
-      recipientEmail: l.recipientEmail || '',
-      recipientPhone: l.recipientPhone || '',
-      date: l.date,
-      status: l.status,
-      sentBy: l.sentBy,
-      content: l.content,
-      tenantId: l.tenantId,
-      createdOn: l.createdOn
-    }));
+    try {
+      const res = await api.get('/letters');
+      const data = res.data.data || res.data;
+      if (!Array.isArray(data)) return [];
+      return data.map((l: any) => ({
+        id: l.id,
+        title: l.title,
+        type: l.type,
+        recipient: l.recipient,
+        recipientEmail: l.recipientEmail || '',
+        recipientPhone: l.recipientPhone || '',
+        date: l.date,
+        status: l.status,
+        sentBy: l.sentBy,
+        content: l.content,
+        tenantId: l.tenantId,
+        createdOn: l.createdOn
+      }));
+    } catch (err) {
+      console.error('Failed to load letters from backend', err);
+      return [];
+    }
   },
 
   saveLetter: async (letter: LetterMock): Promise<void> => {
@@ -273,22 +291,28 @@ export const apiService = {
     link.remove();
   },
 
-  // --- Budgets API ---
   getBudgets: async (tenantId: string): Promise<BudgetMock[]> => {
-    const res = await api.get('/budgets');
-    return res.data.map((b: any) => ({
-      id: b.id.toString(),
-      name: b.name,
-      type: b.type,
-      budgetAmount: parseFloat(b.budget_amount),
-      spentAmount: parseFloat(b.spent_amount),
-      periodStart: b.period_start,
-      periodEnd: b.period_end,
-      status: b.status,
-      description: b.description || '',
-      tenantId: b.church_id.toString(),
-      createdOn: b.created_on || b.created_at?.split('T')[0] || ''
-    }));
+    try {
+      const res = await api.get('/budgets');
+      const data = res.data.data || res.data;
+      if (!Array.isArray(data)) return [];
+      return data.map((b: any) => ({
+        id: b.id.toString(),
+        name: b.name,
+        type: b.type,
+        budgetAmount: parseFloat(b.budget_amount),
+        spentAmount: parseFloat(b.spent_amount),
+        periodStart: b.period_start,
+        periodEnd: b.period_end,
+        status: b.status,
+        description: b.description || '',
+        tenantId: b.church_id.toString(),
+        createdOn: b.created_on || b.created_at?.split('T')[0] || ''
+      }));
+    } catch (err) {
+      console.error('Failed to load budgets from backend', err);
+      return [];
+    }
   },
 
   saveBudget: async (budget: BudgetMock): Promise<void> => {
@@ -314,25 +338,35 @@ export const apiService = {
     await api.delete(`/budgets/${id}`);
   },
 
-  // --- Bank Accounts API ---
   getBankAccounts: async (tenantId: string): Promise<BankAccountMock[]> => {
-    const res = await api.get('/bank-accounts');
-    return res.data.map((a: any) => ({
-      id: a.id.toString(),
-      bankName: a.bank_name,
-      accountName: a.account_name,
-      accountNumber: a.account_number,
-      accountType: a.account_type,
-      balance: parseFloat(a.balance),
-      status: a.status,
-      branch: a.branch || '',
-      currency: a.currency || 'LKR',
-      ledgerBalance: parseFloat(a.ledger_balance),
-      lastStatementDate: a.last_statement_date,
-      createdOn: a.created_on || a.created_at?.split('T')[0] || '',
-      createdBy: a.created_by || '',
-      tenantId: a.church_id.toString()
-    }));
+    try {
+      const res = await api.get('/bank-accounts');
+      if (res.status === 403) {
+        console.warn('Access to bank accounts is unauthorized (403)');
+        return [];
+      }
+      const data = res.data.data || res.data;
+      if (!Array.isArray(data)) return [];
+      return data.map((a: any) => ({
+        id: a.id.toString(),
+        bankName: a.bank_name,
+        accountName: a.account_name,
+        accountNumber: a.account_number,
+        accountType: a.account_type,
+        balance: parseFloat(a.balance),
+        status: a.status,
+        branch: a.branch || '',
+        currency: a.currency || 'LKR',
+        ledgerBalance: parseFloat(a.ledger_balance),
+        lastStatementDate: a.last_statement_date,
+        createdOn: a.created_on || a.created_at?.split('T')[0] || '',
+        createdBy: a.created_by || '',
+        tenantId: a.church_id.toString()
+      }));
+    } catch (err) {
+      console.error('Failed to load bank accounts from backend', err);
+      return [];
+    }
   },
 
   saveBankAccount: async (account: BankAccountMock): Promise<void> => {
@@ -361,19 +395,25 @@ export const apiService = {
     await api.delete(`/bank-accounts/${id}`);
   },
 
-  // --- Categories API ---
   getCategories: async (tenantId: string): Promise<CategoryMock[]> => {
-    const res = await api.get('/finance-categories');
-    return res.data.map((c: any) => ({
-      id: c.id.toString(),
-      name: c.name,
-      type: c.type,
-      description: c.description || '',
-      status: c.status,
-      createdOn: c.created_on || c.created_at?.split('T')[0] || '',
-      createdBy: c.created_by || '',
-      tenantId: c.church_id.toString()
-    }));
+    try {
+      const res = await api.get('/finance-categories');
+      const data = res.data.data || res.data;
+      if (!Array.isArray(data)) return [];
+      return data.map((c: any) => ({
+        id: c.id.toString(),
+        name: c.name,
+        type: c.type,
+        description: c.description || '',
+        status: c.status,
+        createdOn: c.created_on || c.created_at?.split('T')[0] || '',
+        createdBy: c.created_by || '',
+        tenantId: c.church_id.toString()
+      }));
+    } catch (err) {
+      console.error('Failed to load categories from backend', err);
+      return [];
+    }
   },
 
   saveCategory: async (category: CategoryMock): Promise<void> => {
@@ -413,28 +453,48 @@ export const apiService = {
     localStorage.setItem('fc_receipts', JSON.stringify(receipts));
   },
 
-  // --- Members API ---
   getMembers: async (tenantId: string): Promise<MemberMock[]> => {
-    const res = await api.get('/members');
-    const data = res.data.data || res.data;
-    return data.map((m: any) => ({
-      id: m.id.toString(),
-      memberNo: m.member_no,
-      firstName: m.first_name,
-      lastName: m.last_name,
-      phone: m.phone || '',
-      email: m.email || '',
-      gender: m.gender || 'male',
-      dob: m.dob || '',
-      address: m.address || '',
-      baptismDate: m.baptism_date,
-      membershipDate: m.membership_date,
-      occupation: m.occupation || '',
-      status: m.status == 1 || m.status === 'active' || m.status === true,
-      tenantId: m.church_id ? m.church_id.toString() : tenantId,
-      photoUrl: m.photo_url,
-      familyId: m.family_id ? m.family_id.toString() : undefined
-    }));
+    try {
+      const res = await api.get('/members');
+      const data = res.data.data || res.data;
+      if (!Array.isArray(data)) return [];
+      return data.map((m: any) => ({
+        id: m.id.toString(),
+        memberNo: m.member_no,
+        firstName: m.first_name,
+        lastName: m.last_name,
+        phone: m.phone || '',
+        email: m.email || '',
+        gender: m.gender || 'male',
+        dob: m.dob || '',
+        address: m.address || '',
+        baptismDate: m.baptism_date,
+        membershipDate: m.membership_date,
+        occupation: m.occupation || '',
+        status: m.status == 1 || m.status === 'active' || m.status === true,
+        tenantId: m.church_id ? m.church_id.toString() : tenantId,
+        photoUrl: m.photo_url,
+        familyId: m.family_id ? m.family_id.toString() : undefined,
+        nic: m.nic || '',
+        addressType: m.address_type || 'permanent',
+        permanentAddress: m.permanent_address || '',
+        postalAddress: m.postal_address || '',
+        isBaptized: m.is_baptized === true || m.is_baptized == 1,
+        baptismChurch: m.baptism_church || '',
+        baptismPartnerName: m.baptism_partner_name || '',
+        baptismCertificate: m.baptism_certificate || '',
+        baptismCertificateUrl: m.baptism_certificate_url || null,
+        maritalStatus: m.marital_status || 'single',
+        marriageDate: m.marriage_date || '',
+        marriageCertificate: m.marriage_certificate || '',
+        marriageCertificateUrl: m.marriage_certificate_url || null,
+        birthCertificate: m.birth_certificate || '',
+        birthCertificateUrl: m.birth_certificate_url || null,
+      }));
+    } catch (err) {
+      console.error('Failed to load members from backend', err);
+      return [];
+    }
   },
 
   getFamilies: async (tenantId: string): Promise<any[]> => {
@@ -459,8 +519,9 @@ export const apiService = {
   saveMember: async (member: MemberMock): Promise<any> => {
     let payload: any;
     let headers = {};
+    const hasFiles = !!(member.photoFile || member.baptismCertFile || member.marriageCertFile || member.birthCertFile);
 
-    if (member.photoFile) {
+    if (hasFiles) {
       payload = new FormData();
       payload.append('first_name', member.firstName);
       payload.append('last_name', member.lastName);
@@ -469,12 +530,26 @@ export const apiService = {
       payload.append('gender', member.gender);
       if (member.dob) payload.append('dob', member.dob);
       if (member.address) payload.append('address', member.address);
+      if (member.nic) payload.append('nic', member.nic);
+      if (member.addressType) payload.append('address_type', member.addressType);
+      if (member.permanentAddress) payload.append('permanent_address', member.permanentAddress);
+      if (member.postalAddress) payload.append('postal_address', member.postalAddress);
+      payload.append('is_baptized', member.isBaptized ? '1' : '0');
+      if (member.baptismChurch) payload.append('baptism_church', member.baptismChurch);
+      if (member.baptismPartnerName) payload.append('baptism_partner_name', member.baptismPartnerName);
       if (member.baptismDate) payload.append('baptism_date', member.baptismDate);
       if (member.membershipDate) payload.append('membership_date', member.membershipDate);
       if (member.occupation) payload.append('occupation', member.occupation);
+      if (member.maritalStatus) payload.append('marital_status', member.maritalStatus);
+      if (member.marriageDate) payload.append('marriage_date', member.marriageDate);
       payload.append('status', member.status ? 'active' : 'inactive');
       if (member.familyId) payload.append('family_id', member.familyId);
-      payload.append('photo', member.photoFile);
+
+      if (member.photoFile) payload.append('photo', member.photoFile);
+      if (member.baptismCertFile) payload.append('baptism_certificate', member.baptismCertFile);
+      if (member.marriageCertFile) payload.append('marriage_certificate', member.marriageCertFile);
+      if (member.birthCertFile) payload.append('birth_certificate', member.birthCertFile);
+
       headers = { 'Content-Type': 'multipart/form-data' };
       
       // Laravel handles PUT with file uploads badly via FormData, so spoof method
@@ -490,9 +565,18 @@ export const apiService = {
         gender: member.gender,
         dob: member.dob,
         address: member.address,
+        nic: member.nic,
+        address_type: member.addressType,
+        permanent_address: member.permanentAddress,
+        postal_address: member.postalAddress,
+        is_baptized: member.isBaptized ? 1 : 0,
+        baptism_church: member.baptismChurch,
+        baptism_partner_name: member.baptismPartnerName,
         baptism_date: member.baptismDate,
         membership_date: member.membershipDate,
         occupation: member.occupation,
+        marital_status: member.maritalStatus,
+        marriage_date: member.marriageDate,
         status: member.status ? 'active' : 'inactive',
         family_id: member.familyId
       };
@@ -502,8 +586,8 @@ export const apiService = {
       const res = await api.post('/members', payload, { headers });
       return res.data;
     } else {
-      const endpoint = member.photoFile ? `/members/${member.id}` : `/members/${member.id}`;
-      const method = member.photoFile ? 'post' : 'put';
+      const endpoint = `/members/${member.id}`;
+      const method = hasFiles ? 'post' : 'put';
       const res = await api[method](endpoint, payload, { headers });
       return res.data;
     }
@@ -515,18 +599,29 @@ export const apiService = {
 
   // --- Finance API ---
   getFinanceRecords: async (tenantId: string): Promise<FinanceMock[]> => {
-    const res = await api.get('/finance/records');
-    return res.data.map((r: any) => ({
-      id: r.id,
-      type: r.type,
-      category: r.category,
-      amount: parseFloat(r.amount),
-      date: r.date,
-      description: r.description || '',
-      tenantId: r.tenantId,
-      method: r.method,
-      receipt: r.receipt || ''
-    }));
+    try {
+      const res = await api.get('/finance/records');
+      if (res.status === 403) {
+        console.warn('Access to finance records is unauthorized (403)');
+        return [];
+      }
+      const data = res.data.data || res.data;
+      if (!Array.isArray(data)) return [];
+      return data.map((r: any) => ({
+        id: r.id,
+        type: r.type,
+        category: r.category,
+        amount: parseFloat(r.amount),
+        date: r.date,
+        description: r.description || '',
+        tenantId: r.tenantId,
+        method: r.method,
+        receipt: r.receipt || ''
+      }));
+    } catch (err) {
+      console.error('Failed to load finance records from backend', err);
+      return [];
+    }
   },
 
   saveFinanceRecord: async (record: FinanceMock): Promise<void> => {

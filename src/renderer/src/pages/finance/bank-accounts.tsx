@@ -224,28 +224,32 @@ export default function FinanceBankAccountsPage() {
   };
 
   return (
-    <div className="p-8 bg-[#f5f6fa] min-h-full select-none animate-fade-in relative">
+    <div className="p-8 bg-gradient-to-tr from-slate-50 via-slate-100 to-indigo-50/20 min-h-full select-none animate-fade-in relative">
       {/* Header */}
-      <div className="mb-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      <div className="mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
-          <h1 className="text-4xl font-extrabold text-gray-900 tracking-tight leading-none">
+          <h1 className="text-3xl font-extrabold text-slate-800 tracking-tight leading-none">
             Bank Accounts
           </h1>
-          <div className="flex items-center gap-1.5 text-xs font-semibold text-gray-400 mt-3 pl-1">
-            <Link href="/dashboard" className="hover:text-gray-600">Dashboard</Link>
-            <ChevronRight size={12} />
-            <Link href="/finance" className="hover:text-gray-600">Finance</Link>
-            <ChevronRight size={12} />
-            <span className="text-gray-650 font-bold">Bank Accounts</span>
+          <div className="flex items-center gap-1.5 text-xs font-bold text-slate-400 mt-3 pl-1">
+            <Link href="/dashboard" passHref legacyBehavior>
+              <a className="hover:text-slate-600 transition-colors">Dashboard</a>
+            </Link>
+            <ChevronRight size={12} className="text-slate-300" />
+            <Link href="/finance" passHref legacyBehavior>
+              <a className="hover:text-slate-600 transition-colors">Finance</a>
+            </Link>
+            <ChevronRight size={12} className="text-slate-300" />
+            <span className="text-slate-600 font-bold">Bank Accounts</span>
           </div>
         </div>
 
         <button
           type="button"
           onClick={handleOpenAddModal}
-          className="flex items-center gap-2 rounded-xl bg-[#5B3DF5] hover:bg-[#4d32d6] px-5 py-2.5 text-xs font-bold text-white shadow-md shadow-[#5B3DF5]/15 transition-all cursor-pointer active:scale-[0.98]"
+          className="flex items-center gap-2 rounded-2xl bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 px-5 py-2.5 text-xs font-bold text-white shadow-md shadow-violet-500/15 transition-all cursor-pointer active:scale-[0.98]"
         >
-          <Plus size={16} />
+          <Plus size={15} />
           Add New Bank Account
         </button>
       </div>
@@ -267,7 +271,7 @@ export default function FinanceBankAccountsPage() {
       {/* Main Content Layout Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mt-6 items-start">
         {/* Table Column */}
-        <div className="lg:col-span-8 bg-white rounded-3xl border border-gray-150 shadow-sm overflow-hidden animate-fade-in">
+        <div className="lg:col-span-8 bg-white rounded-[2rem] border border-slate-100 shadow-sm shadow-slate-100/50 overflow-hidden animate-fade-in">
           {loading ? (
             <div className="py-40 flex flex-col items-center justify-center">
               <div className="h-8 w-8 border-4 border-indigo-500/20 border-t-[#5B3DF5] rounded-full animate-spin"></div>
@@ -317,8 +321,8 @@ export default function FinanceBankAccountsPage() {
 
       {/* Add / Edit Bank Account Dialog Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="w-full max-w-md bg-white border border-gray-150 rounded-3xl overflow-hidden shadow-2xl animate-scale-in">
+        <div className="fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-50 flex items-start justify-center p-4 overflow-y-auto">
+          <div className="my-auto w-full max-w-md bg-white border border-slate-100 rounded-3xl overflow-hidden shadow-2xl animate-scale-in">
             <div className="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
               <h2 className="text-lg font-extrabold text-gray-900">
                 {modalMode === 'add' ? 'Add New Bank Account' : 'Edit Bank Account'}

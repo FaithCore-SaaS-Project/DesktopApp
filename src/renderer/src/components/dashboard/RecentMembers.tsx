@@ -1,5 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
+import { Users } from 'lucide-react';
 
 interface Member {
   name: string;
@@ -41,44 +42,63 @@ const defaultMembers: Member[] = [
 ];
 
 export default function RecentMembers({ members = defaultMembers }: RecentMembersProps) {
+  // If members prop is explicitly passed but is empty (e.g. from an API that loaded but returned no records),
+  // we render a beautiful empty state to prevent card collapsing.
+  const hasMembers = members && members.length > 0;
+
   return (
-    <div className="bg-white rounded-3xl border border-gray-150 p-6 shadow-sm flex flex-col justify-between h-full">
-      <div>
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-bold text-gray-900 tracking-tight">
+    <div className="bg-white rounded-[2rem] border border-slate-100 p-6 shadow-sm shadow-slate-100/50 flex flex-col justify-between min-h-[380px] h-full">
+      <div className="flex-1 flex flex-col justify-between">
+        <div className="flex items-center justify-between mb-5">
+          <h2 className="text-xl font-extrabold text-slate-800 tracking-tight">
             Recent Members
           </h2>
-          <Link href="/members" className="text-[#5B3DF5] hover:text-[#4529d8] font-bold text-sm transition-colors">
-            View All
+          <Link href="/members" passHref legacyBehavior>
+            <a className="text-xs font-bold text-violet-500 hover:text-violet-600 transition-colors">
+              View All
+            </a>
           </Link>
         </div>
-        <div className="space-y-4">
-          {members.map((member, index) => (
-            <div
-              key={index}
-              className="flex items-center justify-between p-2.5 rounded-2xl hover:bg-gray-50 transition-all duration-200"
-            >
-              <div className="flex items-center gap-4">
-                <img
-                  src={member.avatar || `https://i.pravatar.cc/150?img=${index + 10}`}
-                  alt={member.name}
-                  className="h-12 w-12 rounded-full object-cover border border-gray-100"
-                />
-                <div>
-                  <h4 className="font-bold text-gray-800 leading-snug">
-                    {member.name}
-                  </h4>
-                  <p className="text-xs text-gray-400 font-semibold mt-0.5">
-                    {member.gender} • {member.age}
-                  </p>
-                </div>
-              </div>
-              <span className="text-xs text-gray-450 font-bold">
-                {member.date}
-              </span>
+
+        {!hasMembers ? (
+          <div className="flex-1 flex flex-col items-center justify-center py-6 text-center">
+            <div className="h-12 w-12 rounded-2xl bg-violet-500/10 text-violet-600 flex items-center justify-center mb-3 border border-violet-100/30">
+              <Users size={20} />
             </div>
-          ))}
-        </div>
+            <p className="text-xs font-bold text-slate-600">No members registered</p>
+            <p className="text-[10px] text-slate-400 max-w-[190px] mt-1 font-medium leading-relaxed">
+              Add members to your church roster to see them listed here.
+            </p>
+          </div>
+        ) : (
+          <div className="space-y-3.5 flex-1">
+            {members.slice(0, 4).map((member, index) => (
+              <div
+                key={index}
+                className="flex items-center justify-between p-2 rounded-2xl hover:bg-slate-50/50 transition-all duration-200"
+              >
+                <div className="flex items-center gap-3">
+                  <img
+                    src={member.avatar || `https://i.pravatar.cc/150?img=${index + 10}`}
+                    alt={member.name}
+                    className="h-10 w-10 rounded-full object-cover border border-slate-100"
+                  />
+                  <div>
+                    <h4 className="font-bold text-slate-700 text-xs leading-snug">
+                      {member.name}
+                    </h4>
+                    <p className="text-[10px] text-slate-400 font-bold mt-0.5">
+                      {member.gender} • {member.age}
+                    </p>
+                  </div>
+                </div>
+                <span className="text-[10px] text-slate-400 font-bold">
+                  {member.date}
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

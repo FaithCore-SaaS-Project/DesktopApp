@@ -52,39 +52,35 @@ export default function BankStats({ accounts, financeRecords }: BankStatsProps) 
   const stats = [
     {
       title: "Total Bank Accounts",
-      value: totalAccounts.toString(),
+      value: totalAccounts.toLocaleString(),
       subtext: "All accounts",
       icon: Landmark,
-      color: "bg-[#5B3DF5] shadow-[#5B3DF5]/15",
-      iconColor: "text-white",
-      subtextColor: "text-gray-450 font-bold",
+      textColor: "text-violet-600",
+      iconBg: "bg-violet-500/10",
     },
     {
       title: "Total Balance",
       value: formatCurrency(totalBalance),
       subtext: "Across all accounts",
       icon: Wallet,
-      color: "bg-emerald-500 shadow-emerald-150",
-      iconColor: "text-white",
-      subtextColor: "text-gray-450 font-bold",
+      textColor: "text-emerald-600",
+      iconBg: "bg-emerald-500/10",
     },
     {
       title: "This Month In",
       value: formatCurrency(thisMonthIn),
       subtext: "Total credits",
       icon: ArrowDownToLine,
-      color: "bg-blue-500 shadow-blue-150",
-      iconColor: "text-white",
-      subtextColor: "text-gray-450 font-bold",
+      textColor: "text-blue-600",
+      iconBg: "bg-blue-500/10",
     },
     {
       title: "This Month Out",
       value: formatCurrency(thisMonthOut),
       subtext: "Total debits",
       icon: ArrowUpFromLine,
-      color: "bg-orange-500 shadow-orange-150",
-      iconColor: "text-white",
-      subtextColor: "text-gray-450 font-bold",
+      textColor: "text-orange-600",
+      iconBg: "bg-orange-500/10",
     },
   ];
 
@@ -95,29 +91,28 @@ export default function BankStats({ accounts, financeRecords }: BankStatsProps) 
         return (
           <div
             key={index}
-            className="rounded-3xl border border-gray-150 bg-white p-5 shadow-sm hover:shadow-md transition-all duration-300 group relative overflow-hidden"
+            className="bg-white rounded-[2rem] p-6 border border-slate-100 shadow-sm shadow-slate-100/50 hover:-translate-y-1 hover:shadow-md transition-all duration-300 relative overflow-hidden group"
           >
-            <div className="flex flex-col h-full justify-between">
-              <div className="flex items-center gap-4">
-                <div
-                  className={`flex h-12 w-12 items-center justify-center rounded-2xl ${item.color} ${item.iconColor} shadow-lg transition-transform duration-300 group-hover:scale-105`}
-                >
-                  <Icon size={22} />
-                </div>
-                <div>
-                  <h2 className="text-2xl font-black text-gray-900 leading-tight">
-                    {item.value}
-                  </h2>
-                  <p className="text-gray-400 text-xs font-bold mt-0.5 leading-none">
-                    {item.title}
-                  </p>
-                </div>
+            <div className="flex justify-between items-start">
+              <div>
+                <p className="text-slate-400 text-[10px] font-bold uppercase tracking-wider">
+                  {item.title}
+                </p>
+                <h3 className="text-2xl font-black text-slate-800 tracking-tight mt-3 leading-none">
+                  {item.value}
+                </h3>
               </div>
-              <div className="mt-4 pt-3 border-t border-gray-50 flex items-center justify-between">
-                <span className={`text-xs font-bold ${item.subtextColor}`}>
-                  {item.subtext}
-                </span>
+              <div
+                className={`h-11 w-11 rounded-xl flex items-center justify-center ${item.iconBg} ${item.textColor} transition-all duration-300 group-hover:scale-105`}
+              >
+                <Icon size={20} />
               </div>
+            </div>
+            
+            <div className="mt-5 flex items-center">
+              <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider bg-slate-50 border border-slate-100 rounded-lg px-2 py-0.5 select-none">
+                {item.subtext}
+              </span>
             </div>
           </div>
         );

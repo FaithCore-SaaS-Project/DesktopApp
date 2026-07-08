@@ -23,29 +23,29 @@ export default function FinanceStats({
     {
       title: "Total Income",
       value: formatLKR(totalIncome),
-      color: "bg-emerald-500 shadow-emerald-150",
-      textColor: "text-emerald-500",
+      textColor: "text-emerald-600",
+      iconBg: "bg-emerald-500/10",
       icon: TrendingUp,
     },
     {
       title: "Total Expenses",
       value: formatLKR(totalExpenses),
-      color: "bg-rose-500 shadow-rose-150",
-      textColor: "text-rose-500",
+      textColor: "text-rose-600",
+      iconBg: "bg-rose-500/10",
       icon: TrendingDown,
     },
     {
       title: "Net Balance",
       value: formatLKR(netBalance),
-      color: "bg-blue-500 shadow-blue-150",
-      textColor: "text-blue-500",
+      textColor: "text-blue-600",
+      iconBg: "bg-blue-500/10",
       icon: Wallet,
     },
     {
       title: "Transactions Logged",
-      value: transactionCount.toString(),
-      color: "bg-purple-500 shadow-purple-150",
-      textColor: "text-purple-500",
+      value: transactionCount.toLocaleString(),
+      textColor: "text-violet-600",
+      iconBg: "bg-violet-500/10",
       icon: Receipt,
     },
   ];
@@ -57,22 +57,28 @@ export default function FinanceStats({
         return (
           <div
             key={i}
-            className="rounded-3xl border border-gray-150 bg-white p-6 shadow-sm hover:shadow-md transition-all duration-300 group"
+            className="bg-white rounded-[2rem] p-6 border border-slate-100 shadow-sm shadow-slate-100/50 hover:-translate-y-1 hover:shadow-md transition-all duration-300 relative overflow-hidden group"
           >
-            <div className="flex items-center gap-4">
-              <div
-                className={`flex h-12 w-12 items-center justify-center rounded-2xl text-white ${item.color} shadow-lg transition-transform duration-300 group-hover:scale-105`}
-              >
-                <Icon size={22} />
-              </div>
+            <div className="flex justify-between items-start">
               <div>
-                <h3 className="text-gray-400 text-xs font-bold uppercase tracking-wider">
+                <p className="text-slate-400 text-[10px] font-bold uppercase tracking-wider">
                   {item.title}
-                </h3>
-                <h2 className="mt-1.5 text-2xl font-black text-gray-900 leading-tight">
+                </p>
+                <h3 className="text-2xl font-black text-slate-800 tracking-tight mt-3 leading-none">
                   {item.value}
-                </h2>
+                </h3>
               </div>
+              <div
+                className={`h-11 w-11 rounded-xl flex items-center justify-center ${item.iconBg} ${item.textColor} transition-all duration-300 group-hover:scale-105`}
+              >
+                <Icon size={20} />
+              </div>
+            </div>
+            
+            <div className="mt-5 flex items-center">
+              <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider bg-slate-50 border border-slate-100 rounded-lg px-2 py-0.5 select-none">
+                Overview Status
+              </span>
             </div>
           </div>
         );

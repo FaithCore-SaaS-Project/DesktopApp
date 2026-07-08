@@ -93,43 +93,56 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex h-screen bg-[#0B1020] text-white selection:bg-violet-500 selection:text-white">
+    <div className="flex h-screen bg-[#070913] text-white selection:bg-violet-500 selection:text-white overflow-hidden">
       {/* LEFT PANEL */}
-      <div className="hidden lg:flex w-1/2 relative overflow-hidden bg-gradient-to-br from-[#140B2D] to-[#0A1022]">
-        {/* Deep ambient styling instead of image */}
-        <div className="absolute top-0 left-0 w-full h-full opacity-40 bg-[radial-gradient(ellipse_at_top_left,_var(--tw-gradient-stops))] from-violet-900/40 via-[#0B1020] to-[#0A1022]"></div>
-        <div className="absolute -bottom-1/4 -right-1/4 w-[600px] h-[600px] bg-violet-600/10 rounded-full blur-[120px]"></div>
+      <div className="hidden lg:flex w-1/2 relative overflow-hidden bg-gradient-to-br from-[#12092A] via-[#080C1E] to-[#060814]">
+        {/* Deep ambient styling with glass overlays and glows */}
+        <div className="absolute top-0 left-0 w-full h-full opacity-45 bg-[radial-gradient(ellipse_at_top_left,_var(--tw-gradient-stops))] from-violet-900/30 via-[#070B18] to-[#050711]"></div>
+        <div className="absolute -bottom-1/6 -right-1/6 w-[550px] h-[550px] bg-violet-600/10 rounded-full blur-[110px]"></div>
+        <div className="absolute -top-1/4 -left-1/4 w-[450px] h-[450px] bg-purple-600/15 rounded-full blur-[100px]"></div>
 
-        <div className="relative z-10 flex flex-col justify-between p-14 w-full h-full">
+        {/* Diagonal subtle line pattern to feel high-tech and professional */}
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff03_1px,transparent_1px),linear-gradient(to_bottom,#ffffff03_1px,transparent_1px)] bg-[size:24px_24px] opacity-20"></div>
+
+        <div className="relative z-10 flex flex-col justify-between p-16 w-full h-full">
           <div>
             <div className="flex items-center gap-4">
-              <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-violet-600 to-purple-500 flex items-center justify-center font-extrabold text-white text-2xl shadow-lg shadow-violet-500/20">
+              <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-violet-600 to-purple-500 flex items-center justify-center font-black text-white text-xl shadow-lg shadow-violet-500/20">
                 fc
               </div>
               <div>
-                <h1 className="text-4xl tracking-[8px] font-light">
-                  FAITH<span className="text-violet-400 font-medium">CORE</span>
+                <h1 className="text-3xl tracking-[6px] font-light">
+                  FAITH<span className="text-violet-400 font-semibold">CORE</span>
                 </h1>
-                <p className="text-gray-400 text-sm mt-1">
+                <p className="text-gray-400 text-xs mt-0.5 font-medium tracking-wide">
                   Empowering Ministry Through Technology
                 </p>
               </div>
             </div>
             
-            <div className="mt-24 space-y-2">
-              <h2 className="text-5xl font-semibold">One Platform.</h2>
-              <h2 className="text-5xl font-semibold">Every Ministry.</h2>
-              <h2 className="text-5xl font-bold text-violet-400">Stronger Together.</h2>
+            <div className="mt-28 space-y-4">
+              <span className="text-xs uppercase tracking-[0.25em] font-bold text-violet-400/80">CHURCH MANAGEMENT CONSOLE</span>
+              <h2 className="text-5xl font-extrabold tracking-tight text-white leading-tight">
+                One Platform.
+              </h2>
+              <h2 className="text-5xl font-extrabold tracking-tight text-white leading-tight">
+                Every Ministry.
+              </h2>
+              <h2 className="text-5xl font-black tracking-tight bg-gradient-to-r from-violet-400 via-purple-400 to-indigo-300 bg-clip-text text-transparent leading-tight mt-1">
+                Stronger Together.
+              </h2>
             </div>
           </div>
           
-          <div className="rounded-2xl border border-white/5 bg-white/5 p-6 backdrop-blur-sm max-w-md">
+          <div className="rounded-2xl border border-white/5 bg-white/[0.02] p-6 backdrop-blur-md max-w-md shadow-xl">
             <div className="flex items-center gap-4">
-              <Shield className="text-violet-400 h-8 w-8" />
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-violet-500/10">
+                <Shield className="text-violet-400 h-6 w-6" />
+              </div>
               <div>
-                <h3 className="font-semibold text-lg">Secure. Reliable. Trusted.</h3>
-                <p className="text-sm text-gray-400 mt-1">
-                  Enterprise-grade protection for your ministry data.
+                <h3 className="font-semibold text-base text-gray-200">Secure. Reliable. Trusted.</h3>
+                <p className="text-xs text-gray-400 mt-1 leading-relaxed">
+                  Enterprise-grade protection and database-level isolation for your ministry data.
                 </p>
               </div>
             </div>
@@ -138,36 +151,38 @@ export default function LoginPage() {
       </div>
 
       {/* RIGHT PANEL */}
-      <div className="flex flex-1 items-center justify-center p-6 sm:p-10">
-        <div className="w-full max-w-lg rounded-[2rem] border border-white/5 bg-white/5 p-8 sm:p-10 backdrop-blur-xl relative">
+      <div className="flex flex-1 flex-col bg-[#070912] h-full overflow-y-auto">
+        {/* Centered wrapper div using my-auto to avoid cutting off the top content on smaller heights */}
+        <div className="w-full max-w-lg mx-auto my-auto p-6 sm:p-10 flex flex-col justify-center">
+          <div className="w-full rounded-[2.5rem] border border-white/10 bg-[#0E1528]/85 p-8 sm:p-10 shadow-[0_20px_50px_rgba(4,6,15,0.7)] backdrop-blur-2xl relative">
           
           <div className="text-center mb-8">
-            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-violet-500/10 mb-5">
-              {role === 'super' ? <Shield className="text-violet-400" size={32} /> : <Users className="text-violet-400" size={32} />}
+            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-violet-500/10 mb-4 shadow-inner shadow-violet-500/5">
+              {role === 'super' ? <Shield className="text-violet-400" size={26} /> : <Users className="text-violet-400" size={26} />}
             </div>
-            <h1 className="text-3xl font-bold">Welcome Back!</h1>
-            <p className="mt-2 text-gray-400 text-sm">Sign in to continue to FaithCore</p>
+            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white">Welcome Back!</h1>
+            <p className="mt-2 text-gray-400 text-xs sm:text-sm font-medium">Sign in to continue to FaithCore</p>
           </div>
 
           {/* Role Toggle */}
-          <div className="flex rounded-xl bg-[#121A2D] p-1.5 mb-8 border border-white/5">
+          <div className="flex rounded-2xl bg-[#090E1B] p-1.5 mb-8 border border-white/5">
             <button
               type="button"
               onClick={() => handleRoleSwitch('super')}
-              className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-lg text-sm font-semibold transition-all ${
-                role === 'super' ? 'bg-violet-600 text-white shadow-lg' : 'text-gray-400 hover:text-white hover:bg-white/5'
+              className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-300 ${
+                role === 'super' ? 'bg-gradient-to-r from-violet-600 to-purple-600 text-white shadow-lg shadow-violet-600/20' : 'text-gray-400 hover:text-white hover:bg-white/5'
               }`}
             >
-              <Shield size={16} /> Super Admin
+              <Shield size={15} /> Super Admin
             </button>
             <button
               type="button"
               onClick={() => handleRoleSwitch('co')}
-              className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-lg text-sm font-semibold transition-all ${
-                role === 'co' ? 'bg-violet-600 text-white shadow-lg' : 'text-gray-400 hover:text-white hover:bg-white/5'
+              className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-300 ${
+                role === 'co' ? 'bg-gradient-to-r from-violet-600 to-purple-600 text-white shadow-lg shadow-violet-600/20' : 'text-gray-400 hover:text-white hover:bg-white/5'
               }`}
             >
-              <Users size={16} /> Co-Admin
+              <Users size={15} /> Co-Admin
             </button>
           </div>
 
@@ -175,72 +190,72 @@ export default function LoginPage() {
             {serverError && (
               <div className="rounded-xl border border-red-500/20 bg-red-500/10 p-3.5 flex items-start gap-3 animate-in fade-in slide-in-from-top-2">
                 <AlertCircle className="text-red-400 shrink-0 mt-0.5" size={18} />
-                <p className="text-sm text-red-400">{serverError}</p>
+                <p className="text-xs sm:text-sm text-red-400 font-medium">{serverError}</p>
               </div>
             )}
 
-            {/* Church ID / Activation ID (Show for both or adapt label) */}
+            {/* Church ID / Activation ID */}
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-gray-400 ml-1">
+              <label className="text-[11px] font-bold text-gray-400 tracking-wide uppercase ml-1">
                 {role === 'super' ? 'Activation ID (Optional)' : 'Church ID'}
               </label>
-              <div className="flex h-14 items-center rounded-xl border border-white/10 bg-[#121A2D] px-4 focus-within:border-violet-500 focus-within:ring-1 focus-within:ring-violet-500 transition-all">
-                <Building2 className="text-gray-500" size={18} />
+              <div className="flex h-14 items-center rounded-xl border border-white/5 bg-[#090E1A]/85 px-4 focus-within:border-violet-500 focus-within:ring-2 focus-within:ring-violet-500/20 transition-all duration-300">
+                <Building2 className="text-gray-500 focus-within:text-violet-400" size={18} />
                 <input
                   {...register('churchId')}
                   disabled={loading}
-                  className="ml-3 flex-1 bg-transparent text-sm outline-none placeholder:text-gray-600"
+                  className="ml-3 flex-1 bg-transparent text-sm text-white placeholder:text-gray-500 outline-none"
                   placeholder={role === 'super' ? 'Enter Activation ID' : 'Enter Church ID'}
                 />
               </div>
-              {errors.churchId && <p className="text-red-400 text-xs ml-1">{errors.churchId.message}</p>}
+              {errors.churchId && <p className="text-red-400 text-xs ml-1 font-medium">{errors.churchId.message}</p>}
             </div>
 
             {/* Email */}
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-gray-400 ml-1">Username / Email</label>
-              <div className="flex h-14 items-center rounded-xl border border-white/10 bg-[#121A2D] px-4 focus-within:border-violet-500 focus-within:ring-1 focus-within:ring-violet-500 transition-all">
-                <User className="text-gray-500" size={18} />
+              <label className="text-[11px] font-bold text-gray-400 tracking-wide uppercase ml-1">Username / Email</label>
+              <div className="flex h-14 items-center rounded-xl border border-white/5 bg-[#090E1A]/85 px-4 focus-within:border-violet-500 focus-within:ring-2 focus-within:ring-violet-500/20 transition-all duration-300">
+                <User className="text-gray-500 focus-within:text-violet-400" size={18} />
                 <input
                   {...register('email')}
                   disabled={loading}
-                  className="ml-3 flex-1 bg-transparent text-sm outline-none placeholder:text-gray-600"
+                  className="ml-3 flex-1 bg-transparent text-sm text-white placeholder:text-gray-500 outline-none"
                   placeholder="Enter email address"
                 />
               </div>
-              {errors.email && <p className="text-red-400 text-xs ml-1">{errors.email.message}</p>}
+              {errors.email && <p className="text-red-400 text-xs ml-1 font-medium">{errors.email.message}</p>}
             </div>
 
             {/* Password */}
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-gray-400 ml-1">Password</label>
-              <div className="flex h-14 items-center rounded-xl border border-white/10 bg-[#121A2D] px-4 focus-within:border-violet-500 focus-within:ring-1 focus-within:ring-violet-500 transition-all">
-                <Lock className="text-gray-500" size={18} />
+              <label className="text-[11px] font-bold text-gray-400 tracking-wide uppercase ml-1">Password</label>
+              <div className="flex h-14 items-center rounded-xl border border-white/5 bg-[#090E1A]/85 px-4 focus-within:border-violet-500 focus-within:ring-2 focus-within:ring-violet-500/20 transition-all duration-300">
+                <Lock className="text-gray-500 focus-within:text-violet-400" size={18} />
                 <input
                   type={showPassword ? "text" : "password"}
                   {...register('password')}
                   disabled={loading}
-                  className="ml-3 flex-1 bg-transparent text-sm outline-none placeholder:text-gray-600"
+                  className="ml-3 flex-1 bg-transparent text-sm text-white placeholder:text-gray-500 outline-none"
                   placeholder="Enter password"
                 />
-                <button type="button" onClick={() => setShowPassword(!showPassword)} className="p-1 hover:bg-white/5 rounded-md">
+                <button type="button" onClick={() => setShowPassword(!showPassword)} className="p-1 hover:bg-white/5 rounded-md transition-colors">
                   <Eye size={18} className="text-gray-500 hover:text-gray-300" />
                 </button>
               </div>
-              {errors.password && <p className="text-red-400 text-xs ml-1">{errors.password.message}</p>}
+              {errors.password && <p className="text-red-400 text-xs ml-1 font-medium">{errors.password.message}</p>}
             </div>
 
             <div className="flex items-center justify-between pt-2">
-              <label className="flex items-center gap-2 cursor-pointer group">
+              <label className="flex items-center gap-2.5 cursor-pointer group">
                 <input
                   type="checkbox"
                   {...register('remember')}
                   disabled={loading}
-                  className="rounded border-white/10 bg-[#121A2D] text-violet-500 focus:ring-0 focus:ring-offset-0 w-4 h-4 cursor-pointer"
+                  className="rounded border-white/10 bg-[#090E1A] text-violet-500 focus:ring-0 focus:ring-offset-0 w-4 h-4 cursor-pointer accent-violet-600"
                 />
-                <span className="text-sm text-gray-400 group-hover:text-gray-300 transition-colors">Remember me</span>
+                <span className="text-xs font-semibold text-gray-400 group-hover:text-gray-300 transition-colors">Remember me</span>
               </label>
-              <button type="button" className="text-sm text-violet-400 hover:text-violet-300 transition-colors">
+              <button type="button" className="text-xs font-bold text-violet-400 hover:text-violet-300 transition-colors">
                 Forgot Password?
               </button>
             </div>
@@ -248,7 +263,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className="mt-4 flex h-14 w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-violet-600 to-purple-500 text-sm font-bold text-white shadow-lg shadow-violet-500/25 hover:shadow-violet-500/40 hover:opacity-95 active:scale-[0.98] transition-all disabled:opacity-50 disabled:pointer-events-none"
+              className="mt-4 flex h-14 w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-violet-600 to-purple-500 text-sm font-bold text-white shadow-lg shadow-violet-500/20 hover:from-violet-500 hover:to-purple-400 hover:shadow-violet-500/30 hover:scale-[1.01] active:scale-[0.98] transition-all duration-300 disabled:opacity-50 disabled:pointer-events-none"
             >
               {loading ? (
                 <div className="h-5 w-5 border-2 border-white/20 border-t-white rounded-full animate-spin" />
@@ -261,19 +276,20 @@ export default function LoginPage() {
           {/* Offline Mode Button */}
           <div className="mt-8 flex items-center gap-4">
             <div className="h-px flex-1 bg-white/5" />
-            <span className="text-xs text-gray-500 font-medium">SYSTEM OPTIONS</span>
+            <span className="text-[10px] text-gray-500 font-bold tracking-wider">SYSTEM OPTIONS</span>
             <div className="h-px flex-1 bg-white/5" />
           </div>
 
-          <button className="mt-6 flex w-full items-center justify-center gap-3 rounded-xl border border-white/5 bg-[#121A2D] h-14 hover:bg-white/5 hover:border-white/10 transition-colors group">
-            <WifiOff size={18} className="text-gray-500 group-hover:text-gray-400" />
+          <button className="mt-6 flex w-full items-center justify-center gap-3 rounded-xl border border-white/5 bg-[#090E1A] h-14 hover:bg-white/5 hover:border-white/10 hover:shadow-md transition-all duration-300 group">
+            <WifiOff size={18} className="text-gray-500 group-hover:text-gray-400 transition-colors" />
             <div className="flex flex-col items-start leading-tight">
-              <span className="text-sm font-semibold text-gray-300 group-hover:text-white">Offline Mode</span>
-              <span className="text-[10px] text-gray-500">Access synced local database</span>
+              <span className="text-xs font-bold text-gray-300 group-hover:text-white transition-colors">Offline Mode</span>
+              <span className="text-[9px] font-medium text-gray-500">Access synced local database</span>
             </div>
           </button>
 
         </div>
+      </div>
       </div>
     </div>
   );

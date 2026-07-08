@@ -64,8 +64,8 @@ const actions: ActionItem[] = [
 
 export default function QuickActions() {
   return (
-    <div className="bg-white rounded-3xl border border-gray-150 p-6 shadow-sm flex flex-col h-full justify-between">
-      <h2 className="text-2xl font-bold text-gray-900 tracking-tight mb-6">
+    <div className="bg-white rounded-[2rem] border border-slate-100 p-6 shadow-sm shadow-slate-100/50 flex flex-col h-full justify-between">
+      <h2 className="text-xl font-extrabold text-slate-800 tracking-tight mb-6">
         Quick Actions
       </h2>
       <div className="grid grid-cols-2 gap-4 flex-1">
@@ -73,14 +73,14 @@ export default function QuickActions() {
           const Icon = action.icon;
           return (
             <Link href={action.path} key={index} passHref legacyBehavior>
-              <a className={`border rounded-2xl p-5 hover:shadow-md transition-all duration-200 active:scale-[0.98] flex flex-col items-center justify-center text-center cursor-pointer ${action.bgColor}`}>
+              <a className={`border rounded-2xl p-4 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 active:scale-[0.98] flex flex-col items-center justify-center text-center cursor-pointer ${action.bgColor}`}>
                 <div className="flex justify-center items-center">
                   <Icon
-                    size={34}
+                    size={28}
                     className={action.color}
                   />
                 </div>
-                <p className="mt-3 text-sm font-semibold text-gray-800">
+                <p className="mt-3 text-xs font-bold text-slate-700">
                   {action.title}
                 </p>
               </a>

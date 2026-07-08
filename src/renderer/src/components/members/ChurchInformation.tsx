@@ -13,11 +13,13 @@ interface ChurchInformationProps {
 
 export default function ChurchInformation({ member }: ChurchInformationProps) {
   const fields = [
-    { label: "Church", value: member.church || "Grace Fellowship Church" },
-    { label: "Baptism Date", value: member.baptismDate || "12 March 2023" },
-    { label: "Baptized By", value: member.baptizedBy || "Pastor John" },
-    { label: "Department", value: member.department || "Worship Ministry" },
-    { label: "Cell Group", value: member.cellGroup || "Kandy Cell Group 2" },
+    { label: "Church Branch", value: member.church || "N/A" },
+    { label: "Baptism Status", value: member.isBaptized ? "Baptized" : "Not Baptized" },
+    { label: "Baptism Church", value: member.baptismChurch || "N/A" },
+    { label: "Baptized By", value: member.baptizedBy || "N/A" },
+    { label: "Baptism Date", value: member.baptismDate || "N/A" },
+    { label: "Department", value: member.department || "N/A" },
+    { label: "Cell Group", value: member.cellGroup || "N/A" },
   ];
 
   return (

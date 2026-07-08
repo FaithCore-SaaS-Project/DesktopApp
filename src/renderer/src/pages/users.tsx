@@ -11,7 +11,7 @@ import UserQuickActions from '../components/users/UserQuickActions';
 
 export default function UsersPage() {
   return (
-    <div className="space-y-0 pb-10">
+    <div className="space-y-0 pb-10 p-8 bg-gradient-to-br from-slate-50 via-slate-50/50 to-indigo-50/30 min-h-screen">
       {/* Page Header */}
       <div className="flex justify-between items-end mb-6">
         <div>
@@ -40,14 +40,18 @@ export default function UsersPage() {
       </div>
 
       {/* Main Layout */}
-      <div className="flex gap-6">
+      <div className="flex flex-col lg:flex-row gap-6">
         <div className="flex-1 min-w-0">
-          <UserStatsCards />
-          <UserFilters />
+          <div className="mb-6">
+            <UserStatsCards />
+          </div>
+          <div className="mb-6">
+            <UserFilters />
+          </div>
           <UsersTable />
         </div>
         
-        <div className="w-[320px] shrink-0">
+        <div className="w-full lg:w-[320px] shrink-0 space-y-6">
           <UsersByRoleCard />
           <UsersByDepartmentCard />
           <UserQuickActions />

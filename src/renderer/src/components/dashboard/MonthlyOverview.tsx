@@ -12,12 +12,12 @@ export default function MonthlyOverview({
   balance = "Rs. 1,330,000"
 }: MonthlyOverviewProps) {
   return (
-    <div className="bg-white rounded-3xl border border-gray-150 p-6 shadow-sm">
+    <div className="bg-white rounded-[2rem] border border-slate-100 p-6 shadow-sm shadow-slate-100/50">
       <div className="flex items-center justify-between mb-8">
-        <h2 className="text-2xl font-bold text-gray-900 tracking-tight">
+        <h2 className="text-xl font-extrabold text-slate-800 tracking-tight">
           Monthly Overview
         </h2>
-        <select className="border border-gray-200 rounded-xl px-4 py-2 text-sm text-gray-600 outline-none focus:border-[#5B3DF5] cursor-pointer">
+        <select className="border border-slate-100 rounded-xl px-3.5 py-1.5 text-xs font-bold text-slate-500 outline-none bg-slate-50/50 focus:border-violet-500 cursor-pointer transition-all duration-300">
           <option>This Month</option>
           <option>Last Month</option>
           <option>This Year</option>
@@ -25,28 +25,28 @@ export default function MonthlyOverview({
       </div>
       
       <div className="grid lg:grid-cols-3 gap-8">
-        <div className="flex flex-col justify-center">
+        <div className="flex flex-col justify-center pl-2">
           <div className="mb-6">
-            <p className="text-gray-400 text-sm font-semibold uppercase tracking-wider">
+            <p className="text-slate-400 text-[10px] font-bold uppercase tracking-wider">
               Income
             </p>
-            <h3 className="text-3xl font-extrabold text-green-600 mt-1">
+            <h3 className="text-3xl font-extrabold text-emerald-600 tracking-tight mt-1">
               {income}
             </h3>
           </div>
           <div className="mb-6">
-            <p className="text-gray-400 text-sm font-semibold uppercase tracking-wider">
+            <p className="text-slate-400 text-[10px] font-bold uppercase tracking-wider">
               Expenses
             </p>
-            <h3 className="text-3xl font-extrabold text-red-500 mt-1">
+            <h3 className="text-3xl font-extrabold text-rose-500 tracking-tight mt-1">
               {expenses}
             </h3>
           </div>
           <div>
-            <p className="text-gray-400 text-sm font-semibold uppercase tracking-wider">
+            <p className="text-slate-400 text-[10px] font-bold uppercase tracking-wider">
               Net Balance
             </p>
-            <h3 className="text-4xl font-black text-gray-950 mt-1">
+            <h3 className="text-3xl font-black text-slate-800 tracking-tight mt-1">
               {balance}
             </h3>
           </div>
@@ -54,15 +54,15 @@ export default function MonthlyOverview({
 
         {/* Premium SVG Line Chart Container */}
         <div className="lg:col-span-2">
-          <div className="h-[280px] rounded-2xl bg-[#FCFDFF] border border-gray-100 p-4 relative flex flex-col justify-between overflow-hidden">
+          <div className="h-[280px] rounded-2xl bg-slate-50/40 border border-slate-100/70 p-4 relative flex flex-col justify-between overflow-hidden shadow-inner">
             {/* Chart Legend */}
-            <div className="flex items-center justify-end gap-4 text-xs font-semibold text-gray-500 absolute top-4 right-4 z-10">
+            <div className="flex items-center justify-end gap-4 text-[10px] font-bold text-slate-400 uppercase tracking-wider absolute top-4 right-4 z-10">
               <div className="flex items-center gap-1.5">
-                <span className="h-2 w-2 rounded-full bg-green-500" />
+                <span className="h-2 w-2 rounded-full bg-emerald-500" />
                 <span>Income</span>
               </div>
               <div className="flex items-center gap-1.5">
-                <span className="h-2 w-2 rounded-full bg-red-400" />
+                <span className="h-2 w-2 rounded-full bg-rose-400" />
                 <span>Expenses</span>
               </div>
             </div>
@@ -70,14 +70,14 @@ export default function MonthlyOverview({
             {/* Grid & SVG Chart */}
             <div className="relative flex-1 w-full mt-6">
               {/* Y Axis Guides */}
-              <div className="absolute inset-0 flex flex-col justify-between text-[10px] font-bold text-gray-400 pointer-events-none select-none">
-                <div className="w-full flex items-center justify-between border-b border-gray-100/60 pb-1">
+              <div className="absolute inset-0 flex flex-col justify-between text-[9px] font-bold text-slate-400/80 pointer-events-none select-none">
+                <div className="w-full flex items-center justify-between border-b border-slate-100/60 pb-1">
                   <span>3M</span>
                 </div>
-                <div className="w-full flex items-center justify-between border-b border-gray-100/60 pb-1">
+                <div className="w-full flex items-center justify-between border-b border-slate-100/60 pb-1">
                   <span>2M</span>
                 </div>
-                <div className="w-full flex items-center justify-between border-b border-gray-100/60 pb-1">
+                <div className="w-full flex items-center justify-between border-b border-slate-100/60 pb-1">
                   <span>1M</span>
                 </div>
                 <div className="w-full flex items-center justify-between">

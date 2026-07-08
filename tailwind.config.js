@@ -7,6 +7,7 @@ module.exports = {
     extend: {
       fontFamily: {
         sans: [
+          '"Plus Jakarta Sans"',
           'system-ui',
           '-apple-system',
           'BlinkMacSystemFont',

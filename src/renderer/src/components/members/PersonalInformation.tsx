@@ -18,17 +18,15 @@ interface PersonalInformationProps {
 export default function PersonalInformation({ member, onEdit }: PersonalInformationProps) {
   const fields = [
     { label: "Full Name", value: member.name },
-    { label: "NIC Number", value: member.nic || "901234567V" },
-    { label: "Occupation", value: member.occupation || "Software Engineer" },
-    { label: "Address", value: member.address || "Kandy, Sri Lanka" },
-    { label: "Date Of Birth", value: member.dob || "15 May 1990" },
-    { label: "Passport Number", value: member.passportNumber || "N/A" },
-    { label: "Phone", value: member.phone || "0812345678" },
-    { label: "Joined Date", value: member.joinedDate },
+    { label: "NIC Number", value: member.nic || "N/A" },
+    { label: "Occupation", value: member.occupation || "N/A" },
+    { label: "Date Of Birth", value: member.dob || "N/A" },
     { label: "Gender", value: member.gender || "Male" },
-    { label: "Nationality", value: member.nationality || "Sri Lankan" },
-    { label: "Mobile", value: member.phone },
-    { label: "Status", value: member.status },
+    { label: "Phone", value: member.phone || "N/A" },
+    { label: "Email", value: member.email || "N/A" },
+    { label: "Marital Status", value: member.maritalStatus ? (member.maritalStatus.charAt(0).toUpperCase() + member.maritalStatus.slice(1)) : "Single" },
+    { label: "Permanent Address", value: member.permanentAddress || member.address || "N/A" },
+    { label: "Postal Address", value: member.postalAddress || "N/A" },
   ];
 
   return (

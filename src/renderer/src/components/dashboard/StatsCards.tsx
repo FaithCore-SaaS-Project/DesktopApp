@@ -25,36 +25,32 @@ export default function StatsCards({
       title: "Total Members",
       value: totalMembers.toLocaleString(),
       growth: "Active Roster",
-      color: "bg-purple-500",
-      textColor: "text-purple-600",
-      iconBg: "bg-purple-50",
+      textColor: "text-violet-600",
+      iconBg: "bg-violet-500/10",
     },
     {
       icon: Home,
       title: "Families",
       value: families.toLocaleString(),
       growth: "Registered Units",
-      color: "bg-cyan-500",
       textColor: "text-cyan-600",
-      iconBg: "bg-cyan-50",
+      iconBg: "bg-cyan-500/10",
     },
     {
       icon: TrendingUp,
       title: "Monthly Income",
       value: `$${monthlyIncome.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
       growth: "This Month",
-      color: "bg-emerald-500",
       textColor: "text-emerald-600",
-      iconBg: "bg-emerald-50",
+      iconBg: "bg-emerald-500/10",
     },
     {
       icon: TrendingDown,
       title: "Monthly Expense",
       value: `$${monthlyExpense.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
       growth: "This Month",
-      color: "bg-orange-500",
       textColor: "text-orange-600",
-      iconBg: "bg-orange-50",
+      iconBg: "bg-orange-500/10",
     },
   ];
 
@@ -65,25 +61,28 @@ export default function StatsCards({
         return (
           <div
             key={index}
-            className="bg-white rounded-3xl p-6 border border-gray-150 shadow-sm hover:shadow-md transition-all duration-300 relative overflow-hidden group"
+            className="bg-white rounded-[2rem] p-6 border border-slate-100 shadow-sm shadow-slate-100/50 hover:-translate-y-1 hover:shadow-md transition-all duration-300 relative overflow-hidden group"
           >
-            <div className="flex items-center gap-5">
-              <div
-                className={`h-16 w-16 rounded-2xl flex items-center justify-center text-white ${card.color} shadow-lg shadow-gray-100 transition-transform duration-300 group-hover:scale-105`}
-              >
-                <Icon size={28} />
-              </div>
+            <div className="flex justify-between items-start">
               <div>
-                <h3 className="text-3xl font-bold text-gray-900 tracking-tight leading-none mb-1.5">
-                  {card.value}
-                </h3>
-                <p className="text-gray-500 text-sm font-medium">
+                <p className="text-slate-400 text-[10px] font-bold uppercase tracking-wider">
                   {card.title}
                 </p>
-                <p className="text-slate-500 text-xs font-semibold mt-1">
-                  {card.growth}
-                </p>
+                <h3 className="text-3xl font-extrabold text-slate-800 tracking-tight mt-3 leading-none">
+                  {card.value}
+                </h3>
               </div>
+              <div
+                className={`h-11 w-11 rounded-xl flex items-center justify-center ${card.iconBg} ${card.textColor} transition-all duration-300 group-hover:scale-105`}
+              >
+                <Icon size={20} />
+              </div>
+            </div>
+            
+            <div className="mt-5 flex items-center">
+              <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider bg-slate-50 border border-slate-100 rounded-lg px-2 py-0.5 select-none">
+                {card.growth}
+              </span>
             </div>
           </div>
         );

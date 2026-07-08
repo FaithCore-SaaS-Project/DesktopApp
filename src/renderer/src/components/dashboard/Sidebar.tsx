@@ -49,9 +49,9 @@ const menuItems: MenuItem[] = [
   { icon: BarChart3, label: "Reports", path: "/reports" },
   { icon: FolderOpen, label: "Documents", path: "/documents" },
   { icon: Building2, label: "Departments", path: "/departments" },
-  { 
-    icon: UserCog, 
-    label: "Users & Roles", 
+  {
+    icon: UserCog,
+    label: "Users & Roles",
     path: "/users",
     subItems: [
       { label: "Users", path: "/users" },
@@ -84,7 +84,7 @@ export default function Sidebar() {
     let changed = false;
     menuItems.forEach(item => {
       if (item.subItems) {
-        const isChildActive = item.subItems.some(sub => 
+        const isChildActive = item.subItems.some(sub =>
           router.pathname === sub.path || router.pathname.startsWith(sub.path)
         );
         if (isChildActive && !newOpenMenus[item.path]) {
@@ -108,13 +108,13 @@ export default function Sidebar() {
   };
 
   return (
-    <aside className="w-[280px] bg-[#08152F] text-white flex flex-col min-h-screen sticky top-0 h-screen select-none shrink-0">
+    <aside className="w-[280px] bg-[#0A0D18] text-white flex flex-col min-h-screen sticky top-0 h-screen select-none shrink-0 border-r border-white/[0.04]">
       {/* Logo */}
-      <div className="px-6 py-8 border-b border-white/10">
-        <h1 className="text-3xl font-bold bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent">
-          Kingdom Connect
+      <div className="px-6 py-8 border-b border-white/[0.04]">
+        <h1 className="text-3xl font-extrabold tracking-tight bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent">
+          FAITHCORE
         </h1>
-        <p className="text-sm text-gray-400 mt-1 font-medium">
+        <p className="text-xs text-gray-500 mt-1 font-semibold tracking-wider uppercase">
           Church Management System
         </p>
       </div>
@@ -127,7 +127,7 @@ export default function Sidebar() {
           const isOpen = !!openMenus[item.path];
           const isAnyChildActive = hasSubItems && item.subItems!.some(sub => router.pathname === sub.path || router.pathname.startsWith(sub.path));
           const isActive = router.pathname === item.path || (item.path !== '/dashboard' && router.pathname.startsWith(item.path)) || isAnyChildActive;
-          
+
           const itemContent = (
             <a
               onClick={(e) => {
@@ -135,21 +135,19 @@ export default function Sidebar() {
                   handleMenuClick(e, item.path);
                 }
               }}
-              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 cursor-pointer text-sm font-medium group
-              ${
-                isActive
-                  ? "bg-[#5B3DF5] text-white shadow-lg shadow-[#5B3DF5]/25 font-semibold"
-                  : "text-slate-350 hover:bg-white/5 hover:text-white"
-              }`}
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 cursor-pointer text-sm font-semibold group
+              ${isActive
+                  ? "bg-gradient-to-r from-violet-600 to-indigo-600 text-white shadow-lg shadow-violet-500/15 font-bold"
+                  : "text-slate-400 hover:bg-white/[0.03] hover:text-white"
+                }`}
             >
-              <Icon size={20} className={`transition-transform duration-200 group-hover:scale-105 ${isActive ? 'text-white' : 'text-slate-400 group-hover:text-white'}`} />
+              <Icon size={18} className={`transition-transform duration-300 group-hover:scale-105 ${isActive ? 'text-white' : 'text-slate-500 group-hover:text-white'}`} />
               <span className="flex-1">{item.label}</span>
               {hasSubItems && (
-                <ChevronDown 
-                  size={16} 
-                  className={`transition-transform duration-200 ${
-                    isOpen ? 'rotate-180 text-white' : 'text-slate-400 group-hover:text-white'
-                  }`} 
+                <ChevronDown
+                  size={14}
+                  className={`transition-transform duration-300 ${isOpen ? 'rotate-180 text-white' : 'text-slate-500 group-hover:text-white'
+                    }`}
                 />
               )}
             </a>
@@ -170,25 +168,23 @@ export default function Sidebar() {
               {/* Collapsible Subparts Menu */}
               {hasSubItems && isOpen && item.subItems && (
                 <div className="relative pl-6 pr-2 pb-2 mt-1 space-y-1 transition-all duration-300">
-                  {/* Vertical dotted line running down */}
-                  <div className="absolute left-[20px] top-0 bottom-4 w-[1px] bg-slate-700/60" />
-                  
+                  {/* Vertical line running down */}
+                  <div className="absolute left-[20px] top-0 bottom-4 w-[1px] bg-slate-800/80" />
+
                   {item.subItems.map((sub, sIdx) => {
                     const isSubActive = router.pathname === sub.path || router.pathname.startsWith(sub.path);
-                    
+
                     return (
                       <Link href={sub.path} key={sIdx} passHref legacyBehavior>
                         <a
-                          className={`flex items-center py-2 text-xs font-semibold transition-all relative group/sub cursor-pointer ${
-                            isSubActive ? "text-white font-bold" : "text-slate-400 hover:text-white"
-                          }`}
+                          className={`flex items-center py-2 text-xs font-semibold transition-all relative group/sub cursor-pointer ${isSubActive ? "text-white font-bold" : "text-slate-400 hover:text-white"
+                            }`}
                         >
                           {/* Dot Bullet */}
-                          <span className={`absolute left-[17.5px] top-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full border transition-all ${
-                            isSubActive 
-                              ? "bg-[#5B3DF5] border-[#5B3DF5] ring-4 ring-[#5B3DF5]/20 scale-110" 
-                              : "bg-[#08152F] border-slate-700 group-hover/sub:border-slate-500"
-                          }`} />
+                          <span className={`absolute left-[17.5px] top-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full border transition-all ${isSubActive
+                              ? "bg-violet-500 border-violet-500 ring-4 ring-violet-500/25 scale-110"
+                              : "bg-[#0A0D18] border-slate-800 group-hover/sub:border-slate-600"
+                            }`} />
                           <span className="pl-8">{sub.label}</span>
                         </a>
                       </Link>

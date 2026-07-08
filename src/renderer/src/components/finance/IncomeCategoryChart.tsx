@@ -23,27 +23,24 @@ export default function IncomeCategoryChart({
   
   // Clean totals for final list
   const data = [
-    { label: "Tithes", pct: tithePct, value: titheAmount, color: "stroke-[#5B3DF5] bg-[#5B3DF5]" },
+    { label: "Tithes", pct: tithePct, value: titheAmount, color: "stroke-violet-500 bg-violet-500" },
     { label: "Offerings", pct: offeringPct, value: offeringAmount, color: "stroke-emerald-500 bg-emerald-500" },
-    { label: "Building Fund", pct: buildingPct, value: buildingAmount, color: "stroke-amber-500 bg-amber-500" },
+    { label: "Building Fund", pct: buildingPct, value: buildingAmount, color: "stroke-amber-550 stroke-amber-500 bg-amber-500" },
   ];
 
   // SVG donut segments offsets:
   // Circumference = 100.
-  // segment 1: dasharray="tithePct 100-tithePct" offset="100"
-  // segment 2: dasharray="offeringPct 100-offeringPct" offset="100 - tithePct"
-  // segment 3: dasharray="buildingPct 100-buildingPct" offset="100 - tithePct - offeringPct"
   const offset1 = 100;
   const offset2 = 100 - tithePct;
   const offset3 = 100 - tithePct - offeringPct;
 
   return (
-    <div className="rounded-3xl border border-gray-150 bg-white p-6 shadow-sm flex flex-col h-full">
+    <div className="rounded-[2rem] border border-slate-100 bg-white p-6 shadow-sm shadow-slate-100/50 flex flex-col h-full">
       <div className="mb-6 flex items-center justify-between">
-        <h2 className="text-lg font-extrabold text-gray-900">
+        <h2 className="text-base font-extrabold text-slate-800 tracking-tight">
           Income by Category
         </h2>
-        <select className="rounded-xl border border-gray-200 px-3 py-1.5 text-xs font-bold text-gray-650 outline-none cursor-pointer bg-white">
+        <select className="border border-slate-100 rounded-xl px-3.5 py-1.5 text-xs font-bold text-slate-500 outline-none bg-slate-50/50 focus:border-violet-500 cursor-pointer transition-all duration-300">
           <option>This Month</option>
         </select>
       </div>
@@ -97,8 +94,8 @@ export default function IncomeCategoryChart({
           </svg>
           {/* Inner Text overlay */}
           <div className="absolute inset-0 flex flex-col items-center justify-center leading-none text-center">
-            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Giving</span>
-            <span className="text-xl font-black text-gray-900 mt-1.5">100%</span>
+            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Giving</span>
+            <span className="text-xl font-black text-slate-800 mt-1.5">100%</span>
           </div>
         </div>
 
@@ -106,11 +103,11 @@ export default function IncomeCategoryChart({
         <div className="space-y-3 flex-1 w-full sm:w-auto">
           {data.map((item, idx) => (
             <div key={idx} className="flex items-center justify-between text-xs font-semibold">
-              <div className="flex items-center gap-2 text-gray-500">
-                <span className={`h-2.5 w-2.5 rounded-full ${item.color}`} />
+              <div className="flex items-center gap-2 text-slate-500">
+                <span className={`h-2.5 w-2.5 rounded-full ${item.color.split(' ')[1]}`} />
                 <span>{item.label}</span>
               </div>
-              <span className="text-gray-950 font-bold">{item.pct}%</span>
+              <span className="text-slate-800 font-bold">{item.pct}%</span>
             </div>
           ))}
         </div>

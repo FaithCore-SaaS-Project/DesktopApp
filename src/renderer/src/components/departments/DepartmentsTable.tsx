@@ -1,86 +1,115 @@
 import React from 'react';
-import { Pencil, MoreHorizontal, User } from 'lucide-react';
+import { Pencil, Trash2, User } from 'lucide-react';
 import CategoriesPagination from '../finance/categories/CategoriesPagination';
 
-const departments = [
-  { name: 'Worship Ministry', category: 'Ministry', leader: 'Daniel Wilson', members: 65, iconLetter: '♪', iconBg: 'bg-[#5B3DF5]', categoryColor: 'text-[#5B3DF5]' },
-  { name: 'Sunday School', category: 'Education', leader: 'Sarah Johnson', members: 48, iconLetter: '📖', iconBg: 'bg-green-500', categoryColor: 'text-green-500' },
-  { name: 'Outreach Ministry', category: 'Ministry', leader: 'Michael Peters', members: 72, iconLetter: '🎤', iconBg: 'bg-orange-500', categoryColor: 'text-[#5B3DF5]' },
-  { name: 'Youth Ministry', category: 'Ministry', leader: 'Emily Davis', members: 84, iconLetter: '♥', iconBg: 'bg-red-500', categoryColor: 'text-[#5B3DF5]' },
-  { name: 'Children\'s Ministry', category: 'Ministry', leader: 'Lisa Anderson', members: 61, iconLetter: '👥', iconBg: 'bg-blue-500', categoryColor: 'text-[#5B3DF5]' },
-  { name: 'Care & Support', category: 'Ministry', leader: 'James Thompson', members: 38, iconLetter: '♡', iconBg: 'bg-cyan-500', categoryColor: 'text-[#5B3DF5]' },
-  { name: 'Finance Department', category: 'Administration', leader: 'Robert Miller', members: 12, iconLetter: '$', iconBg: 'bg-yellow-500', categoryColor: 'text-blue-500' },
-  { name: 'Communications', category: 'Administration', leader: 'Olivia Martinez', members: 15, iconLetter: '📢', iconBg: 'bg-purple-500', categoryColor: 'text-blue-500' },
-  { name: 'Events Department', category: 'Administration', leader: 'David Brown', members: 18, iconLetter: '📅', iconBg: 'bg-pink-500', categoryColor: 'text-blue-500' },
-  { name: 'Administration', category: 'Administration', leader: 'Pastor John', members: 8, iconLetter: '📋', iconBg: 'bg-green-500', categoryColor: 'text-blue-500' },
-];
+const categoryColors: Record<string, string> = {
+  Ministry: 'text-violet-600 bg-violet-50 border-violet-100/50',
+  Education: 'text-emerald-600 bg-emerald-50 border-emerald-100/50',
+  Administration: 'text-blue-600 bg-blue-50 border-blue-100/50',
+  'Care & Support': 'text-cyan-600 bg-cyan-50 border-cyan-100/50',
+};
 
-export default function DepartmentsTable() {
+interface DepartmentsTableProps {
+  departments: any[];
+  selectedDepartment: any | null;
+  onSelect: (dept: any) => void;
+  onDelete: (id: number | string) => void;
+}
+
+export default function DepartmentsTable({
+  departments,
+  selectedDepartment,
+  onSelect,
+  onDelete,
+}: DepartmentsTableProps) {
   return (
-    <div className="bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden flex flex-col h-full">
-      <div className="p-5 border-b border-gray-100">
-        <h2 className="text-lg font-black text-gray-900">All Departments</h2>
+    <div className="bg-white border border-slate-100 rounded-3xl shadow-sm overflow-hidden flex flex-col h-full">
+      <div className="p-6 border-b border-slate-50 flex items-center justify-between bg-slate-50/20">
+        <h2 className="text-base font-black text-slate-800">All Departments</h2>
+        <span className="text-[10px] font-bold bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full">
+          Total {departments.length} items
+        </span>
       </div>
       <div className="overflow-x-auto flex-1">
         <table className="w-full text-left whitespace-nowrap">
-          <thead className="bg-gray-50/50">
+          <thead className="bg-slate-50/50">
             <tr>
-              <th className="px-5 py-3 text-[10px] font-bold text-gray-500 uppercase tracking-wider">Department Name</th>
-              <th className="px-5 py-3 text-[10px] font-bold text-gray-500 uppercase tracking-wider">Category</th>
-              <th className="px-5 py-3 text-[10px] font-bold text-gray-500 uppercase tracking-wider">Department Leader</th>
-              <th className="px-5 py-3 text-[10px] font-bold text-gray-500 uppercase tracking-wider">Members</th>
-              <th className="px-5 py-3 text-[10px] font-bold text-gray-500 uppercase tracking-wider">Status</th>
-              <th className="px-5 py-3 text-[10px] font-bold text-gray-500 uppercase tracking-wider text-right">Actions</th>
+              <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-wider">Department Name</th>
+              <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-wider">Category</th>
+              <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-wider">Department Leader</th>
+              <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-wider">Members</th>
+              <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-wider">Status</th>
+              <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-wider text-right">Actions</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-50">
-            {departments.map((item, index) => (
-              <tr key={index} className="hover:bg-gray-50/50 transition-colors">
-                <td className="px-5 py-4">
-                  <div className="flex items-center gap-3">
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs text-white ${item.iconBg}`}>
-                      {item.iconLetter}
+          <tbody className="divide-y divide-slate-50">
+            {departments.map((item, index) => {
+              const isSelected = selectedDepartment && selectedDepartment.id === item.id;
+              const catClass = categoryColors[item.category] || 'text-slate-600 bg-slate-50 border-slate-100/50';
+
+              return (
+                <tr
+                  key={item.id || index}
+                  onClick={() => onSelect(item)}
+                  className={`hover:bg-slate-50/70 transition-all duration-150 group cursor-pointer ${
+                    isSelected ? 'bg-indigo-50/40 border-l-4 border-[#5B3DF5]' : ''
+                  }`}
+                >
+                  <td className="px-6 py-4">
+                    <div className="flex items-center gap-3">
+                      <div className={`w-8 h-8 rounded-xl flex items-center justify-center font-bold text-xs text-white bg-[#5B3DF5] shadow-sm shrink-0 transition-transform group-hover:scale-105`}>
+                        {item.iconLetter || '♪'}
+                      </div>
+                      <span className={`text-xs font-bold ${isSelected ? 'text-[#5B3DF5]' : 'text-slate-800'} group-hover:text-[#5B3DF5] transition-colors`}>
+                        {item.name}
+                      </span>
                     </div>
-                    <span className="text-xs font-bold text-gray-900">{item.name}</span>
-                  </div>
-                </td>
-                <td className="px-5 py-4">
-                  <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold bg-gray-50 ${item.categoryColor}`}>{item.category}</span>
-                </td>
-                <td className="px-5 py-4 text-xs font-semibold text-gray-600">{item.leader}</td>
-                <td className="px-5 py-4">
-                  <div className="flex items-center gap-1.5 text-xs font-semibold text-gray-600">
-                    {item.members} <User size={12} className="text-gray-400" />
-                  </div>
-                </td>
-                <td className="px-5 py-4">
-                  <span className="px-2.5 py-1 rounded-full text-[10px] font-bold bg-green-100 text-green-700">
-                    Active
-                  </span>
-                </td>
-                <td className="px-5 py-4">
-                  <div className="flex items-center justify-end gap-2">
-                    <button className="p-1.5 text-gray-400 hover:text-gray-700 transition-colors border border-gray-200 rounded hover:bg-gray-50">
-                      <Pencil size={14} />
-                    </button>
-                    <button className="p-1.5 text-gray-400 hover:text-gray-700 transition-colors border border-gray-200 rounded hover:bg-gray-50">
-                      <MoreHorizontal size={14} />
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
+                  </td>
+                  <td className="px-6 py-4">
+                    <span className={`px-2.5 py-0.5 rounded-md text-[10px] font-black border uppercase tracking-wider ${catClass}`}>
+                      {item.category}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 text-xs font-bold text-slate-600">{item.leader}</td>
+                  <td className="px-6 py-4">
+                    <div className="flex items-center gap-1 text-xs font-bold text-slate-500">
+                      {item.members} <User size={13} className="text-slate-400" />
+                    </div>
+                  </td>
+                  <td className="px-6 py-4">
+                    <span className="px-2.5 py-1 rounded-full text-[10px] font-black bg-emerald-50 text-emerald-700 border border-emerald-100/50">
+                      {item.status || 'Active'}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4" onClick={(e) => e.stopPropagation()}>
+                    <div className="flex items-center justify-end gap-2">
+                      <button className="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-xl transition-all cursor-pointer active:scale-95 shadow-sm shadow-slate-100 bg-white">
+                        <Pencil size={13} />
+                      </button>
+                      <button
+                        onClick={() => onDelete(item.id)}
+                        className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all cursor-pointer border border-slate-100 active:scale-95 shadow-sm shadow-slate-100 bg-white"
+                      >
+                        <Trash2 size={13} />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>
-      <CategoriesPagination
-        currentPage={1}
-        totalPages={2}
-        totalCategoriesCount={18}
-        pageSize={10}
-        onPageChange={() => {}}
-        itemName="departments"
-      />
+      <div className="p-4 border-t border-slate-100 bg-slate-50/20">
+        <CategoriesPagination
+          currentPage={1}
+          totalPages={Math.max(1, Math.ceil(departments.length / 10))}
+          totalCategoriesCount={departments.length}
+          pageSize={10}
+          onPageChange={() => {}}
+          itemName="departments"
+        />
+      </div>
     </div>
   );
 }

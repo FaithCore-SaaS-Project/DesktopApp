@@ -11,7 +11,7 @@ export default function UsersRolesPage() {
   const [activeTab, setActiveTab] = useState('Users');
 
   return (
-    <div className="space-y-0 pb-10">
+    <div className="space-y-0 pb-10 p-8 bg-gradient-to-br from-slate-50 via-slate-50/50 to-indigo-50/30 min-h-screen">
       {/* Page Header */}
       <div className="flex items-center justify-between mb-2">
         <h1 className="text-3xl font-black text-gray-900 tracking-tight">Users & Roles</h1>
@@ -54,13 +54,17 @@ export default function UsersRolesPage() {
 
       {activeTab === 'Users' && (
         <>
-          <UsersStats />
-          <UsersFilters />
-          <div className="grid lg:grid-cols-12 gap-6">
-            <div className="lg:col-span-9 h-full">
+          <div className="mb-6">
+            <UsersStats />
+          </div>
+          <div className="mb-6">
+            <UsersFilters />
+          </div>
+          <div className="flex flex-col lg:flex-row gap-6">
+            <div className="flex-1 min-w-0">
               <UsersTable />
             </div>
-            <div className="lg:col-span-3">
+            <div className="w-full lg:w-[320px] shrink-0">
               <UsersSidebar />
             </div>
           </div>

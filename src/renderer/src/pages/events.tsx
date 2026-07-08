@@ -336,8 +336,8 @@ export default function EventsPage() {
 
       {/* Add / Edit Event Dialog Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="w-full max-w-lg bg-white border border-gray-150 rounded-3xl overflow-hidden shadow-2xl animate-scale-in">
+        <div className="fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-50 flex items-start justify-center p-4 overflow-y-auto">
+          <div className="my-auto w-full max-w-lg bg-white border border-slate-100 rounded-3xl overflow-hidden shadow-2xl animate-scale-in">
             <div className="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
               <h2 className="text-lg font-extrabold text-gray-900">
                 {modalMode === 'add' ? 'Create New Event' : 'Edit Event'}

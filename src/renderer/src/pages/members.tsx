@@ -43,16 +43,26 @@ const emptyForm = {
   occupation: '',
   status: 'active' as 'active' | 'inactive' | 'archived',
   family_id: '' as string | number,
+  nic: '',
+  address_type: 'permanent', // permanent, postal, both
+  permanent_address: '',
+  postal_address: '',
+  is_baptized: false,
+  baptism_church: '',
+  baptism_partner_name: '',
+  baptism_date: '',
+  marital_status: 'single', // single, married
+  marriage_date: '',
 };
 
 import { useRouter } from 'next/router';
-import { Download, UploadCloud, Image as ImageIcon, MessageSquare } from 'lucide-react';
+import { Download, UploadCloud, Image as ImageIcon, MessageSquare, FileText } from 'lucide-react';
 import { apiService } from '../services/api';
 import SendNotificationModal from '../components/settings/notifications/SendNotificationModal';
 
 export default function MembersPage() {
   const router = useRouter();
-  const [members, setMembers] = useState<Member[]>([]);
+  const [members, setMembers] = useState<any[]>([]);
   const [families, setFamilies] = useState<Family[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -60,9 +70,12 @@ export default function MembersPage() {
   const [filterStatus, setFilterStatus] = useState('all');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSendModalOpen, setIsSendModalOpen] = useState(false);
-  const [editingMember, setEditingMember] = useState<Member | null>(null);
+  const [editingMember, setEditingMember] = useState<any | null>(null);
   const [form, setForm] = useState(emptyForm);
   const [photoFile, setPhotoFile] = useState<File | null>(null);
+  const [baptismCertFile, setBaptismCertFile] = useState<File | null>(null);
+  const [marriageCertFile, setMarriageCertFile] = useState<File | null>(null);
+  const [birthCertFile, setBirthCertFile] = useState<File | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [errors, setErrors] = useState<Record<string, string[]>>({});
   const [serverError, setServerError] = useState('');
@@ -71,11 +84,15 @@ export default function MembersPage() {
     setLoading(true);
     try {
       const res = await api.get('/members');
-      setMembers(res.data.data ?? res.data);
+      const membersData = res.data.data ?? res.data;
+      setMembers(Array.isArray(membersData) ? membersData : []);
+      
       const fams = await apiService.getFamilies('tenant');
-      setFamilies(fams);
+      setFamilies(Array.isArray(fams) ? fams : []);
     } catch (err) {
       console.error('Failed to load members:', err);
+      setMembers([]);
+      setFamilies([]);
     } finally {
       setLoading(false);
     }
@@ -87,12 +104,15 @@ export default function MembersPage() {
     setEditingMember(null);
     setForm(emptyForm);
     setPhotoFile(null);
+    setBaptismCertFile(null);
+    setMarriageCertFile(null);
+    setBirthCertFile(null);
     setErrors({});
     setServerError('');
     setIsModalOpen(true);
   };
 
-  const openEditModal = (m: Member) => {
+  const openEditModal = (m: any) => {
     setEditingMember(m);
     setForm({
       first_name: m.first_name,
@@ -105,15 +125,34 @@ export default function MembersPage() {
       occupation: m.occupation ?? '',
       status: m.status,
       family_id: m.family_id ?? '',
+      nic: m.nic ?? '',
+      address_type: m.address_type ?? 'permanent',
+      permanent_address: m.permanent_address ?? '',
+      postal_address: m.postal_address ?? '',
+      is_baptized: !!m.is_baptized,
+      baptism_church: m.baptism_church ?? '',
+      baptism_partner_name: m.baptism_partner_name ?? '',
+      baptism_date: m.baptism_date ?? '',
+      marital_status: m.marital_status ?? 'single',
+      marriage_date: m.marriage_date ?? '',
     });
     setPhotoFile(null);
+    setBaptismCertFile(null);
+    setMarriageCertFile(null);
+    setBirthCertFile(null);
     setErrors({});
     setServerError('');
     setIsModalOpen(true);
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-    setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
+    const { name, value, type } = e.target;
+    if (type === 'checkbox') {
+      const checked = (e.target as HTMLInputElement).checked;
+      setForm(prev => ({ ...prev, [name]: checked }));
+    } else {
+      setForm(prev => ({ ...prev, [name]: value }));
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -136,7 +175,20 @@ export default function MembersPage() {
         status: form.status,
         familyId: form.family_id ? form.family_id.toString() : undefined,
         tenantId: 'tenant',
-        photoFile: photoFile || undefined
+        photoFile: photoFile || undefined,
+        nic: form.nic,
+        addressType: form.address_type,
+        permanentAddress: form.permanent_address,
+        postalAddress: form.postal_address,
+        isBaptized: form.is_baptized,
+        baptismChurch: form.baptism_church,
+        baptismPartnerName: form.baptism_partner_name,
+        baptismDate: form.baptism_date,
+        baptismCertFile: baptismCertFile || undefined,
+        maritalStatus: form.marital_status,
+        marriageDate: form.marriage_date,
+        marriageCertFile: marriageCertFile || undefined,
+        birthCertFile: birthCertFile || undefined,
       });
       
       setIsModalOpen(false);
@@ -393,8 +445,8 @@ export default function MembersPage() {
 
       {/* CRUD Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 bg-gray-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="w-full max-w-lg bg-white border border-gray-150 rounded-3xl overflow-hidden shadow-2xl animate-scale-in">
+        <div className="fixed inset-0 bg-gray-900/40 backdrop-blur-sm z-50 flex items-start justify-center p-4 overflow-y-auto">
+          <div className="my-auto w-full max-w-lg bg-white border border-slate-100 rounded-3xl overflow-hidden shadow-2xl animate-scale-in">
             {/* Modal Header */}
             <div className="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
               <div>
@@ -477,19 +529,17 @@ export default function MembersPage() {
                 </div>
               </div>
 
-              {/* Email */}
-              <div className="space-y-1.5">
-                <label className="text-xs font-bold text-gray-500">Email Address</label>
-                <input
-                  name="email" type="email" value={form.email} onChange={handleChange}
-                  placeholder="e.g. john@example.com"
-                  className={`w-full bg-gray-50 border ${fieldErr('email') ? 'border-red-400' : 'border-gray-200'} focus:border-[#5B3DF5] rounded-xl px-4 py-2.5 text-xs text-gray-800 font-semibold focus:outline-none placeholder:text-gray-400`}
-                />
-                {fieldErr('email') && <p className="text-red-500 text-[10px] font-semibold">{fieldErr('email')}</p>}
-              </div>
-
-              {/* Phone / Gender */}
+              {/* Email / Phone */}
               <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-gray-500">Email Address</label>
+                  <input
+                    name="email" type="email" value={form.email} onChange={handleChange}
+                    placeholder="e.g. john@example.com"
+                    className={`w-full bg-gray-50 border ${fieldErr('email') ? 'border-red-400' : 'border-gray-200'} focus:border-[#5B3DF5] rounded-xl px-4 py-2.5 text-xs text-gray-800 font-semibold focus:outline-none placeholder:text-gray-400`}
+                  />
+                  {fieldErr('email') && <p className="text-red-500 text-[10px] font-semibold">{fieldErr('email')}</p>}
+                </div>
                 <div className="space-y-1.5">
                   <label className="text-xs font-bold text-gray-500">Phone Number</label>
                   <input
@@ -498,6 +548,10 @@ export default function MembersPage() {
                     className="w-full bg-gray-50 border border-gray-200 focus:border-[#5B3DF5] rounded-xl px-4 py-2.5 text-xs text-gray-800 font-semibold focus:outline-none placeholder:text-gray-400"
                   />
                 </div>
+              </div>
+
+              {/* Gender / NIC */}
+              <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1.5">
                   <label className="text-xs font-bold text-gray-500">Gender <span className="text-red-500">*</span></label>
                   <select
@@ -508,9 +562,17 @@ export default function MembersPage() {
                     <option value="female">Female</option>
                   </select>
                 </div>
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-gray-500">NIC Number</label>
+                  <input
+                    name="nic" type="text" value={form.nic} onChange={handleChange}
+                    placeholder="e.g. 199012345678 or 901234567V"
+                    className="w-full bg-gray-50 border border-gray-200 focus:border-[#5B3DF5] rounded-xl px-4 py-2.5 text-xs text-gray-800 font-semibold focus:outline-none placeholder:text-gray-400"
+                  />
+                </div>
               </div>
 
-              {/* DOB / Occupation */}
+              {/* Date of Birth / Birth Certificate */}
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1.5">
                   <label className="text-xs font-bold text-gray-500">Date of Birth</label>
@@ -519,6 +581,26 @@ export default function MembersPage() {
                     className="w-full bg-gray-50 border border-gray-200 focus:border-[#5B3DF5] rounded-xl px-4 py-2.5 text-xs text-gray-800 font-semibold focus:outline-none"
                   />
                 </div>
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-gray-500">Birth Certificate</label>
+                  <label className="flex items-center gap-3 border border-dashed border-gray-300 hover:border-[#5B3DF5] hover:bg-gray-50/50 rounded-xl px-4 py-2.5 cursor-pointer transition-colors group">
+                    <div className="h-8 w-8 rounded-lg bg-gray-100 group-hover:bg-indigo-50 flex items-center justify-center text-gray-400 group-hover:text-[#5B3DF5]">
+                      {birthCertFile ? <FileText className="h-4 w-4" /> : <UploadCloud className="h-4 w-4" />}
+                    </div>
+                    <div className="flex-1 overflow-hidden">
+                      <p className="text-[10px] font-bold text-gray-700 truncate">{birthCertFile ? birthCertFile.name : 'Upload File'}</p>
+                      <p className="text-[9px] text-gray-400">PDF, JPG, PNG (5MB)</p>
+                    </div>
+                    <input
+                      type="file" className="hidden"
+                      onChange={(e) => setBirthCertFile(e.target.files ? e.target.files[0] : null)}
+                    />
+                  </label>
+                </div>
+              </div>
+
+              {/* Status / Occupation */}
+              <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1.5">
                   <label className="text-xs font-bold text-gray-500">Standing Status</label>
                   <select
@@ -530,27 +612,199 @@ export default function MembersPage() {
                     ))}
                   </select>
                 </div>
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-gray-500">Occupation</label>
+                  <input
+                    name="occupation" type="text" value={form.occupation} onChange={handleChange}
+                    placeholder="e.g. Software Engineer"
+                    className="w-full bg-gray-50 border border-gray-200 focus:border-[#5B3DF5] rounded-xl px-4 py-2.5 text-xs text-gray-800 font-semibold focus:outline-none placeholder:text-gray-400"
+                  />
+                </div>
               </div>
 
-              {/* Occupation */}
-              <div className="space-y-1.5">
-                <label className="text-xs font-bold text-gray-500">Occupation</label>
-                <input
-                  name="occupation" type="text" value={form.occupation} onChange={handleChange}
-                  placeholder="e.g. Software Engineer"
-                  className="w-full bg-gray-50 border border-gray-200 focus:border-[#5B3DF5] rounded-xl px-4 py-2.5 text-xs text-gray-800 font-semibold focus:outline-none placeholder:text-gray-400"
-                />
+              {/* Address Details (Permanent / Postal / Both) */}
+              <div className="space-y-2 bg-slate-50 p-4 rounded-2xl border border-slate-100">
+                <label className="text-xs font-bold text-gray-500 block mb-1">Address Details</label>
+                <div className="flex flex-wrap gap-x-4 gap-y-2 mb-2">
+                  <label className="flex items-center gap-1.5 cursor-pointer text-xs font-bold text-gray-650">
+                    <input
+                      type="radio"
+                      name="address_type"
+                      value="permanent"
+                      checked={form.address_type === 'permanent'}
+                      onChange={handleChange}
+                      className="text-[#5B3DF5] focus:ring-[#5B3DF5]"
+                    />
+                    <span>Permanent Address</span>
+                  </label>
+                  <label className="flex items-center gap-1.5 cursor-pointer text-xs font-bold text-gray-650">
+                    <input
+                      type="radio"
+                      name="address_type"
+                      value="postal"
+                      checked={form.address_type === 'postal'}
+                      onChange={handleChange}
+                      className="text-[#5B3DF5] focus:ring-[#5B3DF5]"
+                    />
+                    <span>Postal Address</span>
+                  </label>
+                  <label className="flex items-center gap-1.5 cursor-pointer text-xs font-bold text-gray-650">
+                    <input
+                      type="radio"
+                      name="address_type"
+                      value="both"
+                      checked={form.address_type === 'both'}
+                      onChange={handleChange}
+                      className="text-[#5B3DF5] focus:ring-[#5B3DF5]"
+                    />
+                    <span>Both Addresses</span>
+                  </label>
+                </div>
+
+                {(form.address_type === 'permanent' || form.address_type === 'both') && (
+                  <div className="space-y-1">
+                    <label className="text-[9px] font-bold text-gray-400 uppercase">Permanent Address</label>
+                    <textarea
+                      name="permanent_address" value={form.permanent_address} onChange={handleChange}
+                      rows={2}
+                      placeholder="Street, City, Country"
+                      className="w-full bg-white border border-gray-200 focus:border-[#5B3DF5] rounded-xl px-4 py-2 text-xs text-gray-800 font-semibold focus:outline-none placeholder:text-gray-400 resize-none"
+                    />
+                  </div>
+                )}
+
+                {(form.address_type === 'postal' || form.address_type === 'both') && (
+                  <div className="space-y-1 mt-2">
+                    <label className="text-[9px] font-bold text-gray-400 uppercase">Postal Address</label>
+                    <textarea
+                      name="postal_address" value={form.postal_address} onChange={handleChange}
+                      rows={2}
+                      placeholder="Street, City, Country"
+                      className="w-full bg-white border border-gray-200 focus:border-[#5B3DF5] rounded-xl px-4 py-2 text-xs text-gray-800 font-semibold focus:outline-none placeholder:text-gray-400 resize-none"
+                    />
+                  </div>
+                )}
               </div>
 
-              {/* Address */}
-              <div className="space-y-1.5">
-                <label className="text-xs font-bold text-gray-500">Address</label>
-                <textarea
-                  name="address" value={form.address} onChange={handleChange}
-                  rows={2}
-                  placeholder="Street, City, Country"
-                  className="w-full bg-gray-50 border border-gray-200 focus:border-[#5B3DF5] rounded-xl px-4 py-2.5 text-xs text-gray-800 font-semibold focus:outline-none placeholder:text-gray-400 resize-none"
-                />
+              {/* Holy Baptism Status (Yes / No) */}
+              <div className="space-y-3 bg-slate-50 p-4 rounded-2xl border border-slate-100">
+                <div className="flex justify-between items-center">
+                  <label className="text-xs font-bold text-gray-500">Holy Baptism Status</label>
+                  <div className="flex gap-4">
+                    <label className="flex items-center gap-1.5 cursor-pointer text-xs font-bold text-gray-700">
+                      <input
+                        type="radio"
+                        name="is_baptized"
+                        value="true"
+                        checked={form.is_baptized === true}
+                        onChange={() => setForm(prev => ({ ...prev, is_baptized: true }))}
+                        className="text-[#5B3DF5] focus:ring-[#5B3DF5]"
+                      />
+                      <span>Yes</span>
+                    </label>
+                    <label className="flex items-center gap-1.5 cursor-pointer text-xs font-bold text-gray-700">
+                      <input
+                        type="radio"
+                        name="is_baptized"
+                        value="false"
+                        checked={form.is_baptized === false}
+                        onChange={() => setForm(prev => ({ ...prev, is_baptized: false }))}
+                        className="text-[#5B3DF5] focus:ring-[#5B3DF5]"
+                      />
+                      <span>No</span>
+                    </label>
+                  </div>
+                </div>
+
+                {form.is_baptized && (
+                  <div className="space-y-3 pt-3 border-t border-slate-200/60">
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="space-y-1">
+                        <label className="text-[9px] font-bold text-gray-450 uppercase">Baptism Church</label>
+                        <input
+                          name="baptism_church" type="text" value={form.baptism_church} onChange={handleChange}
+                          placeholder="e.g. Grace Fellowship"
+                          className="w-full bg-white border border-gray-200 focus:border-[#5B3DF5] rounded-xl px-3 py-2 text-xs text-gray-800 font-semibold focus:outline-none"
+                        />
+                      </div>
+                      <div className="space-y-1">
+                        <label className="text-[9px] font-bold text-gray-450 uppercase">Partner Pastor Name</label>
+                        <input
+                          name="baptism_partner_name" type="text" value={form.baptism_partner_name} onChange={handleChange}
+                          placeholder="e.g. Rev. Miller"
+                          className="w-full bg-white border border-gray-200 focus:border-[#5B3DF5] rounded-xl px-3 py-2 text-xs text-gray-800 font-semibold focus:outline-none"
+                        />
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="space-y-1">
+                        <label className="text-[9px] font-bold text-gray-450 uppercase">Baptism Date</label>
+                        <input
+                          name="baptism_date" type="date" value={form.baptism_date} onChange={handleChange}
+                          className="w-full bg-white border border-gray-200 focus:border-[#5B3DF5] rounded-xl px-3 py-2 text-xs text-gray-800 font-semibold focus:outline-none"
+                        />
+                      </div>
+                      <div className="space-y-1">
+                        <label className="text-[9px] font-bold text-gray-450 uppercase">Baptism Certificate</label>
+                        <label className="flex items-center gap-2 border border-dashed border-gray-300 hover:border-[#5B3DF5] hover:bg-gray-50/50 rounded-xl px-3 py-2 cursor-pointer transition-colors group">
+                          <div className="h-6 w-6 rounded bg-gray-100 group-hover:bg-indigo-50 flex items-center justify-center text-gray-400 group-hover:text-[#5B3DF5]">
+                            {baptismCertFile ? <FileText className="h-3 w-3" /> : <UploadCloud className="h-3 w-3" />}
+                          </div>
+                          <div className="flex-1 overflow-hidden">
+                            <p className="text-[9px] font-bold text-gray-700 truncate">{baptismCertFile ? baptismCertFile.name : 'Upload File'}</p>
+                          </div>
+                          <input
+                            type="file" className="hidden"
+                            onChange={(e) => setBaptismCertFile(e.target.files ? e.target.files[0] : null)}
+                          />
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Marital Status (Single / Married) */}
+              <div className="space-y-3 bg-slate-50 p-4 rounded-2xl border border-slate-100">
+                <div className="flex justify-between items-center">
+                  <label className="text-xs font-bold text-gray-500">Marital Status</label>
+                  <select
+                    name="marital_status" value={form.marital_status} onChange={handleChange}
+                    className="bg-white border border-gray-200 focus:border-[#5B3DF5] rounded-xl px-3 py-1.5 text-xs text-gray-800 font-bold focus:outline-none cursor-pointer"
+                  >
+                    <option value="single">Single / Unmarried</option>
+                    <option value="married">Married</option>
+                  </select>
+                </div>
+
+                {form.marital_status === 'married' && (
+                  <div className="space-y-3 pt-3 border-t border-slate-200/60">
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="space-y-1">
+                        <label className="text-[9px] font-bold text-gray-450 uppercase">Marriage Date</label>
+                        <input
+                          name="marriage_date" type="date" value={form.marriage_date} onChange={handleChange}
+                          className="w-full bg-white border border-gray-200 focus:border-[#5B3DF5] rounded-xl px-3 py-2 text-xs text-gray-800 font-semibold focus:outline-none"
+                        />
+                      </div>
+                      <div className="space-y-1">
+                        <label className="text-[9px] font-bold text-gray-450 uppercase">Marriage Certificate</label>
+                        <label className="flex items-center gap-2 border border-dashed border-gray-300 hover:border-[#5B3DF5] hover:bg-gray-50/50 rounded-xl px-3 py-2 cursor-pointer transition-colors group">
+                          <div className="h-6 w-6 rounded bg-gray-100 group-hover:bg-indigo-50 flex items-center justify-center text-gray-400 group-hover:text-[#5B3DF5]">
+                            {marriageCertFile ? <FileText className="h-3 w-3" /> : <UploadCloud className="h-3 w-3" />}
+                          </div>
+                          <div className="flex-1 overflow-hidden">
+                            <p className="text-[9px] font-bold text-gray-700 truncate">{marriageCertFile ? marriageCertFile.name : 'Upload File'}</p>
+                          </div>
+                          <input
+                            type="file" className="hidden"
+                            onChange={(e) => setMarriageCertFile(e.target.files ? e.target.files[0] : null)}
+                          />
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Form Buttons */}

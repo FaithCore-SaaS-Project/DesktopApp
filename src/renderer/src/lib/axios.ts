@@ -8,6 +8,10 @@ const api = axios.create({
     'Accept': 'application/json',
     'Content-Type': 'application/json',
   },
+  validateStatus: (status) => {
+    // Allow 403 Forbidden to resolve normally to prevent Next.js React Dev Overlay from popping up during development
+    return (status >= 200 && status < 300) || status === 403;
+  }
 });
 
 // Add a request interceptor to inject Token and Tenant ID

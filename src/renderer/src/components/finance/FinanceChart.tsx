@@ -26,25 +26,25 @@ export default function FinanceChart({ totalIncome, totalExpenses }: FinanceChar
   const maxVal = Math.max(...monthlyData.flatMap(d => [d.income, d.expense])) * 1.15;
 
   return (
-    <div className="rounded-3xl border border-gray-150 bg-white p-6 shadow-sm flex flex-col h-full">
+    <div className="rounded-[2rem] border border-slate-100 bg-white p-6 shadow-sm shadow-slate-100/50 flex flex-col h-full">
       <div className="mb-6 flex items-center justify-between">
-        <h2 className="text-lg font-extrabold text-gray-900">
+        <h2 className="text-base font-extrabold text-slate-800 tracking-tight">
           Income vs Expenses
         </h2>
-        <select className="rounded-xl border border-gray-200 px-3 py-1.5 text-xs font-bold text-gray-650 outline-none cursor-pointer bg-white">
+        <select className="border border-slate-100 rounded-xl px-3.5 py-1.5 text-xs font-bold text-slate-500 outline-none bg-slate-50/50 focus:border-violet-500 cursor-pointer transition-all duration-300">
           <option>This Year (5 Months)</option>
         </select>
       </div>
 
       <div className="flex-1 flex flex-col justify-end min-h-[260px]">
         {/* Graph Area */}
-        <div className="flex-1 flex items-end justify-between gap-4 px-2 pb-2 relative border-b border-gray-100">
+        <div className="flex-1 flex items-end justify-between gap-4 px-2 pb-2 relative border-b border-slate-100">
           {/* Grid lines background */}
           <div className="absolute inset-0 flex flex-col justify-between pointer-events-none">
-            <div className="border-t border-gray-50 w-full h-0" />
-            <div className="border-t border-gray-50 w-full h-0" />
-            <div className="border-t border-gray-50 w-full h-0" />
-            <div className="border-t border-gray-50 w-full h-0" />
+            <div className="border-t border-slate-100/40 w-full h-0" />
+            <div className="border-t border-slate-100/40 w-full h-0" />
+            <div className="border-t border-slate-100/40 w-full h-0" />
+            <div className="border-t border-slate-100/40 w-full h-0" />
           </div>
 
           {monthlyData.map((d, i) => {
@@ -56,24 +56,24 @@ export default function FinanceChart({ totalIncome, totalExpenses }: FinanceChar
                 <div className="w-full flex items-end justify-center gap-1.5 h-[180px]">
                   {/* Income bar */}
                   <div 
-                    className="w-3 sm:w-4 bg-emerald-500 rounded-t-lg transition-all duration-500 hover:opacity-80 relative group cursor-pointer"
+                    className="w-3 sm:w-4 bg-gradient-to-t from-emerald-500 to-emerald-400 rounded-t-[4px] transition-all duration-500 hover:opacity-85 relative group cursor-pointer"
                     style={{ height: `${incHeight}%` }}
                   >
-                    <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 bg-gray-900 text-white text-[9px] font-bold py-1 px-1.5 rounded-md opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-25 pointer-events-none">
+                    <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 bg-slate-900 text-white text-[9px] font-bold py-1 px-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-25 pointer-events-none shadow-md">
                       Inc: Rs. {d.income.toLocaleString()}
                     </div>
                   </div>
                   {/* Expense bar */}
                   <div 
-                    className="w-3 sm:w-4 bg-rose-500 rounded-t-lg transition-all duration-500 hover:opacity-80 relative group cursor-pointer"
+                    className="w-3 sm:w-4 bg-gradient-to-t from-rose-500 to-rose-400 rounded-t-[4px] transition-all duration-500 hover:opacity-85 relative group cursor-pointer"
                     style={{ height: `${expHeight}%` }}
                   >
-                    <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 bg-gray-900 text-white text-[9px] font-bold py-1 px-1.5 rounded-md opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-25 pointer-events-none">
+                    <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 bg-slate-900 text-white text-[9px] font-bold py-1 px-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-25 pointer-events-none shadow-md">
                       Exp: Rs. {d.expense.toLocaleString()}
                     </div>
                   </div>
                 </div>
-                <span className="text-[10px] font-bold text-gray-400 mt-2">{d.month}</span>
+                <span className="text-[10px] font-bold text-slate-400 mt-2">{d.month}</span>
               </div>
             );
           })}
@@ -81,11 +81,11 @@ export default function FinanceChart({ totalIncome, totalExpenses }: FinanceChar
 
         {/* Legend */}
         <div className="flex gap-4 mt-5 pl-2">
-          <div className="flex items-center gap-1.5 text-xs font-bold text-gray-500">
+          <div className="flex items-center gap-1.5 text-xs font-bold text-slate-500">
             <span className="h-2.5 w-2.5 rounded-full bg-emerald-500" />
             <span>Income</span>
           </div>
-          <div className="flex items-center gap-1.5 text-xs font-bold text-gray-500">
+          <div className="flex items-center gap-1.5 text-xs font-bold text-slate-500">
             <span className="h-2.5 w-2.5 rounded-full bg-rose-500" />
             <span>Expenses</span>
           </div>
