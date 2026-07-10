@@ -42,7 +42,7 @@ workflows:
       - name: Build Application
         script: npm run build
       - name: Build Electron Mac App (Universal)
-        script: npx electron-builder --mac dmg --universal --publish never
+        script: npx electron-builder --mac --universal --publish never
     artifacts:
       - release/*.dmg
       - dist/*.dmg
