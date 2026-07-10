@@ -13,7 +13,11 @@
     "build:electron": "tsc -p tsconfig.json",
     "dev": "concurrently -k \"npm run dev:next\" \"wait-on http://127.0.0.1:3080 && npm run dev:electron\"",
     "build": "npm run build:next && npm run build:electron",
-    "dist": "npm run build && electron-builder"
+    "dist": "npm run build && electron-builder",
+    "dist:win": "npm run build && electron-builder --win",
+    "dist:mac:universal": "npm run build && electron-builder --mac universal",
+    "dist:mac:x64": "npm run build && electron-builder --mac --x64",
+    "dist:mac:arm64": "npm run build && electron-builder --mac --arm64"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.4.0",
@@ -58,7 +62,16 @@
       "icon": "public/icon.ico"
     },
     "mac": {
-      "target": "dmg",
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "universal",
+            "x64",
+            "arm64"
+          ]
+        }
+      ],
       "icon": "public/icon.icns"
     }
   }

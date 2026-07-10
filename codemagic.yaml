@@ -9,8 +9,8 @@ workflows:
         script: npm install
       - name: Build Application
         script: npm run build
-      - name: Build Electron Mac App
-        script: npx electron-builder --mac --publish never
+      - name: Build Electron Mac App (Universal, Intel x64 & Apple Silicon arm64)
+        script: npx electron-builder --mac universal --x64 --arm64 --publish never
     artifacts:
       - dist/*.dmg
       - release/*.dmg
