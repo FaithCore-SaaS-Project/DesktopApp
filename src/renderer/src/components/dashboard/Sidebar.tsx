@@ -64,7 +64,7 @@ const menuItems: MenuItem[] = [
     label: "Settings",
     path: "/settings",
     subItems: [
-      { label: "General", path: "/settings/general" },
+      { label: "General", path: "/settings" },
       { label: "Finance", path: "/settings/finance" },
       { label: "Notifications", path: "/settings/notifications" },
       { label: "Security", path: "/settings/security" },
