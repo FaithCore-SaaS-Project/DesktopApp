@@ -12,7 +12,7 @@ import SupportSubscribe from '../components/support/SupportSubscribe';
 
 export default function SupportPage() {
   return (
-    <div className="space-y-0 pb-10">
+    <div className="space-y-0 pb-10 p-8 bg-gradient-to-br from-slate-50 via-slate-50/50 to-indigo-50/30 min-h-screen">
       {/* Page Header */}
       <div className="mb-6">
         <h1 className="text-2xl font-black text-gray-900 tracking-tight">Support</h1>
