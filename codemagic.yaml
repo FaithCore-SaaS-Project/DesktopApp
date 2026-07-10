@@ -1,5 +1,5 @@
 workflows:
-  build-mac-intel-x64:
+  build-mac-desktop-app:
     name: Build FaithCore Mac App (Intel Core x64 ONLY - ~160 MB)
     instance_type: mac_mini_m1
     environment:
