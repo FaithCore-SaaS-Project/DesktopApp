@@ -62,7 +62,7 @@ export default function UsersRolesPage() {
           </div>
           <div className="flex flex-col lg:flex-row gap-6">
             <div className="flex-1 min-w-0">
-              <UsersTable />
+              <UsersTable users={[]} onEdit={() => {}} onDelete={() => {}} />
             </div>
             <div className="w-full lg:w-[320px] shrink-0">
               <UsersSidebar />
