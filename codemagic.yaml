@@ -1,6 +1,6 @@
 workflows:
-  build-mac-desktop-app:
-    name: Build FaithCore Mac App (.dmg)
+  build-mac-intel-x64:
+    name: Build FaithCore Mac App (Intel Core x64 ONLY - ~160 MB)
     instance_type: mac_mini_m1
     environment:
       node: 18
@@ -9,9 +9,40 @@ workflows:
         script: npm install
       - name: Build Application
         script: npm run build
-      - name: Build Electron Mac App (Universal, Intel x64 & Apple Silicon arm64)
-        script: npx electron-builder --mac --publish never
+      - name: Build Electron Mac App (Intel Core x64)
+        script: npx electron-builder --mac --x64 --publish never
     artifacts:
-      - dist/*.dmg
       - release/*.dmg
-      - out/**/*.dmg
+      - dist/*.dmg
+
+  build-mac-silicon-arm64:
+    name: Build FaithCore Mac App (Apple Silicon M-Series ONLY - ~160 MB)
+    instance_type: mac_mini_m1
+    environment:
+      node: 18
+    scripts:
+      - name: Install Dependencies
+        script: npm install
+      - name: Build Application
+        script: npm run build
+      - name: Build Electron Mac App (Apple Silicon arm64)
+        script: npx electron-builder --mac --arm64 --publish never
+    artifacts:
+      - release/*.dmg
+      - dist/*.dmg
+
+  build-mac-universal:
+    name: Build FaithCore Mac App (Universal Both Intel & Silicon - ~300 MB)
+    instance_type: mac_mini_m1
+    environment:
+      node: 18
+    scripts:
+      - name: Install Dependencies
+        script: npm install
+      - name: Build Application
+        script: npm run build
+      - name: Build Electron Mac App (Universal)
+        script: npx electron-builder --mac dmg --universal --publish never
+    artifacts:
+      - release/*.dmg
+      - dist/*.dmg

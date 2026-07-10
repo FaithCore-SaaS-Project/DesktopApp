@@ -20,16 +20,7 @@
     "createStartMenuShortcut": true
   },
   "mac": {
-    "target": [
-      {
-        "target": "dmg",
-        "arch": [
-          "universal",
-          "x64",
-          "arm64"
-        ]
-      }
-    ],
+    "target": "dmg",
     "icon": "public/icon.icns",
     "category": "public.app-category.business"
   },
