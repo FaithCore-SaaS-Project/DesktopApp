@@ -37,6 +37,7 @@ export default function DepartmentsPage() {
   const [members, setMembers] = useState<any[]>([]);
   const [selectedDepartment, setSelectedDepartment] = useState<any | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingDepartment, setEditingDepartment] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
 
   // Form Fields
@@ -110,10 +111,20 @@ export default function DepartmentsPage() {
   }, []);
 
   const handleOpenAddModal = () => {
+    setEditingDepartment(null);
     setFormName('');
     setFormCategory('Ministry');
     setFormLeaderId('');
     setFormDescription('');
+    setIsModalOpen(true);
+  };
+
+  const handleOpenEditModal = (dept: any) => {
+    setEditingDepartment(dept);
+    setFormName(dept.name);
+    setFormCategory(dept.category);
+    setFormLeaderId(dept.leader_id || '');
+    setFormDescription(dept.description || '');
     setIsModalOpen(true);
   };
 
@@ -130,30 +141,70 @@ export default function DepartmentsPage() {
         description: fullDescription
       };
 
-      await api.post('/departments', payload);
+      if (editingDepartment && typeof editingDepartment.id === 'number') {
+        await api.put(`/departments/${editingDepartment.id}`, payload);
+      } else if (editingDepartment) {
+        throw new Error('Local item edit');
+      } else {
+        await api.post('/departments', payload);
+      }
       await loadData();
       setIsModalOpen(false);
     } catch (err) {
       console.error('Failed to save department on backend, saving locally:', err);
       // Fallback
-      const newDept = {
-        id: 'local-' + Date.now(),
-        name: formName.trim(),
-        category: formCategory,
-        leader: formLeaderId ? (members.find((m) => m.id === parseInt(formLeaderId)) ? `${members.find((m) => m.id === parseInt(formLeaderId)).first_name} ${members.find((m) => m.id === parseInt(formLeaderId)).last_name}` : 'Assigned Leader') : 'No Leader',
-        leader_id: formLeaderId,
-        members: 0,
-        description: formDescription.trim(),
-        created_at: new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
-        status: 'Active',
-        iconLetter: formName.charAt(0),
-        iconBg: 'bg-[#5B3DF5]',
-        categoryColor: 'text-[#5B3DF5]'
-      };
-      const updated = [newDept, ...departments];
-      setDepartments(updated);
-      localStorage.setItem('fc_departments', JSON.stringify(updated));
-      setSelectedDepartment(newDept);
+      const leaderName = formLeaderId
+        ? (members.find((m) => m.id === parseInt(formLeaderId))
+            ? `${members.find((m) => m.id === parseInt(formLeaderId)).first_name} ${members.find((m) => m.id === parseInt(formLeaderId)).last_name}`
+            : 'Assigned Leader')
+        : 'No Leader';
+
+      if (editingDepartment) {
+        const updated = departments.map((d) => {
+          if (d.id === editingDepartment.id) {
+            return {
+              ...d,
+              name: formName.trim(),
+              category: formCategory,
+              leader: leaderName,
+              leader_id: formLeaderId,
+              description: formDescription.trim(),
+            };
+          }
+          return d;
+        });
+        setDepartments(updated);
+        localStorage.setItem('fc_departments', JSON.stringify(updated));
+        if (selectedDepartment && selectedDepartment.id === editingDepartment.id) {
+          setSelectedDepartment({
+            ...selectedDepartment,
+            name: formName.trim(),
+            category: formCategory,
+            leader: leaderName,
+            leader_id: formLeaderId,
+            description: formDescription.trim(),
+          });
+        }
+      } else {
+        const newDept = {
+          id: 'local-' + Date.now(),
+          name: formName.trim(),
+          category: formCategory,
+          leader: leaderName,
+          leader_id: formLeaderId,
+          members: 0,
+          description: formDescription.trim(),
+          created_at: new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
+          status: 'Active',
+          iconLetter: formName.charAt(0),
+          iconBg: 'bg-[#5B3DF5]',
+          categoryColor: 'text-[#5B3DF5]'
+        };
+        const updated = [newDept, ...departments];
+        setDepartments(updated);
+        localStorage.setItem('fc_departments', JSON.stringify(updated));
+        setSelectedDepartment(newDept);
+      }
       setIsModalOpen(false);
     }
   };
@@ -221,6 +272,7 @@ export default function DepartmentsPage() {
             departments={departments} 
             selectedDepartment={selectedDepartment}
             onSelect={setSelectedDepartment}
+            onEdit={handleOpenEditModal}
             onDelete={handleDeleteDepartment}
           />
         </div>
@@ -241,7 +293,7 @@ export default function DepartmentsPage() {
             <div className="flex items-center justify-between p-6 border-b border-slate-50 bg-slate-50/30">
               <h2 className="text-base font-black text-slate-800 flex items-center gap-2">
                 <Building2 size={16} className="text-[#5B3DF5]" />
-                Add New Department
+                {editingDepartment ? 'Edit Department Details' : 'Add New Department'}
               </h2>
               <button
                 type="button"
@@ -322,7 +374,7 @@ export default function DepartmentsPage() {
                   disabled={!formName.trim()}
                   className="flex-1 bg-[#5B3DF5] hover:bg-[#4a30db] text-white py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer active:scale-[0.98] disabled:opacity-50 shadow-md shadow-[#5B3DF5]/15"
                 >
-                  Add Department
+                  {editingDepartment ? 'Save Changes' : 'Add Department'}
                 </button>
               </div>
             </form>

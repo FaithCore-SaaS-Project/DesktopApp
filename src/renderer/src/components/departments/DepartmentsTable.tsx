@@ -13,6 +13,7 @@ interface DepartmentsTableProps {
   departments: any[];
   selectedDepartment: any | null;
   onSelect: (dept: any) => void;
+  onEdit: (dept: any) => void;
   onDelete: (id: number | string) => void;
 }
 
@@ -20,6 +21,7 @@ export default function DepartmentsTable({
   departments,
   selectedDepartment,
   onSelect,
+  onEdit,
   onDelete,
 }: DepartmentsTableProps) {
   return (
@@ -83,7 +85,10 @@ export default function DepartmentsTable({
                   </td>
                   <td className="px-6 py-4" onClick={(e) => e.stopPropagation()}>
                     <div className="flex items-center justify-end gap-2">
-                      <button className="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-xl transition-all cursor-pointer active:scale-95 shadow-sm shadow-slate-100 bg-white">
+                      <button
+                        onClick={() => onEdit(item)}
+                        className="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-xl transition-all cursor-pointer active:scale-95 shadow-sm shadow-slate-100 bg-white"
+                      >
                         <Pencil size={13} />
                       </button>
                       <button

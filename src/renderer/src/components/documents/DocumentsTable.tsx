@@ -114,7 +114,20 @@ export default function DocumentsTable({ documents, onDelete }: DocumentsTablePr
                   </td>
                   <td className="px-6 py-4">
                     <div className="flex items-center justify-end gap-2">
-                      <button className="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-xl transition-all cursor-pointer active:scale-95 shadow-sm shadow-slate-100">
+                      <button
+                        onClick={() => {
+                          const content = `FaithCore Church Management System\n===================================\nDocument: ${item.name}\nCategory: ${item.category}\nFile Size: ${item.size}\nUploaded By: ${item.uploader}\nDate: ${item.date}\nStatus: ${item.status}\n\nThis is a demonstration of the document download system for FaithCore.`;
+                          const blob = new Blob([content], { type: 'text/plain;charset=utf-8;' });
+                          const link = document.createElement('a');
+                          link.href = URL.createObjectURL(blob);
+                          link.setAttribute('download', item.name.replace(/\.[^/.]+$/, "") + '.txt');
+                          document.body.appendChild(link);
+                          link.click();
+                          link.remove();
+                        }}
+                        className="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-xl transition-all cursor-pointer active:scale-95 shadow-sm shadow-slate-100 bg-white border border-slate-100"
+                        title="Download Document Preview"
+                      >
                         <Download size={13} />
                       </button>
                       <button
