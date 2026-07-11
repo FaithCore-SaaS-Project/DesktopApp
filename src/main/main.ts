@@ -5,7 +5,13 @@ import { initDatabase, dbOperations } from './database';
 import { initAutoUpdater } from './autoUpdater';
 import serve from 'electron-serve';
 
-const loadURL = serve({ directory: path.join(__dirname, '..', '..', 'src', 'renderer', 'out') });
+// Resolve the renderer's static export directory.
+// In a packaged app, asarUnpack extracts it to app.asar.unpacked/ for direct file access.
+const rendererDir = app.isPackaged
+  ? path.join(process.resourcesPath, 'app.asar.unpacked', 'src', 'renderer', 'out')
+  : path.join(__dirname, '..', '..', 'src', 'renderer', 'out');
+
+const loadURL = serve({ directory: rendererDir });
 
 let mainWindow: BrowserWindow | null = null;
 

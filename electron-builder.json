@@ -7,7 +7,12 @@
   "files": [
     "dist/**/*",
     "src/renderer/out/**/*",
+    "node_modules/sql.js/dist/sql-wasm.wasm",
     "package.json"
+  ],
+  "asarUnpack": [
+    "node_modules/sql.js/dist/sql-wasm.wasm",
+    "src/renderer/out/**/*"
   ],
   "win": {
     "target": "nsis",
@@ -23,7 +28,11 @@
     "target": "dmg",
     "icon": "public/icon.icns",
     "category": "public.app-category.business",
-    "artifactName": "${productName}-${version}-${arch}.${ext}"
+    "artifactName": "${productName}-${version}-${arch}.${ext}",
+    "hardenedRuntime": true,
+    "gatekeeperAssess": false,
+    "entitlements": "build/entitlements.mac.plist",
+    "entitlementsInherit": "build/entitlements.mac.plist"
   },
   "dmg": {
     "background": "public/dmg-background.png",

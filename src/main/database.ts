@@ -35,7 +35,15 @@ export async function initDatabase(): Promise<any> {
   if (db) return db;
 
   // Initialize WebAssembly SQL.js
-  const SQL = await initSqlJs();
+  // In a packaged app the .wasm binary lives in app.asar.unpacked (via asarUnpack).
+  // We must provide locateFile() so sql.js can resolve the correct binary path.
+  const wasmDir = app.isPackaged
+    ? path.join(process.resourcesPath, 'app.asar.unpacked', 'node_modules', 'sql.js', 'dist')
+    : path.join(__dirname, '..', '..', 'node_modules', 'sql.js', 'dist');
+
+  const SQL = await initSqlJs({
+    locateFile: (file: string) => path.join(wasmDir, file),
+  });
 
   // Resolve DB file path inside standard Electron App Data folder
   dbPath = app.isPackaged

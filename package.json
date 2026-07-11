@@ -45,26 +45,5 @@
     "tailwindcss": "^3.4.16",
     "typescript": "^5.7.2",
     "wait-on": "^8.0.1"
-  },
-  "build": {
-    "appId": "com.fcsoftware.desktop",
-    "productName": "FC Desktop",
-    "directories": {
-      "output": "release"
-    },
-    "files": [
-      "dist/**/*",
-      "src/renderer/out/**/*",
-      "package.json"
-    ],
-    "win": {
-      "target": "nsis",
-      "icon": "public/icon.ico"
-    },
-    "mac": {
-      "target": "dmg",
-      "icon": "public/icon.icns",
-      "artifactName": "${productName}-${version}-${arch}.${ext}"
-    }
   }
 }
