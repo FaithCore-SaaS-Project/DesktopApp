@@ -9,12 +9,14 @@ interface AppLayoutProps {
 }
 
 export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
-  const { isActivated, user } = useApp();
+  const { isActivated, user, subscriptionStatus } = useApp();
   const router = useRouter();
 
   // Central routing guard
   useEffect(() => {
     if (!router.isReady) return;
+
+    const isExpired = subscriptionStatus === 'expired' || subscriptionStatus === 'cancelled' || subscriptionStatus === 'none';
 
     if (!isActivated) {
       if (router.pathname !== '/activation') {
@@ -24,15 +26,20 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
       if (router.pathname !== '/login') {
         router.replace('/login');
       }
+    } else if (isExpired) {
+      if (router.pathname !== '/subscription-expired') {
+        router.replace('/subscription-expired');
+      }
     } else {
-      if (router.pathname === '/login' || router.pathname === '/activation') {
+      if (router.pathname === '/login' || router.pathname === '/activation' || router.pathname === '/subscription-expired') {
         router.replace('/dashboard');
       }
     }
-  }, [isActivated, user, router.pathname, router.isReady]);
+  }, [isActivated, user, subscriptionStatus, router.pathname, router.isReady]);
 
-  // Render children directly for full-screen pages if not activated or authenticated
-  if (!isActivated || !user) {
+  // Render children directly for full-screen pages if not activated, not authenticated, or subscription is expired
+  const isExpired = subscriptionStatus === 'expired' || subscriptionStatus === 'cancelled' || subscriptionStatus === 'none';
+  if (!isActivated || !user || isExpired) {
     return <div className="min-h-screen bg-slate-950 text-slate-100">{children}</div>;
   }
 

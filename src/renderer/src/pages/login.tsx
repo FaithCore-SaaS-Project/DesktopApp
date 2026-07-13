@@ -65,7 +65,7 @@ export default function LoginPage() {
       };
 
       const response = await api.post('/login', payload);
-      const { token, user, church } = response.data;
+      const { token, user, church, subscription_status } = response.data;
 
       if (!church) {
         throw new Error('No church associated with this account. Please contact support.');
@@ -75,13 +75,18 @@ export default function LoginPage() {
       activateApp(church.id.toString(), church.church_name);
       
       // Save Session
-      login(user.first_name + ' ' + user.last_name, token);
+      const subStatus = subscription_status || 'active';
+      login(user.first_name + ' ' + user.last_name, token, subStatus);
 
       if (data.remember) {
         localStorage.setItem('remember_login', 'true');
       }
       
-      router.replace('/dashboard');
+      if (subStatus === 'expired' || subStatus === 'cancelled' || subStatus === 'none') {
+        router.replace('/subscription-expired');
+      } else {
+        router.replace('/dashboard');
+      }
 
     } catch (err: any) {
       setServerError(

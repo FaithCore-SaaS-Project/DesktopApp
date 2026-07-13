@@ -15,7 +15,8 @@ interface AppContextType {
   tenants: Tenant[];
   switchTenant: (tenantId: string) => void;
   user: User | null;
-  login: (username: string, token: string) => void;
+  subscriptionStatus: string | null;
+  login: (username: string, token: string, subStatus: string) => void;
   logout: () => void;
   activateApp: (tenantId: string, churchName: string) => void;
   isOnline: boolean;
@@ -31,6 +32,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [currentTenant, setCurrentTenant] = useState<Tenant | null>(null);
   const [tenants, setTenants] = useState<Tenant[]>(mockTenants);
   const [user, setUser] = useState<User | null>(null);
+  const [subscriptionStatus, setSubscriptionStatus] = useState<string | null>(null);
   const [isOnline, setIsOnline] = useState<boolean>(true);
 
   // Read initial states from localStorage on mount (client-side only)
@@ -40,6 +42,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       const cname = localStorage.getItem('churchName');
       const token = localStorage.getItem('token');
       const savedUser = localStorage.getItem('username');
+      const savedSubStatus = localStorage.getItem('subscriptionStatus');
 
       if (tid && cname) {
         setIsActivated(true);
@@ -61,6 +64,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
       if (token && savedUser) {
         setUser({ username: savedUser, role: 'Super Admin' });
+        setSubscriptionStatus(savedSubStatus || 'active');
       }
     }
   }, []);
@@ -94,16 +98,20 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     });
   };
 
-  const login = (username: string, token: string) => {
+  const login = (username: string, token: string, subStatus: string) => {
     localStorage.setItem('token', token);
     localStorage.setItem('username', username);
+    localStorage.setItem('subscriptionStatus', subStatus);
     setUser({ username, role: 'Super Admin' });
+    setSubscriptionStatus(subStatus);
   };
 
   const logout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('username');
+    localStorage.removeItem('subscriptionStatus');
     setUser(null);
+    setSubscriptionStatus(null);
   };
 
   const toggleNetworkStatus = () => {
@@ -120,6 +128,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         tenants,
         switchTenant,
         user,
+        subscriptionStatus,
         login,
         logout,
         activateApp,
