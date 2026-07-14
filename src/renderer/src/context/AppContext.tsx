@@ -16,7 +16,9 @@ interface AppContextType {
   switchTenant: (tenantId: string) => void;
   user: User | null;
   subscriptionStatus: string | null;
-  login: (username: string, token: string, subStatus: string) => void;
+  activePlan: any | null;
+  hasFeature: (key: string) => boolean;
+  login: (username: string, token: string, subStatus: string, plan: any) => void;
   logout: () => void;
   activateApp: (tenantId: string, churchName: string) => void;
   isOnline: boolean;
@@ -33,6 +35,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [tenants, setTenants] = useState<Tenant[]>(mockTenants);
   const [user, setUser] = useState<User | null>(null);
   const [subscriptionStatus, setSubscriptionStatus] = useState<string | null>(null);
+  const [activePlan, setActivePlan] = useState<any | null>(null);
   const [isOnline, setIsOnline] = useState<boolean>(true);
 
   // Read initial states from localStorage on mount (client-side only)
@@ -43,6 +46,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       const token = localStorage.getItem('token');
       const savedUser = localStorage.getItem('username');
       const savedSubStatus = localStorage.getItem('subscriptionStatus');
+      const savedActivePlan = localStorage.getItem('activePlan');
 
       if (tid && cname) {
         setIsActivated(true);
@@ -65,6 +69,13 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       if (token && savedUser) {
         setUser({ username: savedUser, role: 'Super Admin' });
         setSubscriptionStatus(savedSubStatus || 'active');
+        if (savedActivePlan) {
+          try {
+            setActivePlan(JSON.parse(savedActivePlan));
+          } catch (e) {
+            console.error('Failed to parse active plan from storage:', e);
+          }
+        }
       }
     }
   }, []);
@@ -98,10 +109,17 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     });
   };
 
-  const login = (username: string, token: string, subStatus: string) => {
+  const login = (username: string, token: string, subStatus: string, plan: any) => {
     localStorage.setItem('token', token);
     localStorage.setItem('username', username);
     localStorage.setItem('subscriptionStatus', subStatus);
+    if (plan) {
+      localStorage.setItem('activePlan', JSON.stringify(plan));
+      setActivePlan(plan);
+    } else {
+      localStorage.removeItem('activePlan');
+      setActivePlan(null);
+    }
     setUser({ username, role: 'Super Admin' });
     setSubscriptionStatus(subStatus);
   };
@@ -110,8 +128,25 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     localStorage.removeItem('token');
     localStorage.removeItem('username');
     localStorage.removeItem('subscriptionStatus');
+    localStorage.removeItem('activePlan');
     setUser(null);
     setSubscriptionStatus(null);
+    setActivePlan(null);
+  };
+
+  const hasFeature = (featureKey: string): boolean => {
+    if (!activePlan || !activePlan.features) return false;
+
+    // Dot-notation split (e.g. "finance.budgets")
+    const keys = featureKey.split('.');
+    let current = activePlan.features;
+    for (const key of keys) {
+      if (current === null || typeof current !== 'object' || !(key in current)) {
+        return false;
+      }
+      current = current[key];
+    }
+    return !!current;
   };
 
   const toggleNetworkStatus = () => {
@@ -129,6 +164,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         switchTenant,
         user,
         subscriptionStatus,
+        activePlan,
+        hasFeature,
         login,
         logout,
         activateApp,

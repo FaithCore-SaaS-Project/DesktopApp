@@ -65,7 +65,7 @@ export default function LoginPage() {
       };
 
       const response = await api.post('/login', payload);
-      const { token, user, church, subscription_status } = response.data;
+      const { token, user, church, subscription_status, plan } = response.data;
 
       if (!church) {
         throw new Error('No church associated with this account. Please contact support.');
@@ -76,7 +76,7 @@ export default function LoginPage() {
       
       // Save Session
       const subStatus = subscription_status || 'active';
-      login(user.first_name + ' ' + user.last_name, token, subStatus);
+      login(user.first_name + ' ' + user.last_name, token, subStatus, plan);
 
       if (data.remember) {
         localStorage.setItem('remember_login', 'true');

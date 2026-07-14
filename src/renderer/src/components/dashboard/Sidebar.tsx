@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
+import { useApp } from '../../context/AppContext';
 import {
   LayoutDashboard,
   Users,
@@ -77,12 +78,37 @@ const menuItems: MenuItem[] = [
 
 export default function Sidebar() {
   const router = useRouter();
+  const { hasFeature, activePlan } = useApp();
   const [openMenus, setOpenMenus] = useState<Record<string, boolean>>({});
+
+  // Filter menu items and their sub-items based on plan feature gates
+  const filteredMenuItems = menuItems.filter(item => {
+    if (item.path === '/letters' && !hasFeature('letters.enabled')) return false;
+    if (item.path === '/certificates' && !hasFeature('certificates.enabled')) return false;
+    if (item.path === '/reports' && !hasFeature('reports.enabled')) return false;
+    return true;
+  }).map(item => {
+    if (item.subItems) {
+      const filteredSubs = item.subItems.filter(sub => {
+        if (sub.path === '/finance/bank-accounts' && !hasFeature('finance.bank_accounts')) return false;
+        if (sub.path === '/finance/budgets' && !hasFeature('finance.budgets')) return false;
+        if (sub.path === '/roles' && !hasFeature('roles.custom_roles')) return false;
+        if (sub.path === '/permissions' && !hasFeature('roles.custom_roles')) return false;
+        if (sub.path === '/settings/integrations' && !hasFeature('settings.integrations')) return false;
+        if (sub.path === '/settings/backup' && !hasFeature('settings.backup')) return false;
+        if (sub.path === '/settings/security' && !hasFeature('settings.security')) return false;
+        if (sub.path === '/settings/notifications' && !hasFeature('settings.notifications')) return false;
+        return true;
+      });
+      return { ...item, subItems: filteredSubs };
+    }
+    return item;
+  });
 
   useEffect(() => {
     const newOpenMenus = { ...openMenus };
     let changed = false;
-    menuItems.forEach(item => {
+    filteredMenuItems.forEach(item => {
       if (item.subItems) {
         const isChildActive = item.subItems.some(sub =>
           router.pathname === sub.path || router.pathname.startsWith(sub.path)
@@ -96,7 +122,7 @@ export default function Sidebar() {
     if (changed) {
       setOpenMenus(newOpenMenus);
     }
-  }, [router.pathname]);
+  }, [router.pathname, activePlan]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleMenuClick = (e: React.MouseEvent, path: string) => {
     setOpenMenus(prev => ({ ...prev, [path]: !prev[path] }));
@@ -121,7 +147,7 @@ export default function Sidebar() {
 
       {/* Menu */}
       <div className="flex-1 px-4 py-6 space-y-1.5 overflow-y-auto custom-scrollbar">
-        {menuItems.map((item, index) => {
+        {filteredMenuItems.map((item, index) => {
           const Icon = item.icon;
           const hasSubItems = !!item.subItems;
           const isOpen = !!openMenus[item.path];

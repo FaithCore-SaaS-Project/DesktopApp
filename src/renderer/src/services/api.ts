@@ -458,7 +458,8 @@ export const apiService = {
       const res = await api.get('/members');
       const data = res.data.data || res.data;
       if (!Array.isArray(data)) return [];
-      return data.map((m: any) => ({
+      
+      const mapped = data.map((m: any) => ({
         id: m.id.toString(),
         memberNo: m.member_no,
         firstName: m.first_name,
@@ -491,8 +492,61 @@ export const apiService = {
         birthCertificate: m.birth_certificate || '',
         birthCertificateUrl: m.birth_certificate_url || null,
       }));
+
+      // Cache to local SQLite if inside Electron
+      if (isElectron()) {
+        try {
+          for (const m of mapped) {
+            await window.electronAPI.saveMember({
+              id: m.id,
+              name: `${m.firstName} ${m.lastName}`,
+              email: m.email,
+              phone: m.phone,
+              role: m.occupation,
+              joinedDate: m.membershipDate,
+              status: m.status ? 'active' : 'inactive',
+              tenantId: tenantId,
+              syncStatus: 'synced'
+            });
+          }
+        } catch (e) {
+          console.error('Failed to sync to local SQLite cache:', e);
+        }
+      }
+
+      return mapped;
     } catch (err) {
-      console.error('Failed to load members from backend', err);
+      console.warn('Failed to load members from backend, trying local cache...', err);
+      // Fallback to SQLite
+      if (isElectron()) {
+        try {
+          const localData = await window.electronAPI.getMembers(tenantId);
+          return localData.map((m: any) => ({
+            id: m.id,
+            memberNo: 'MEM-LOCAL-' + m.id,
+            firstName: m.name.split(' ')[0] || '',
+            lastName: m.name.split(' ').slice(1).join(' ') || '',
+            phone: m.phone || '',
+            email: m.email || '',
+            gender: 'male',
+            dob: '',
+            address: '',
+            baptismDate: '',
+            membershipDate: m.joinedDate || '',
+            occupation: m.role || '',
+            status: m.status === 'active',
+            tenantId: m.tenantId,
+            nic: '',
+            addressType: 'permanent',
+            permanentAddress: '',
+            postalAddress: '',
+            isBaptized: false,
+            maritalStatus: 'single',
+          }));
+        } catch (e) {
+          console.error('Failed to load from local SQLite:', e);
+        }
+      }
       return [];
     }
   },
@@ -552,7 +606,6 @@ export const apiService = {
 
       headers = { 'Content-Type': 'multipart/form-data' };
       
-      // Laravel handles PUT with file uploads badly via FormData, so spoof method
       if (!member.id.startsWith('MEM-')) {
         payload.append('_method', 'PUT');
       }
@@ -582,19 +635,83 @@ export const apiService = {
       };
     }
 
-    if (member.id.startsWith('MEM-')) {
-      const res = await api.post('/members', payload, { headers });
+    try {
+      let res;
+      if (member.id.startsWith('MEM-')) {
+        res = await api.post('/members', payload, { headers });
+      } else {
+        const endpoint = `/members/${member.id}`;
+        const method = hasFiles ? 'post' : 'put';
+        res = await api[method](endpoint, payload, { headers });
+      }
+
+      // Save locally as 'synced' in Electron
+      if (isElectron()) {
+        try {
+          const syncedMember = res.data?.data || res.data || member;
+          await window.electronAPI.saveMember({
+            id: (syncedMember.id || member.id).toString(),
+            name: `${member.firstName} ${member.lastName}`,
+            email: member.email,
+            phone: member.phone,
+            role: member.occupation,
+            joinedDate: member.membershipDate,
+            status: member.status ? 'active' : 'inactive',
+            tenantId: member.tenantId || localStorage.getItem('tenantId') || '',
+            syncStatus: 'synced'
+          });
+        } catch (e) {
+          console.error('Failed to update local cache after successful save:', e);
+        }
+      }
       return res.data;
-    } else {
-      const endpoint = `/members/${member.id}`;
-      const method = hasFiles ? 'post' : 'put';
-      const res = await api[method](endpoint, payload, { headers });
-      return res.data;
+    } catch (err) {
+      console.warn('Failed to save member to backend, trying local fallback...', err);
+      // Fallback: Save to SQLite as 'pending' in Electron
+      if (isElectron()) {
+        try {
+          await window.electronAPI.saveMember({
+            id: member.id,
+            name: `${member.firstName} ${member.lastName}`,
+            email: member.email,
+            phone: member.phone,
+            role: member.occupation,
+            joinedDate: member.membershipDate,
+            status: member.status ? 'active' : 'inactive',
+            tenantId: member.tenantId || localStorage.getItem('tenantId') || '',
+            syncStatus: 'pending'
+          });
+          return { success: true, message: 'Saved offline locally. Will sync when online.' };
+        } catch (e) {
+          console.error('Failed to save to offline database:', e);
+        }
+      }
+      throw err;
     }
   },
 
   deleteMember: async (id: string): Promise<void> => {
-    await api.delete(`/members/${id}`);
+    try {
+      await api.delete(`/members/${id}`);
+      if (isElectron()) {
+        try {
+          await window.electronAPI.deleteMember(id);
+        } catch (e) {
+          console.error('Failed to delete member from local SQLite:', e);
+        }
+      }
+    } catch (err) {
+      console.warn('Failed to delete from backend, applying to local SQLite...', err);
+      if (isElectron()) {
+        try {
+          await window.electronAPI.deleteMember(id);
+        } catch (e) {
+          console.error('Failed to delete from local database:', e);
+        }
+        return;
+      }
+      throw err;
+    }
   },
 
   // --- Finance API ---
@@ -607,19 +724,63 @@ export const apiService = {
       }
       const data = res.data.data || res.data;
       if (!Array.isArray(data)) return [];
-      return data.map((r: any) => ({
-        id: r.id,
+      
+      const mapped = data.map((r: any) => ({
+        id: r.id.toString(),
         type: r.type,
         category: r.category,
         amount: parseFloat(r.amount),
         date: r.date,
         description: r.description || '',
-        tenantId: r.tenantId,
+        tenantId: r.church_id ? r.church_id.toString() : tenantId,
         method: r.method,
         receipt: r.receipt || ''
       }));
+
+      // Cache locally in SQLite if inside Electron
+      if (isElectron()) {
+        try {
+          for (const r of mapped) {
+            await window.electronAPI.saveFinanceRecord({
+              id: r.id,
+              type: r.type,
+              category: r.category,
+              amount: r.amount,
+              date: r.date,
+              description: r.description,
+              tenantId: tenantId,
+              method: r.method || 'Cash',
+              receipt: r.receipt || '',
+              syncStatus: 'synced'
+            });
+          }
+        } catch (e) {
+          console.error('Failed to sync finance record to local SQLite cache:', e);
+        }
+      }
+
+      return mapped;
     } catch (err) {
-      console.error('Failed to load finance records from backend', err);
+      console.warn('Failed to load finance records from backend, trying local cache...', err);
+      // Fallback to SQLite
+      if (isElectron()) {
+        try {
+          const localData = await window.electronAPI.getFinanceRecords(tenantId);
+          return localData.map((r: any) => ({
+            id: r.id,
+            type: r.type,
+            category: r.category,
+            amount: r.amount,
+            date: r.date,
+            description: r.description || '',
+            tenantId: r.tenantId,
+            method: r.method || 'Cash',
+            receipt: r.receipt || ''
+          }));
+        } catch (e) {
+          console.error('Failed to load finance records from local SQLite:', e);
+        }
+      }
       return [];
     }
   },
@@ -633,37 +794,102 @@ export const apiService = {
       receipt: record.receipt
     };
 
-    if (record.type === 'income') {
-      if (record.id.startsWith('fin-')) {
-        await api.post('/income', {
-          ...payload,
-          income_date: record.date
-        });
+    try {
+      if (record.type === 'income') {
+        if (record.id.startsWith('fin-')) {
+          await api.post('/income', {
+            ...payload,
+            income_date: record.date
+          });
+        } else {
+          const cleanId = record.id.replace('income-', '');
+          await api.put(`/income/${cleanId}`, {
+            ...payload,
+            income_date: record.date
+          });
+        }
       } else {
-        const cleanId = record.id.replace('income-', '');
-        await api.put(`/income/${cleanId}`, {
-          ...payload,
-          income_date: record.date
-        });
+        if (record.id.startsWith('fin-')) {
+          await api.post('/expenses', {
+            ...payload,
+            expense_date: record.date
+          });
+        } else {
+          const cleanId = record.id.replace('expense-', '');
+          await api.put(`/expenses/${cleanId}`, {
+            ...payload,
+            expense_date: record.date
+          });
+        }
       }
-    } else {
-      if (record.id.startsWith('fin-')) {
-        await api.post('/expenses', {
-          ...payload,
-          expense_date: record.date
-        });
-      } else {
-        const cleanId = record.id.replace('expense-', '');
-        await api.put(`/expenses/${cleanId}`, {
-          ...payload,
-          expense_date: record.date
-        });
+
+      // Save locally as 'synced' in Electron
+      if (isElectron()) {
+        try {
+          await window.electronAPI.saveFinanceRecord({
+            id: record.id,
+            type: record.type,
+            category: record.category,
+            amount: record.amount,
+            date: record.date,
+            description: record.description,
+            tenantId: record.tenantId || localStorage.getItem('tenantId') || '',
+            method: record.method || 'Cash',
+            receipt: record.receipt || '',
+            syncStatus: 'synced'
+          });
+        } catch (e) {
+          console.error('Failed to update local finance cache:', e);
+        }
       }
+    } catch (err) {
+      console.warn('Failed to save finance record to backend, trying local fallback...', err);
+      // Fallback: Save to SQLite as 'pending' in Electron
+      if (isElectron()) {
+        try {
+          await window.electronAPI.saveFinanceRecord({
+            id: record.id,
+            type: record.type,
+            category: record.category,
+            amount: record.amount,
+            date: record.date,
+            description: record.description,
+            tenantId: record.tenantId || localStorage.getItem('tenantId') || '',
+            method: record.method || 'Cash',
+            receipt: record.receipt || '',
+            syncStatus: 'pending'
+          });
+          return;
+        } catch (e) {
+          console.error('Failed to save finance record to local SQLite offline:', e);
+        }
+      }
+      throw err;
     }
   },
 
   deleteFinanceRecord: async (id: string): Promise<void> => {
-    await api.delete(`/finance/records/${id}`);
+    try {
+      await api.delete(`/finance/records/${id}`);
+      if (isElectron()) {
+        try {
+          await window.electronAPI.deleteFinanceRecord(id);
+        } catch (e) {
+          console.error('Failed to delete finance record from local SQLite:', e);
+        }
+      }
+    } catch (err) {
+      console.warn('Failed to delete from backend, applying to local SQLite...', err);
+      if (isElectron()) {
+        try {
+          await window.electronAPI.deleteFinanceRecord(id);
+        } catch (e) {
+          console.error('Failed to delete finance record from local database:', e);
+        }
+        return;
+      }
+      throw err;
+    }
   },
 
   // --- Notifications API ---

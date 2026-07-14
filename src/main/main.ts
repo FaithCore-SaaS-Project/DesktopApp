@@ -216,8 +216,14 @@ function setupIPCHandlers() {
 
       await pdfWindow.loadURL('data:text/html;charset=utf-8,' + encodeURIComponent(styledHtml));
       
-      // Wait for rendering styles/fonts
-      await new Promise(resolve => setTimeout(resolve, 500));
+      await new Promise<void>((resolve) => {
+        if (pdfWindow.webContents.isLoading()) {
+          pdfWindow.webContents.once('did-finish-load', () => resolve());
+        } else {
+          resolve();
+        }
+      });
+      await new Promise(resolve => setTimeout(resolve, 300));
 
       const data = await pdfWindow.webContents.printToPDF({
         printBackground: true,
@@ -281,8 +287,14 @@ function setupIPCHandlers() {
 
       await printWindow.loadURL('data:text/html;charset=utf-8,' + encodeURIComponent(styledHtml));
       
-      // Wait for rendering
-      await new Promise(resolve => setTimeout(resolve, 500));
+      await new Promise<void>((resolve) => {
+        if (printWindow.webContents.isLoading()) {
+          printWindow.webContents.once('did-finish-load', () => resolve());
+        } else {
+          resolve();
+        }
+      });
+      await new Promise(resolve => setTimeout(resolve, 300));
 
       await new Promise<void>((resolve, reject) => {
         printWindow.webContents.print(
