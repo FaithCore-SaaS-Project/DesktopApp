@@ -8,7 +8,7 @@ import { Shield, Building2, User, Lock, Eye, ArrowRight, Users, WifiOff, AlertCi
 import api from '../lib/axios';
 
 const loginSchema = z.object({
-  churchId: z.string().optional(),
+  churchId: z.string().min(1, 'Church ID / Activation ID is required'),
   email: z.string().email('Enter a valid email'),
   password: z.string().min(6, 'Password must be at least 6 characters'),
   remember: z.boolean().optional(),
@@ -50,18 +50,10 @@ export default function LoginPage() {
       setLoading(true);
       setServerError('');
 
-      if (role === 'co' && !data.churchId) {
-        setServerError('Church ID is required for Co-Admin login.');
-        setLoading(false);
-        return;
-      }
-
-      // We use Option A: Single Endpoint intelligently handled by Laravel
-      // We pass the email, password, and optionally church_id.
       const payload = {
         email: data.email,
         password: data.password,
-        ...(role === 'co' && { church_id: data.churchId })
+        church_id: data.churchId
       };
 
       const response = await api.post('/login', payload);
@@ -73,6 +65,7 @@ export default function LoginPage() {
 
       // Activate Tenant
       activateApp(church.id.toString(), church.church_name);
+      localStorage.setItem('activationCode', church.registration_no || data.churchId || '');
       
       // Save Session
       const subStatus = subscription_status || 'active';
@@ -202,7 +195,7 @@ export default function LoginPage() {
             {/* Church ID / Activation ID */}
             <div className="space-y-1.5">
               <label className="text-[11px] font-bold text-gray-400 tracking-wide uppercase ml-1">
-                {role === 'super' ? 'Activation ID (Optional)' : 'Church ID'}
+                Church ID / Activation ID
               </label>
               <div className="flex h-14 items-center rounded-xl border border-white/5 bg-[#090E1A]/85 px-4 focus-within:border-violet-500 focus-within:ring-2 focus-within:ring-violet-500/20 transition-all duration-300">
                 <Building2 className="text-gray-500 focus-within:text-violet-400" size={18} />
@@ -210,7 +203,7 @@ export default function LoginPage() {
                   {...register('churchId')}
                   disabled={loading}
                   className="ml-3 flex-1 bg-transparent text-sm text-white placeholder:text-gray-500 outline-none"
-                  placeholder={role === 'super' ? 'Enter Activation ID' : 'Enter Church ID'}
+                  placeholder="Enter Church ID or Activation ID"
                 />
               </div>
               {errors.churchId && <p className="text-red-400 text-xs ml-1 font-medium">{errors.churchId.message}</p>}

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
 import { useRouter } from 'next/router';
 import { Shield, KeyRound, CheckCircle2, AlertCircle } from 'lucide-react';
+import api from '../lib/axios';
 
 export default function ActivationPage() {
   const { activateApp } = useApp();
@@ -16,35 +17,36 @@ export default function ActivationPage() {
     setLoading(true);
     setError('');
 
-    // Simulate API POST /api/activate
     try {
-      // We wrap the API call in a promise to simulate network latency
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-
       const codeTrimmed = activationCode.trim();
 
       if (!codeTrimmed) {
         throw new Error('Please enter a valid activation code.');
       }
 
-      // Mock response payload
-      const mockResponse = {
-        success: true,
-        tenantId: "TENANT_001",
-        churchName: "Beracah Christian Ministry"
-      };
+      // Call the real backend activation endpoint
+      const response = await api.post('/activate', {
+        activation_code: codeTrimmed
+      });
+
+      const { tenantId, churchName } = response.data;
 
       setSuccess(true);
       
       // Store in local storage via AppContext
-      activateApp(mockResponse.tenantId, mockResponse.churchName);
+      activateApp(tenantId.toString(), churchName);
+      localStorage.setItem('activationCode', codeTrimmed);
 
       // Brief delay to show success animation before redirecting
       setTimeout(() => {
         router.replace('/login');
       }, 1000);
     } catch (err: any) {
-      setError(err.message || 'Activation failed. Please check your internet connection.');
+      setError(
+        err.response?.data?.message || 
+        err.message || 
+        'Activation failed. Please check your internet connection.'
+      );
       setLoading(false);
     }
   };

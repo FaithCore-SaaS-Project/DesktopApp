@@ -101,6 +101,10 @@ export default function Header() {
               <div className="px-4 py-2 border-b border-slate-50">
                 <p className="text-[10px] text-slate-400 font-bold uppercase">Signed in as</p>
                 <p className="text-sm font-bold text-slate-700 truncate mt-0.5">{user?.username || 'Admin'}</p>
+                <p className="text-[9px] text-slate-400 font-bold uppercase mt-2 tracking-wide">Church Activation ID</p>
+                <p className="text-xs font-mono font-bold text-[#5B3DF5] mt-0.5 truncate">
+                  {typeof window !== 'undefined' ? localStorage.getItem('activationCode') || 'FC-123456' : 'FC-123456'}
+                </p>
               </div>
               <button
                 onClick={logout}
