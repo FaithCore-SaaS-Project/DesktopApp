@@ -1,11 +1,32 @@
-import React from 'react';
-import { Settings, Server, Database, HardDrive, Users } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { Settings, Server, Database, HardDrive, Users, Key } from 'lucide-react';
 
 export default function SystemOverviewCard() {
+  const [activationCode, setActivationCode] = useState<string>('FC-XXXXXX');
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const code = localStorage.getItem('activationCode');
+      if (code) {
+        setActivationCode(code);
+      }
+    }
+  }, []);
+
   return (
     <div className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm">
       <h3 className="text-sm font-black text-gray-900 mb-6">System Overview</h3>
       <div className="space-y-5">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <Key size={16} className="text-amber-500" />
+            <span className="text-xs font-semibold text-gray-600">Activation ID</span>
+          </div>
+          <span className="text-xs font-mono font-bold text-[#5B3DF5] bg-violet-50 px-2 py-0.5 rounded tracking-wide">
+            {activationCode}
+          </span>
+        </div>
+
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Settings size={16} className="text-gray-400" />
