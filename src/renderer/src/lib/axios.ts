@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const baseURL = 'https://api.faithcore.org';
+const baseURL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
 const api = axios.create({
   baseURL: `${baseURL}/api`,
