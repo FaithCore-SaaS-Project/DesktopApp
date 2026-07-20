@@ -9,37 +9,38 @@ interface QuickActionsProps {
 
 export default function QuickActions({ member }: QuickActionsProps) {
   const router = useRouter();
+  const memberName = member.name || `${member.firstName} ${member.lastName}`;
 
   const actions = [
     {
       label: "Send Letter",
       icon: FileText,
       color: "text-blue-500 bg-blue-50 border-blue-100",
-      onClick: () => router.push(`/letters?memberId=${member.id}&name=${encodeURIComponent(member.name)}`)
+      onClick: () => router.push(`/letters?memberId=${member.id}&name=${encodeURIComponent(memberName)}`)
     },
     {
       label: "Generate Certificate",
       icon: Award,
       color: "text-amber-500 bg-amber-50 border-amber-100",
-      onClick: () => router.push(`/certificates?name=${encodeURIComponent(member.name)}`)
+      onClick: () => router.push(`/certificates?name=${encodeURIComponent(memberName)}`)
     },
     {
       label: "View E-Receipts",
       icon: Receipt,
       color: "text-emerald-500 bg-emerald-50 border-emerald-100",
-      onClick: () => router.push(`/finance/e-receipts?search=${encodeURIComponent(member.name)}`)
+      onClick: () => router.push(`/finance/e-receipts?search=${encodeURIComponent(memberName)}`)
     },
     {
       label: "Add Note",
       icon: Notebook,
       color: "text-purple-500 bg-purple-50 border-purple-100",
-      onClick: () => alert(`Feature "Add Note" for ${member.name} simulated!`)
+      onClick: () => alert(`Feature "Add Note" for ${memberName} simulated!`)
     },
     {
       label: "Record Attendance",
       icon: UserCheck,
       color: "text-indigo-500 bg-indigo-50 border-indigo-100",
-      onClick: () => alert(`Attendance for ${member.name} successfully recorded!`)
+      onClick: () => alert(`Attendance for ${memberName} successfully recorded!`)
     },
   ];
 

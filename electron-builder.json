@@ -4,6 +4,13 @@
   "directories": {
     "output": "release"
   },
+  "publish": [
+    {
+      "provider": "github",
+      "owner": "FaithCore-SaaS-Project",
+      "repo": "faithcore-desktop-releases"
+    }
+  ],
   "files": [
     "dist/**/*",
     "src/renderer/out/**/*",

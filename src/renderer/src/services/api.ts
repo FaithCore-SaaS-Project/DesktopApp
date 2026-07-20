@@ -280,17 +280,6 @@ export const apiService = {
     link.remove();
   },
 
-  downloadLetterPdf: async (id: string, fileName: string): Promise<void> => {
-    const res = await api.get(`/letters/${id}/pdf`, { responseType: 'blob' });
-    const url = window.URL.createObjectURL(new Blob([res.data]));
-    const link = document.createElement('a');
-    link.href = url;
-    link.setAttribute('download', fileName);
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-  },
-
   getBudgets: async (tenantId: string): Promise<BudgetMock[]> => {
     try {
       const res = await api.get('/budgets');
@@ -1039,5 +1028,73 @@ export const apiService = {
       window.print();
       return { success: true };
     }
+  },
+
+  syncPendingRecords: async (tenantId: string): Promise<{ membersSynced: number; financeSynced: number }> => {
+    if (!isElectron()) return { membersSynced: 0, financeSynced: 0 };
+    let membersSynced = 0;
+    let financeSynced = 0;
+
+    try {
+      // 1. Sync pending members
+      const localMembers = await window.electronAPI.getMembers(tenantId);
+      const pendingMembers = localMembers.filter((m: any) => m.syncStatus === 'pending');
+
+      for (const m of pendingMembers) {
+        const nameParts = m.name.trim().split(' ');
+        const firstName = nameParts[0] || 'Unknown';
+        const lastName = nameParts.slice(1).join(' ') || 'Member';
+
+        await api.post('/members', {
+          first_name: firstName,
+          last_name: lastName,
+          phone: m.phone || '',
+          email: m.email || '',
+          gender: 'male',
+          status: m.status === 'active' ? 'active' : 'inactive',
+          membership_date: m.joinedDate || new Date().toISOString().split('T')[0],
+          occupation: m.role || '',
+          is_baptized: 0,
+          marital_status: 'single'
+        });
+
+        // Update local record to synced
+        await window.electronAPI.saveMember({
+          ...m,
+          syncStatus: 'synced'
+        });
+        membersSynced++;
+      }
+
+      // 2. Sync pending finance records
+      const localFinance = await window.electronAPI.getFinanceRecords(tenantId);
+      const pendingFinance = localFinance.filter((f: any) => f.syncStatus === 'pending');
+
+      for (const f of pendingFinance) {
+        const endpoint = f.type === 'income' ? '/income' : '/expenses';
+        const dateKey = f.type === 'income' ? 'income_date' : 'expense_date';
+        
+        await api.post(endpoint, {
+          category: f.category,
+          amount: parseFloat(f.amount),
+          description: f.description || '',
+          method: f.method || (f.type === 'income' ? 'Cash' : 'Bank Transfer'),
+          receipt: f.receipt || '',
+          [dateKey]: f.date
+        });
+
+        // Update local record to synced
+        await window.electronAPI.saveFinanceRecord({
+          ...f,
+          syncStatus: 'synced'
+        });
+        financeSynced++;
+      }
+    } catch (e) {
+      console.error('[Sync] Error during background synchronization:', e);
+      throw e;
+    }
+
+    return { membersSynced, financeSynced };
   }
 };

@@ -17,7 +17,7 @@ interface PersonalInformationProps {
 
 export default function PersonalInformation({ member, onEdit }: PersonalInformationProps) {
   const fields = [
-    { label: "Full Name", value: member.name },
+    { label: "Full Name", value: member.name || `${member.firstName} ${member.lastName}` },
     { label: "NIC Number", value: member.nic || "N/A" },
     { label: "Occupation", value: member.occupation || "N/A" },
     { label: "Date Of Birth", value: member.dob || "N/A" },

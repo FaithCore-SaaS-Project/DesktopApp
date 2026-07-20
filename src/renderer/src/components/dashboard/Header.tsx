@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useApp } from '../../context/AppContext';
+import { apiService } from '../../services/api';
 import {
   Menu,
   Search,
@@ -8,12 +9,14 @@ import {
   Wifi,
   WifiOff,
   LogOut,
-  ChevronDown
+  ChevronDown,
+  RefreshCw
 } from "lucide-react";
 
 export default function Header() {
   const { user, logout, isOnline, toggleNetworkStatus, currentTenant } = useApp();
   const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const [isSyncing, setIsSyncing] = useState(false);
 
   return (
     <div className="bg-white/80 border-b border-slate-100 px-8 py-4 flex items-center justify-between sticky top-0 z-20 backdrop-blur-md shadow-sm shadow-slate-100/30">
@@ -58,6 +61,48 @@ export default function Header() {
             </>
           )}
         </button>
+
+        {/* Sync Button */}
+        {isOnline && currentTenant?.id && (
+          <button
+            onClick={async () => {
+              setIsSyncing(true);
+              try {
+                const { membersSynced, financeSynced } = await apiService.syncPendingRecords(currentTenant.id);
+                if (membersSynced > 0 || financeSynced > 0) {
+                  if (typeof window !== 'undefined' && window.electronAPI) {
+                    window.electronAPI.sendNotification(
+                      'Cloud Sync Complete',
+                      `Successfully uploaded ${membersSynced} member(s) and ${financeSynced} financial record(s).`
+                    );
+                  } else {
+                    alert(`Sync Complete: Uploaded ${membersSynced} member(s) and ${financeSynced} financial record(s).`);
+                  }
+                } else {
+                  if (typeof window !== 'undefined' && window.electronAPI) {
+                    window.electronAPI.sendNotification(
+                      'Cloud Sync Complete',
+                      'Your local database is already up to date.'
+                    );
+                  } else {
+                    alert('Sync Complete: Local database is up to date.');
+                  }
+                }
+              } catch (e) {
+                console.error(e);
+                alert('Sync failed. Please check your network connection.');
+              } finally {
+                setIsSyncing(false);
+              }
+            }}
+            disabled={isSyncing}
+            className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-[11px] font-bold border border-violet-200 bg-violet-50 text-violet-600 hover:bg-violet-100 disabled:opacity-50 transition-all select-none active:scale-[0.98]"
+            title="Upload pending offline records to cloud"
+          >
+            <RefreshCw size={13} className={isSyncing ? "animate-spin" : ""} />
+            <span>{isSyncing ? "Syncing..." : "Sync Cloud"}</span>
+          </button>
+        )}
 
         {/* Notifications and Mail */}
         <div className="flex items-center gap-4 text-slate-500">
