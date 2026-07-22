@@ -5,6 +5,9 @@ import { initDatabase, dbOperations } from './database';
 import { initAutoUpdater } from './autoUpdater';
 import serve from 'electron-serve';
 
+// Set application name for macOS menu bar and system dialogs
+app.name = 'FaithCore';
+
 // Resolve the renderer's static export directory.
 // In a packaged app, asarUnpack extracts it to app.asar.unpacked/ for direct file access.
 const rendererDir = app.isPackaged
@@ -25,6 +28,7 @@ function createWindow() {
     minHeight: 700,
     show: false, // Wait for ready-to-show to prevent screen flash
     backgroundColor: '#020617', // Slate 950
+    title: 'FaithCore', // Set default window title
     titleBarStyle: 'default',
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),

@@ -60,10 +60,10 @@ export default function ActivationPage() {
       <div className="w-full max-w-md bg-slate-900/40 border border-slate-800/80 p-8 rounded-3xl shadow-2xl backdrop-blur-xl relative z-10 transition-all duration-300">
         <div className="flex flex-col items-center mb-8">
           <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-[#3224B8] to-[#5B3DF5] flex items-center justify-center font-extrabold text-white text-3xl shadow-lg shadow-[#5B3DF5]/20 mb-4 select-none">
-            K
+            F
           </div>
           <h1 className="text-3xl font-black bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent select-none">
-            Kingdom Connect
+            FaithCore
           </h1>
           <p className="text-xs text-gray-500 mt-1.5 uppercase tracking-widest font-semibold">
             Product Activation
