@@ -12,6 +12,8 @@ export default function ActivationPage() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
 
+  const [logoError, setLogoError] = useState(false);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -59,9 +61,20 @@ export default function ActivationPage() {
 
       <div className="w-full max-w-md bg-slate-900/40 border border-slate-800/80 p-8 rounded-3xl shadow-2xl backdrop-blur-xl relative z-10 transition-all duration-300">
         <div className="flex flex-col items-center mb-8">
-          <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-[#3224B8] to-[#5B3DF5] flex items-center justify-center font-extrabold text-white text-3xl shadow-lg shadow-[#5B3DF5]/20 mb-4 select-none">
-            F
-          </div>
+          {logoError ? (
+            <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-[#3224B8] to-[#5B3DF5] flex items-center justify-center font-extrabold text-white text-3xl shadow-lg shadow-[#5B3DF5]/20 mb-4 select-none">
+              F
+            </div>
+          ) : (
+            <div className="h-16 w-16 rounded-2xl overflow-hidden shadow-lg shadow-[#5B3DF5]/20 mb-4 select-none bg-slate-950 border border-slate-800/80 flex items-center justify-center">
+              <img 
+                src="/logo.jpg" 
+                alt="Logo" 
+                className="w-full h-full object-cover" 
+                onError={() => setLogoError(true)}
+              />
+            </div>
+          )}
           <h1 className="text-3xl font-black bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent select-none">
             FaithCore
           </h1>

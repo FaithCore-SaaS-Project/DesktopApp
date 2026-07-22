@@ -5,6 +5,8 @@ workflows:
     environment:
       groups:
         - publish
+      vars:
+        NEXT_PUBLIC_API_URL: "https://api.faithcore.org"
       node: 18
     scripts:
       - name: Install Dependencies
@@ -23,6 +25,8 @@ workflows:
     environment:
       groups:
         - publish
+      vars:
+        NEXT_PUBLIC_API_URL: "https://api.faithcore.org"
       node: 18
     scripts:
       - name: Install Dependencies
@@ -41,6 +45,8 @@ workflows:
     environment:
       groups:
         - publish
+      vars:
+        NEXT_PUBLIC_API_URL: "https://api.faithcore.org"
       node: 18
     scripts:
       - name: Install Dependencies
