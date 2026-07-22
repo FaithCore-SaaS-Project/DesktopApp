@@ -3,6 +3,8 @@ workflows:
     name: Build FaithCore Mac App (Intel Core x64 ONLY - ~160 MB)
     instance_type: mac_mini_m1
     environment:
+      groups:
+        - publish
       node: 18
     scripts:
       - name: Install Dependencies
@@ -19,6 +21,8 @@ workflows:
     name: Build FaithCore Mac App (Apple Silicon M-Series ONLY - ~160 MB)
     instance_type: mac_mini_m1
     environment:
+      groups:
+        - publish
       node: 18
     scripts:
       - name: Install Dependencies
@@ -35,6 +39,8 @@ workflows:
     name: Build FaithCore Mac App (Universal Both Intel & Silicon - ~300 MB)
     instance_type: mac_mini_m1
     environment:
+      groups:
+        - publish
       node: 18
     scripts:
       - name: Install Dependencies
