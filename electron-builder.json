@@ -8,7 +8,8 @@
     {
       "provider": "github",
       "owner": "FaithCore-SaaS-Project",
-      "repo": "faithcore-desktop-releases"
+      "repo": "faithcore-desktop-releases",
+      "releaseType": "release"
     }
   ],
   "files": [
