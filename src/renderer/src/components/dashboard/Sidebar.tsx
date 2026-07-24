@@ -16,7 +16,8 @@ import {
   UserCog,
   Settings,
   Headphones,
-  ChevronDown
+  ChevronDown,
+  MessageSquare
 } from "lucide-react";
 
 interface MenuItem {
@@ -45,6 +46,7 @@ const menuItems: MenuItem[] = [
     ]
   },
   { icon: Mail, label: "Letters", path: "/letters" },
+  { icon: MessageSquare, label: "SMS Center", path: "/sms" },
   { icon: BadgeCheck, label: "Certificates", path: "/certificates" },
   { icon: CalendarDays, label: "Events", path: "/events" },
   { icon: BarChart3, label: "Reports", path: "/reports" },
