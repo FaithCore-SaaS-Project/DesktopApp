@@ -4,6 +4,7 @@ import { ChevronRight, Plus, X } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { apiService } from '../services/api';
 import { EventMock } from '../services/mockData';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
 import EventStats from '../components/events/EventStats';
 import EventFilters from '../components/events/EventFilters';
@@ -14,8 +15,7 @@ import EventAttendanceModal from '../components/events/EventAttendanceModal';
 
 export default function EventsPage() {
   const { currentTenant } = useApp();
-  const [events, setEvents] = useState<EventMock[]>([]);
-  const [loading, setLoading] = useState(true);
+  const queryClient = useQueryClient();
 
   // Selection
   const [selectedEvent, setSelectedEvent] = useState<EventMock | null>(null);
@@ -51,31 +51,38 @@ export default function EventsPage() {
   const [formOrganizer, setFormOrganizer] = useState('');
   const [formDescription, setFormDescription] = useState('');
 
-  const loadData = async () => {
-    if (!currentTenant) return;
-    setLoading(true);
-    try {
-      const list = await apiService.getEvents(currentTenant.id);
-      setEvents(list);
-
-      // Default select the first event in the list
-      if (list.length > 0) {
-        // Find first upcoming or first event
-        const upcoming = list.find(e => e.status === 'Upcoming' || e.status === 'Ongoing');
-        setSelectedEvent(upcoming || list[0]);
-      } else {
-        setSelectedEvent(null);
-      }
-    } catch (err) {
-      console.error('Error loading events:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const { data: events = [], isLoading: loading } = useQuery({
+    queryKey: ['events', currentTenant?.id],
+    queryFn: () => currentTenant ? apiService.getEvents(currentTenant.id) : Promise.resolve([]),
+    enabled: !!currentTenant,
+  });
 
   useEffect(() => {
-    loadData();
-  }, [currentTenant]);
+    if (events.length > 0 && !selectedEvent) {
+      const upcoming = events.find(e => e.status === 'Upcoming' || e.status === 'Ongoing');
+      setSelectedEvent(upcoming || events[0]);
+    }
+  }, [events]);
+
+  const saveEventMutation = useMutation({
+    mutationFn: (eventData: EventMock) => apiService.saveEvent(eventData),
+    onSuccess: (data, variables) => {
+      setIsModalOpen(false);
+      queryClient.invalidateQueries({ queryKey: ['events'] });
+      // We optimistically select the edited/added event by updating local state, but we don't have the full object if it's not returned.
+      // In this app, we just let it refresh and the selectedEvent might stay the same by ID if it exists.
+    }
+  });
+
+  const deleteEventMutation = useMutation({
+    mutationFn: (id: string) => apiService.deleteEvent(id),
+    onSuccess: (_, deletedId) => {
+      queryClient.invalidateQueries({ queryKey: ['events'] });
+      if (selectedEvent?.id === deletedId) {
+        setSelectedEvent(null); // will be selected by the effect if there are others
+      }
+    }
+  });
 
   const handleResetFilters = () => {
     setSearchTerm('');
@@ -169,17 +176,7 @@ export default function EventsPage() {
   const handleDeleteEvent = async (evt: EventMock) => {
     if (!currentTenant) return;
     if (confirm(`Are you sure you want to delete this event: "${evt.name}"?`)) {
-      try {
-        await apiService.deleteEvent(evt.id);
-        const list = await apiService.getEvents(currentTenant.id);
-        setEvents(list);
-
-        if (selectedEvent?.id === evt.id) {
-          setSelectedEvent(list.length > 0 ? list[0] : null);
-        }
-      } catch (err) {
-        console.error('Error deleting event:', err);
-      }
+      deleteEventMutation.mutate(evt.id);
     }
   };
 
@@ -230,19 +227,11 @@ export default function EventsPage() {
       createdOn: modalMode === 'add' ? new Date().toISOString().split('T')[0] : events.find(item => item.id === editId)?.createdOn || new Date().toISOString().split('T')[0]
     };
 
-    try {
-      await apiService.saveEvent(eventData);
-      const list = await apiService.getEvents(currentTenant.id);
-      setEvents(list);
-      setIsModalOpen(false);
-
-      const target = list.find(item => item.id === eventData.id);
-      if (target) {
-        setSelectedEvent(target);
+    saveEventMutation.mutate(eventData, {
+      onSuccess: () => {
+        setSelectedEvent(eventData);
       }
-    } catch (err) {
-      console.error('Error saving event:', err);
-    }
+    });
   };
 
   return (
@@ -560,8 +549,10 @@ export default function EventsPage() {
                 </button>
                 <button
                   type="submit"
-                  className="rounded-xl bg-[#5B3DF5] hover:bg-[#4d32d6] px-5 py-2.5 text-xs font-bold text-white shadow-md shadow-[#5B3DF5]/15 transition-all cursor-pointer active:scale-[0.98]"
+                  disabled={saveEventMutation.isPending}
+                  className="rounded-xl bg-[#5B3DF5] hover:bg-[#4d32d6] px-5 py-2.5 text-xs font-bold text-white shadow-md shadow-[#5B3DF5]/15 transition-all cursor-pointer active:scale-[0.98] disabled:opacity-50 flex items-center gap-2"
                 >
+                  {saveEventMutation.isPending ? <div className="h-3 w-3 border-2 border-white/30 border-t-white rounded-full animate-spin"></div> : null}
                   {modalMode === 'add' ? 'Create Event' : 'Save Changes'}
                 </button>
               </div>

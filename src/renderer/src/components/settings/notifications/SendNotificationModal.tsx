@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Send, Mail, MessageSquare, Loader2, Search } from 'lucide-react';
+import { X, Send, Mail, MessageSquare, Loader2, Search, Phone } from 'lucide-react';
 import { apiService } from '../../../services/api';
 import { MemberMock } from '../../../services/mockData';
 
@@ -51,18 +51,24 @@ export default function SendNotificationModal({ members, initialSelectedMembers 
 
     setSubmitting(true);
     try {
-      await apiService.sendNotification({
+      const response = await apiService.sendNotification({
         subject,
         message,
         channels,
         member_ids: selectedIds
       });
-      alert('Message sent successfully!');
+      
+      if (response.no_phone_numbers && response.no_phone_numbers.length > 0) {
+        alert(`Message sent successfully!\n\nNote: The following members were skipped for SMS because they don't have a phone number:\n- ${response.no_phone_numbers.join('\n- ')}`);
+      } else {
+        alert('Message sent successfully!');
+      }
+      
       onSuccess();
       onClose();
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
-      alert('Failed to send message.');
+      alert(err.response?.data?.message || 'Failed to send message.');
     } finally {
       setSubmitting(false);
     }
@@ -126,6 +132,11 @@ export default function SendNotificationModal({ members, initialSelectedMembers 
                   <input type="checkbox" checked={channels.includes('database')} onChange={() => toggleChannel('database')} className="hidden" />
                   <MessageSquare size={18} />
                   <span className="text-sm font-bold">In-App Alert</span>
+                </label>
+                <label className={`flex items-center gap-2 border px-4 py-3 rounded-xl cursor-pointer transition-colors flex-1 ${channels.includes('sms') ? 'border-[#5B3DF5] bg-[#5B3DF5]/5 text-[#5B3DF5]' : 'border-gray-200 text-gray-600 hover:bg-gray-50'}`}>
+                  <input type="checkbox" checked={channels.includes('sms')} onChange={() => toggleChannel('sms')} className="hidden" />
+                  <Phone size={18} />
+                  <span className="text-sm font-bold">SMS</span>
                 </label>
               </div>
             </div>

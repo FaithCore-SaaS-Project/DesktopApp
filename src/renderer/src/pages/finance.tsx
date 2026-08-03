@@ -3,6 +3,7 @@ import { useApp } from '../context/AppContext';
 import { apiService } from '../services/api';
 import { FinanceMock } from '../services/mockData';
 import { X, Plus, Sparkles } from 'lucide-react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
 import FinanceHeader from '../components/finance/FinanceHeader';
 import FinanceStats from '../components/finance/FinanceStats';
@@ -14,8 +15,7 @@ import ExpenseCategories from '../components/finance/ExpenseCategories';
 
 export default function FinancePage() {
   const { currentTenant, isOnline } = useApp();
-  const [records, setRecords] = useState<FinanceMock[]>([]);
-  const [loading, setLoading] = useState(true);
+  const queryClient = useQueryClient();
   
   // Pagination State
   const [currentPage, setCurrentPage] = useState(1);
@@ -29,22 +29,33 @@ export default function FinancePage() {
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
   const [description, setDescription] = useState('');
 
-  const loadFinanceRecords = async () => {
-    if (!currentTenant) return;
-    setLoading(true);
-    try {
-      const data = await apiService.getFinanceRecords(currentTenant.id);
-      setRecords(data);
-    } catch (err) {
-      console.error('Error loading finance records:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const { data: records = [], isLoading: loading } = useQuery({
+    queryKey: ['financeRecords', currentTenant?.id],
+    queryFn: () => currentTenant ? apiService.getFinanceRecords(currentTenant.id) : Promise.resolve([]),
+    enabled: !!currentTenant,
+  });
 
-  useEffect(() => {
-    loadFinanceRecords();
-  }, [currentTenant, isOnline]);
+  const saveRecordMutation = useMutation({
+    mutationFn: (newRecord: FinanceMock) => apiService.saveFinanceRecord(newRecord),
+    onSuccess: () => {
+      setIsModalOpen(false);
+      setCurrentPage(1);
+      queryClient.invalidateQueries({ queryKey: ['financeRecords'] });
+    }
+  });
+
+  const deleteRecordMutation = useMutation({
+    mutationFn: (id: string) => apiService.deleteFinanceRecord(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['financeRecords'] });
+      
+      const updatedTotal = records.length - 1;
+      const maxPages = Math.ceil(updatedTotal / pageSize);
+      if (currentPage > maxPages && maxPages > 0) {
+        setCurrentPage(maxPages);
+      }
+    }
+  });
 
   const handleOpenAddModal = () => {
     setType('income');
@@ -84,31 +95,12 @@ export default function FinancePage() {
       tenantId: currentTenant.id
     };
 
-    try {
-      await apiService.saveFinanceRecord(newRecord);
-      setIsModalOpen(false);
-      loadFinanceRecords();
-      setCurrentPage(1); // Reset to first page
-    } catch (err) {
-      console.error('Error saving transaction:', err);
-    }
+    saveRecordMutation.mutate(newRecord);
   };
 
   const handleDelete = async (id: string) => {
     if (confirm('Are you sure you want to remove this ledger entry?')) {
-      try {
-        await apiService.deleteFinanceRecord(id);
-        loadFinanceRecords();
-        
-        // Adjust page index if list shrank
-        const updatedTotal = records.length - 1;
-        const maxPages = Math.ceil(updatedTotal / pageSize);
-        if (currentPage > maxPages && maxPages > 0) {
-          setCurrentPage(maxPages);
-        }
-      } catch (err) {
-        console.error('Error deleting finance record:', err);
-      }
+      deleteRecordMutation.mutate(id);
     }
   };
 
@@ -334,8 +326,10 @@ export default function FinancePage() {
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2.5 rounded-xl bg-[#5B3DF5] hover:bg-[#4d32d6] text-white text-xs font-bold shadow-md shadow-[#5B3DF5]/10 transition-all cursor-pointer"
+                  disabled={saveRecordMutation.isPending}
+                  className="px-4 py-2.5 rounded-xl bg-[#5B3DF5] hover:bg-[#4d32d6] text-white text-xs font-bold shadow-md shadow-[#5B3DF5]/10 transition-all cursor-pointer disabled:opacity-50 flex items-center gap-2"
                 >
+                  {saveRecordMutation.isPending ? <div className="h-3 w-3 border-2 border-white/30 border-t-white rounded-full animate-spin"></div> : null}
                   Post Transaction
                 </button>
               </div>
