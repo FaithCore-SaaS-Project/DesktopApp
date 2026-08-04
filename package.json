@@ -9,6 +9,7 @@
     "dev:next": "next dev src/renderer -p 3080",
     "build:next": "next build src/renderer",
     "start:next": "next start src/renderer",
+    "test": "vitest run",
     "dev:electron": "tsc -p tsconfig.json && electron .",
     "build:electron": "tsc -p tsconfig.json",
     "dev": "concurrently -k \"npm run dev:next\" \"wait-on http://127.0.0.1:3080 && npm run dev:electron\"",
@@ -34,17 +35,22 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
+    "@testing-library/jest-dom": "^7.0.0",
+    "@testing-library/react": "^16.3.2",
     "@types/node": "^22.10.1",
     "@types/react": "^19.0.1",
     "@types/react-dom": "^19.0.1",
     "@types/sql.js": "^1.4.9",
+    "@vitejs/plugin-react": "^6.0.5",
     "autoprefixer": "^10.4.20",
     "concurrently": "^9.1.0",
     "electron": "^33.0.0",
     "electron-builder": "^24.13.3",
+    "jsdom": "^29.1.1",
     "postcss": "^8.4.49",
     "tailwindcss": "^3.4.16",
     "typescript": "^5.7.2",
+    "vitest": "^4.1.10",
     "wait-on": "^8.0.1"
   }
 }
