@@ -1,6 +1,6 @@
 {
   "name": "fc-desktop-app",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "FC Software Hybrid Multi-Tenant Church Management Desktop Client",
   "main": "dist/main/main.js",
   "author": "FC Software Team",
