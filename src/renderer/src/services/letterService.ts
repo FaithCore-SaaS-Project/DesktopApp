@@ -22,7 +22,7 @@ export const letterService = {
         createdOn: l.createdOn
       }));
     } catch (err) {
-      console.error('Failed to load letters from backend', err);
+      console.error('Failed to load letters from backend', err?.message || 'Error occurred');
       return [];
     }
   },

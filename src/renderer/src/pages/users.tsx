@@ -40,7 +40,7 @@ export default function UsersPage() {
       const rList = await apiService.getRoles();
       setRoles(rList);
     } catch (err) {
-      console.error('Failed to load users page data:', err);
+      console.error('Failed to load users page data:', err?.message || 'Error occurred');
     } finally {
       setLoading(false);
     }
@@ -98,7 +98,7 @@ export default function UsersPage() {
       setIsModalOpen(false);
       loadData();
     } catch (err: any) {
-      console.error('Failed to save user:', err);
+      console.error('Failed to save user:', err?.message || 'Error occurred');
       if (err.response?.data?.errors) {
         setErrors(err.response.data.errors);
       } else {

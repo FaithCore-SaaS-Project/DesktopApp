@@ -21,7 +21,7 @@ export const certificateService = {
         createdOn: c.createdOn
       }));
     } catch (err) {
-      console.error('Failed to load certificates from backend', err);
+      console.error('Failed to load certificates from backend', err?.message || 'Error occurred');
       return [];
     }
   },

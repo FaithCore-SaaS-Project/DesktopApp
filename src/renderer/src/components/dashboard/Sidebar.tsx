@@ -200,7 +200,9 @@ export default function Sidebar() {
                   <div className="absolute left-[20px] top-0 bottom-4 w-[1px] bg-slate-800/80" />
 
                   {item.subItems.map((sub, sIdx) => {
-                    const isSubActive = router.pathname === sub.path || router.pathname.startsWith(sub.path);
+                    const isSubActive = sub.path === item.path 
+                      ? router.pathname === sub.path
+                      : (router.pathname === sub.path || router.pathname.startsWith(sub.path + '/'));
 
                     return (
                       <Link href={sub.path} key={sIdx} passHref legacyBehavior>

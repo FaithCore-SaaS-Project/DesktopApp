@@ -88,7 +88,7 @@ export const systemService = {
         financeSynced++;
       }
     } catch (e) {
-      console.error('Failed to sync offline records:', e);
+      console.error('Failed to sync offline records:', e?.message || 'Error occurred');
     }
 
     return { membersSynced, financeSynced };

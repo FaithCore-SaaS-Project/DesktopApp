@@ -155,7 +155,7 @@ export default function EventsSidebar({
         alert(`Export failed: ${res.error}`);
       }
     } catch (err) {
-      console.error(err);
+      console.error(err?.message || 'Error occurred');
       alert('Error exporting events list.');
     }
   };
@@ -197,7 +197,7 @@ export default function EventsSidebar({
     try {
       await apiService.printDirect(html);
     } catch (err) {
-      console.error(err);
+      console.error(err?.message || 'Error occurred');
       alert('Print failed.');
     }
   };

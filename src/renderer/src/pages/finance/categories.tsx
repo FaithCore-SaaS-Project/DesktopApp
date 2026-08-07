@@ -56,7 +56,7 @@ export default function FinanceCategoriesPage() {
         setSelectedCategory(null);
       }
     } catch (err) {
-      console.error('Error loading categories data:', err);
+      console.error('Error loading categories data:', err?.message || 'Error occurred');
     } finally {
       setLoading(false);
     }
@@ -150,7 +150,7 @@ export default function FinanceCategoriesPage() {
           setCurrentPage(maxPages);
         }
       } catch (err) {
-        console.error('Error deleting category:', err);
+        console.error('Error deleting category:', err?.message || 'Error occurred');
       }
     }
   };
@@ -206,7 +206,7 @@ export default function FinanceCategoriesPage() {
         setSelectedCategory(targetCat);
       }
     } catch (err) {
-      console.error('Error saving category:', err);
+      console.error('Error saving category:', err?.message || 'Error occurred');
     }
   };
 

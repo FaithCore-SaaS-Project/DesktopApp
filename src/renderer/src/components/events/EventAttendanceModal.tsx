@@ -24,7 +24,7 @@ export default function EventAttendanceModal({ event, onClose }: EventAttendance
         setMembers(mems);
         setAttendance(att);
       } catch (err) {
-        console.error('Failed to load attendance data', err);
+        console.error('Failed to load attendance data', err?.message || 'Error occurred');
       } finally {
         setLoading(false);
       }

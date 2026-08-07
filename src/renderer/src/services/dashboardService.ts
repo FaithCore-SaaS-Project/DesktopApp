@@ -6,7 +6,7 @@ export const dashboardService = {
       const response = await api.get('/dashboard/stats');
       return response.data;
     } catch (err) {
-      console.error('Failed to fetch dashboard stats', err);
+      console.error('Failed to fetch dashboard stats', err?.message || 'Error occurred');
       return null;
     }
   }

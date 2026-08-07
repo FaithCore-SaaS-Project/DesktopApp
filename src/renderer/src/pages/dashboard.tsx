@@ -39,7 +39,7 @@ export default function DashboardPage() {
         setStats(response.data.stats);
         setDashboardData(response.data);
       } catch (error) {
-        console.error("Failed to load dashboard stats", error);
+        console.error("Failed to load dashboard stats", error?.message || 'Error occurred');
       } finally {
         setLoadingStats(false);
       }

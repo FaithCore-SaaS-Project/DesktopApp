@@ -69,7 +69,7 @@ export default function CertificatesPage() {
         setSelectedCertificate(null);
       }
     } catch (err) {
-      console.error('Error loading certificates:', err);
+      console.error('Error loading certificates:', err?.message || 'Error occurred');
     } finally {
       setLoading(false);
     }
@@ -177,7 +177,7 @@ export default function CertificatesPage() {
       const fileName = `${cert.id}_${cert.name.replace(/\s+/g, '_')}.pdf`;
       await apiService.downloadCertificatePdf(cert.id, fileName);
     } catch (err) {
-      console.error('Failed to download certificate PDF:', err);
+      console.error('Failed to download certificate PDF:', err?.message || 'Error occurred');
       alert('Error downloading certificate.');
     }
   };

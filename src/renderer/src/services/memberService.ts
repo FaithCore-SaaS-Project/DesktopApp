@@ -59,7 +59,7 @@ export const memberService = {
             });
           }
         } catch (e) {
-          console.error('Failed to sync to local SQLite cache:', e);
+          console.error('Failed to sync to local SQLite cache:', e?.message || 'Error occurred');
         }
       }
 
@@ -92,7 +92,7 @@ export const memberService = {
             maritalStatus: 'single',
           }));
         } catch (e) {
-          console.error('Failed to load from local SQLite:', e);
+          console.error('Failed to load from local SQLite:', e?.message || 'Error occurred');
         }
       }
       return [];
@@ -104,7 +104,14 @@ export const memberService = {
       const res = await api.get('/families');
       return res.data.data || res.data;
     } catch (err) {
-      console.error('Error fetching families:', err);
+      console.warn('Failed to fetch families. Backend might be offline.');
+      if (isElectron()) {
+        try {
+          return await window.electronAPI.getFamilies(tenantId);
+        } catch (e) {
+          // Ignore
+        }
+      }
       return [];
     }
   },
@@ -208,7 +215,7 @@ export const memberService = {
             syncStatus: 'synced'
           });
         } catch (e) {
-          console.error('Failed to update local cache after successful save:', e);
+          console.error('Failed to update local cache after successful save:', e?.message || 'Error occurred');
         }
       }
       return res.data;
@@ -229,7 +236,7 @@ export const memberService = {
           });
           return { success: true, message: 'Saved offline locally. Will sync when online.' };
         } catch (e) {
-          console.error('Failed to save to offline database:', e);
+          console.error('Failed to save to offline database:', e?.message || 'Error occurred');
         }
       }
       throw err;
@@ -243,7 +250,7 @@ export const memberService = {
         try {
           await window.electronAPI.deleteMember(id);
         } catch (e) {
-          console.error('Failed to delete member from local SQLite:', e);
+          console.error('Failed to delete member from local SQLite:', e?.message || 'Error occurred');
         }
       }
     } catch (err) {
@@ -252,7 +259,7 @@ export const memberService = {
         try {
           await window.electronAPI.deleteMember(id);
         } catch (e) {
-          console.error('Failed to delete from local database:', e);
+          console.error('Failed to delete from local database:', e?.message || 'Error occurred');
         }
         return;
       }

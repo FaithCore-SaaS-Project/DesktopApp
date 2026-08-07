@@ -32,30 +32,10 @@ const STATUS_OPTIONS = ['active', 'inactive', 'archived'] as const;
 const statusColor = (s: string) =>
   s === 'active' ? 'bg-emerald-500' : s === 'inactive' ? 'bg-amber-500' : 'bg-gray-400';
 
-const emptyForm = {
-  first_name: '',
-  last_name: '',
-  email: '',
-  phone: '',
-  gender: 'male' as 'male' | 'female',
-  dob: '',
-  address: '',
-  occupation: '',
-  status: 'active' as 'active' | 'inactive' | 'archived',
-  family_id: '' as string | number,
-  nic: '',
-  address_type: 'permanent', // permanent, postal, both
-  permanent_address: '',
-  postal_address: '',
-  is_baptized: false,
-  baptism_church: '',
-  baptism_partner_name: '',
-  baptism_date: '',
-  marital_status: 'single', // single, married
-  marriage_date: '',
+
 import { useRouter } from 'next/router';
-import { Download, UploadCloud, Image as ImageIcon, MessageSquare, FileText, ChevronLeft, ChevronRight, ShieldAlert } from 'lucide-react';
-import { api, apiService } from '../services/api';
+import { Download, UploadCloud, Image as ImageIcon, MessageSquare, FileText, ChevronLeft, ChevronRight } from 'lucide-react';
+import { apiService } from '../services/api';
 import SendNotificationModal from '../components/settings/notifications/SendNotificationModal';
 import MemberFormModal from '../components/members/MemberFormModal';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -100,10 +80,6 @@ export default function MembersPage() {
 
   const openAddModal = () => {
     setEditingMember(null);
-    setForm(emptyForm);
-    setPhotoFile(null);
-    setBaptismCertFile(null);
-    setMarriageCertFile(null);
     setIsModalOpen(true);
   };
 
@@ -140,7 +116,7 @@ export default function MembersPage() {
       link.click();
       link.remove();
     } catch (error) {
-      console.error('Export failed', error);
+      console.error('Export failed', error?.message || 'Error occurred');
       alert('Failed to export members. Please try again.');
     }
   };
@@ -170,7 +146,7 @@ export default function MembersPage() {
                     queryClient.invalidateQueries({ queryKey: ['members'] });
                   } catch (err) {
                     alert('Failed to import members.');
-                    console.error(err);
+                    console.error(err?.message || 'Error occurred');
                   }
                 }
                 e.target.value = '';

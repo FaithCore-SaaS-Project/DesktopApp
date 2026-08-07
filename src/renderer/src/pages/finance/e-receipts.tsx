@@ -59,7 +59,7 @@ export default function FinanceEReceiptsPage() {
         setSelectedReceipt(null);
       }
     } catch (err) {
-      console.error('Error loading receipts:', err);
+      console.error('Error loading receipts:', err?.message || 'Error occurred');
     }
   };
 
@@ -175,7 +175,7 @@ export default function FinanceEReceiptsPage() {
       setSelectedReceipt(newReceipt); // Preview the newly added receipt
       setCurrentPage(1); // Go back to first page to see the new receipt
     } catch (err) {
-      console.error('Error saving receipt:', err);
+      console.error('Error saving receipt:', err?.message || 'Error occurred');
     }
   };
 

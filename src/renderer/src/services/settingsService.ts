@@ -6,7 +6,7 @@ export const settingsService = {
       const response = await api.get('/settings');
       return response.data;
     } catch (err) {
-      console.error('Failed to fetch settings', err);
+      console.error('Failed to fetch settings', err?.message || 'Error occurred');
       return {};
     }
   },

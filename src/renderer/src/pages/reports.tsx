@@ -63,7 +63,7 @@ export default function ReportsPage() {
       setEventsCount(events.length);
 
     } catch (err) {
-      console.error('Error loading reports details:', err);
+      console.error('Error loading reports details:', err?.message || 'Error occurred');
     } finally {
       setLoading(false);
     }
@@ -113,7 +113,7 @@ export default function ReportsPage() {
       setActiveCategory('Custom Reports');
       alert(`Custom report "${newReport.name}" created and saved successfully!`);
     } catch (err) {
-      console.error(err);
+      console.error(err?.message || 'Error occurred');
       alert('Error saving custom report.');
     }
   };

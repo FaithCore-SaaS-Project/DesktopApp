@@ -24,7 +24,7 @@ export const eventService = {
         createdOn: e.createdOn
       }));
     } catch (err) {
-      console.error('Failed to load events from backend', err);
+      console.error('Failed to load events from backend', err?.message || 'Error occurred');
       return [];
     }
   },

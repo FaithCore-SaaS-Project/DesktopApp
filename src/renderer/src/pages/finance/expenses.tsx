@@ -45,7 +45,7 @@ export default function FinanceExpensesPage() {
       const expensesOnly = data.filter(r => r.type === 'expense');
       setRecords(expensesOnly);
     } catch (err) {
-      console.error('Error loading expense records:', err);
+      console.error('Error loading expense records:', err?.message || 'Error occurred');
     } finally {
       setLoading(false);
     }
@@ -93,7 +93,7 @@ export default function FinanceExpensesPage() {
       loadExpenseRecords();
       setCurrentPage(1); // Reset to page 1
     } catch (err) {
-      console.error('Error saving expense transaction:', err);
+      console.error('Error saving expense transaction:', err?.message || 'Error occurred');
     }
   };
 
@@ -110,7 +110,7 @@ export default function FinanceExpensesPage() {
           setCurrentPage(maxPages);
         }
       } catch (err) {
-        console.error('Error deleting expense record:', err);
+        console.error('Error deleting expense record:', err?.message || 'Error occurred');
       }
     }
   };

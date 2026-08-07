@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Mail, Plus, CreditCard, Search, ArrowRight, MessageSquare, AlertCircle, ShieldCheck } from 'lucide-react';
+import api from '../lib/axios';
 
 interface SmsDashboard {
   monthly_limit: number;
@@ -24,12 +25,19 @@ export default function SmsCenter() {
 
   const fetchDashboard = async () => {
     try {
-      const res = await window.api.request('/api/sms/dashboard');
+      const res = await api.get('/sms/dashboard');
       if (res.data) {
         setDashboard(res.data);
       }
-    } catch (e) {
-      console.error('Failed to fetch SMS dashboard', e);
+    } catch (e: any) {
+      console.error('Failed to fetch SMS dashboard', e?.message || 'Error occurred');
+      // Set dummy dashboard if backend fails so it doesn't get stuck loading
+      setDashboard({
+        monthly_limit: 0,
+        monthly_used: 0,
+        topup_balance: 0,
+        sender_id: 'UNKNOWN'
+      });
     } finally {
       setLoading(false);
     }
@@ -46,7 +54,7 @@ export default function SmsCenter() {
     setErrorMsg('');
 
     try {
-      const res = await window.api.request('/api/sms/send', 'POST', {
+      const res = await api.post('/sms/send', {
         contacts: [phone],
         message
       });
@@ -64,7 +72,7 @@ export default function SmsCenter() {
   const handleBuy = async () => {
     setBuying(true);
     try {
-      await window.api.request('/api/sms/topup', 'POST', {
+      await api.post('/sms/topup', {
         amount: topupAmount
       });
       alert(`Successfully added ${topupAmount} SMS credits!`);
@@ -124,7 +132,7 @@ export default function SmsCenter() {
           <div className="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden">
             <div 
               className={`h-2.5 rounded-full transition-all duration-500 ${freePercent > 90 ? 'bg-red-500' : 'bg-violet-600'}`}
-              style={{ width: \`\${Math.min(100, freePercent)}%\` }}
+              style={{ width: `${Math.min(100, freePercent)}%` }}
             ></div>
           </div>
           <p className="text-xs text-slate-400 font-medium mt-3 text-right">
@@ -240,5 +248,18 @@ export default function SmsCenter() {
 }
 
 const CheckCircle = ({ size }: { size: number }) => (
-  <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+  <svg 
+    xmlns="http://www.w3.org/2000/svg" 
+    width={size} 
+    height={size} 
+    viewBox="0 0 24 24" 
+    fill="none" 
+    stroke="currentColor" 
+    strokeWidth="2" 
+    strokeLinecap="round" 
+    strokeLinejoin="round"
+  >
+    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+    <polyline points="22 4 12 14.01 9 11.01"></polyline>
+  </svg>
 );

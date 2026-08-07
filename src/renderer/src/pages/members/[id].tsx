@@ -78,7 +78,7 @@ export default function MemberProfilePage() {
           setMember(null);
         }
       } catch (err) {
-        console.error('Error loading member profile:', err);
+        console.error('Error loading member profile:', err?.message || 'Error occurred');
       } finally {
         setLoading(false);
       }

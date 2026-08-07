@@ -6,7 +6,7 @@ export const notificationService = {
       const response = await api.get('/notifications');
       return response.data;
     } catch (err) {
-      console.error('Failed to fetch notifications', err);
+      console.error('Failed to fetch notifications', err?.message || 'Error occurred');
       return { unread: [], all: [] };
     }
   },
@@ -15,7 +15,7 @@ export const notificationService = {
     try {
       await api.post(`/notifications/${id}/read`);
     } catch (err) {
-      console.error('Failed to mark notification as read', err);
+      console.error('Failed to mark notification as read', err?.message || 'Error occurred');
     }
   },
 

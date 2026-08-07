@@ -89,7 +89,7 @@ export default function Header() {
                   }
                 }
               } catch (e) {
-                console.error(e);
+                console.error(e?.message || 'Error occurred');
                 alert('Sync failed. Please check your network connection.');
               } finally {
                 setIsSyncing(false);

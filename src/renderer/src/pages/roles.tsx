@@ -32,7 +32,7 @@ export default function RolesPage() {
       const pList = await apiService.getPermissions();
       setPermissions(pList);
     } catch (err) {
-      console.error('Failed to load roles page data:', err);
+      console.error('Failed to load roles page data:', err?.message || 'Error occurred');
     } finally {
       setLoading(false);
     }
@@ -83,7 +83,7 @@ export default function RolesPage() {
       setIsModalOpen(false);
       loadData();
     } catch (err: any) {
-      console.error('Failed to save role:', err);
+      console.error('Failed to save role:', err?.message || 'Error occurred');
       if (err.response?.data?.errors) {
         setErrors(err.response.data.errors);
       } else {

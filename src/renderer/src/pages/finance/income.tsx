@@ -43,7 +43,7 @@ export default function FinanceIncomePage() {
       const incomeOnly = data.filter(r => r.type === 'income');
       setRecords(incomeOnly);
     } catch (err) {
-      console.error('Error loading income records:', err);
+      console.error('Error loading income records:', err?.message || 'Error occurred');
     } finally {
       setLoading(false);
     }
@@ -91,7 +91,7 @@ export default function FinanceIncomePage() {
       loadIncomeRecords();
       setCurrentPage(1); // Reset to page 1
     } catch (err) {
-      console.error('Error saving income transaction:', err);
+      console.error('Error saving income transaction:', err?.message || 'Error occurred');
     }
   };
 
@@ -108,7 +108,7 @@ export default function FinanceIncomePage() {
           setCurrentPage(maxPages);
         }
       } catch (err) {
-        console.error('Error deleting income record:', err);
+        console.error('Error deleting income record:', err?.message || 'Error occurred');
       }
     }
   };

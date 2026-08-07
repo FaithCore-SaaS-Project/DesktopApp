@@ -86,7 +86,7 @@ export default function DepartmentsPage() {
         loadFromLocalStorage();
       }
     } catch (err) {
-      console.error('Failed to load departments from backend, falling back to local storage:', err);
+      console.error('Failed to load departments from backend, falling back to local storage:', err?.message || 'Error occurred');
       loadFromLocalStorage();
     } finally {
       setLoading(false);
@@ -151,7 +151,7 @@ export default function DepartmentsPage() {
       await loadData();
       setIsModalOpen(false);
     } catch (err) {
-      console.error('Failed to save department on backend, saving locally:', err);
+      console.error('Failed to save department on backend, saving locally:', err?.message || 'Error occurred');
       // Fallback
       const leaderName = formLeaderId
         ? (members.find((m) => m.id === parseInt(formLeaderId))
@@ -220,7 +220,7 @@ export default function DepartmentsPage() {
         throw new Error('Local item');
       }
     } catch (err) {
-      console.error('Failed to delete department on backend, deleting locally:', err);
+      console.error('Failed to delete department on backend, deleting locally:', err?.message || 'Error occurred');
       const updated = departments.filter((d) => d.id !== id);
       setDepartments(updated);
       localStorage.setItem('fc_departments', JSON.stringify(updated));

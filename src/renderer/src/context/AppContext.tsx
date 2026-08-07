@@ -73,7 +73,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
           try {
             setActivePlan(JSON.parse(savedActivePlan));
           } catch (e) {
-            console.error('Failed to parse active plan from storage:', e);
+            console.error('Failed to parse active plan from storage:', e?.message || 'Error occurred');
           }
         }
       }
@@ -88,7 +88,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         try {
           // Optional IPC notification to main process
         } catch (e) {
-          console.error(e);
+          console.error(e?.message || 'Error occurred');
         }
       }
     }

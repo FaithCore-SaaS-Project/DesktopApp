@@ -60,7 +60,7 @@ export default function FinanceBankAccountsPage() {
         setSelectedAccount(null);
       }
     } catch (err) {
-      console.error('Error loading bank accounts data:', err);
+      console.error('Error loading bank accounts data:', err?.message || 'Error occurred');
     } finally {
       setLoading(false);
     }
@@ -160,7 +160,7 @@ export default function FinanceBankAccountsPage() {
           setSelectedAccount(bankAccounts.find(a => a.id === acc.id) || null);
         }
       } catch (err) {
-        console.error('Error toggling bank account status:', err);
+        console.error('Error toggling bank account status:', err?.message || 'Error occurred');
       }
     }
   };
@@ -219,7 +219,7 @@ export default function FinanceBankAccountsPage() {
         setSelectedAccount(target);
       }
     } catch (err) {
-      console.error('Error saving bank account:', err);
+      console.error('Error saving bank account:', err?.message || 'Error occurred');
     }
   };
 

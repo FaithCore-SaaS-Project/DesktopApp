@@ -7,7 +7,7 @@ export const reportService = {
       const response = await api.get('/reports/saved');
       return response.data;
     } catch (err) {
-      console.error('Failed to fetch saved reports', err);
+      console.error('Failed to fetch saved reports', err?.message || 'Error occurred');
       return [];
     }
   },

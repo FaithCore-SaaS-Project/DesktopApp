@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 import { ChevronRight, Save } from 'lucide-react';
 
 import FinanceSystemOverview from '../../components/settings/finance/FinanceSystemOverview';
@@ -11,8 +12,11 @@ import SettingsHelpCard from '../../components/settings/SettingsHelpCard';
 import { apiService } from '../../services/api';
 
 export default function FinanceSettingsPage() {
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState('General');
   const [settings, setSettings] = useState<Record<string, string>>({});
+  const [originalSettings, setOriginalSettings] = useState<Record<string, string>>({});
+  const [hasChanges, setHasChanges] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   
   const tabs = [
@@ -24,14 +28,43 @@ export default function FinanceSettingsPage() {
     const fetchSettings = async () => {
       const data = await apiService.getSettings();
       setSettings(data || {});
+      setOriginalSettings(data || {});
+      setHasChanges(false);
     };
     fetchSettings();
   }, []);
+
+  // Handle route change warning
+  useEffect(() => {
+    const handleRouteChangeStart = () => {
+      if (hasChanges && !window.confirm('You have unsaved changes. Are you sure you want to leave without saving?')) {
+        router.events.emit('routeChangeError');
+        throw 'Route canceled';
+      }
+    };
+
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (hasChanges) {
+        e.preventDefault();
+        e.returnValue = '';
+      }
+    };
+
+    router.events.on('routeChangeStart', handleRouteChangeStart);
+    window.addEventListener('beforeunload', handleBeforeUnload);
+
+    return () => {
+      router.events.off('routeChangeStart', handleRouteChangeStart);
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, [hasChanges, router.events]);
 
   const handleSave = async () => {
     setIsSaving(true);
     try {
       await apiService.updateSettings(settings);
+      setOriginalSettings(settings);
+      setHasChanges(false);
       alert('Settings saved successfully!');
     } catch (err) {
       alert('Error saving settings.');
@@ -41,7 +74,23 @@ export default function FinanceSettingsPage() {
   };
 
   const updateSetting = (key: string, value: string) => {
-    setSettings(prev => ({ ...prev, [key]: value }));
+    setSettings(prev => {
+      const next = { ...prev, [key]: value };
+      setHasChanges(JSON.stringify(next) !== JSON.stringify(originalSettings));
+      return next;
+    });
+  };
+
+  const handleTabClick = (tab: string) => {
+    if (hasChanges) {
+      if (window.confirm('You have unsaved changes. Do you want to discard them and switch tabs?')) {
+        setSettings(originalSettings);
+        setHasChanges(false);
+        setActiveTab(tab);
+      }
+    } else {
+      setActiveTab(tab);
+    }
   };
 
   return (
@@ -73,7 +122,7 @@ export default function FinanceSettingsPage() {
         {tabs.map((tab) => (
           <button
             key={tab}
-            onClick={() => setActiveTab(tab)}
+            onClick={() => handleTabClick(tab)}
             className={`py-3 text-[11px] font-bold border-b-2 transition-colors whitespace-nowrap cursor-pointer ${
               activeTab === tab
                 ? 'border-[#5B3DF5] text-[#5B3DF5]'

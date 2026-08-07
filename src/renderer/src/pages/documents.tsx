@@ -65,7 +65,7 @@ export default function DocumentsPage() {
         loadFromLocalStorage();
       }
     } catch (err) {
-      console.error('Failed to load documents from backend, using local storage:', err);
+      console.error('Failed to load documents from backend, using local storage:', err?.message || 'Error occurred');
       loadFromLocalStorage();
     }
   };
@@ -117,7 +117,7 @@ export default function DocumentsPage() {
       await loadDocuments();
       setIsModalOpen(false);
     } catch (err) {
-      console.error('Failed to save document on backend, saving locally:', err);
+      console.error('Failed to save document on backend, saving locally:', err?.message || 'Error occurred');
       // Fallback
       const now = new Date();
       const formattedDate = now.toLocaleDateString('en-GB', {
@@ -156,7 +156,7 @@ export default function DocumentsPage() {
         throw new Error('Local item');
       }
     } catch (err) {
-      console.error('Failed to delete document from backend, deleting locally:', err);
+      console.error('Failed to delete document from backend, deleting locally:', err?.message || 'Error occurred');
       const updated = documents.filter((doc) => doc.name !== name);
       setDocuments(updated);
       localStorage.setItem('fc_documents', JSON.stringify(updated));

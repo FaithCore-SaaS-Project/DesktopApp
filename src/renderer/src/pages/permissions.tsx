@@ -27,7 +27,7 @@ export default function PermissionsPage() {
       const pList = await apiService.getPermissions();
       setPermissions(pList);
     } catch (err) {
-      console.error('Failed to load permissions page data:', err);
+      console.error('Failed to load permissions page data:', err?.message || 'Error occurred');
     } finally {
       setLoading(false);
     }
@@ -67,7 +67,7 @@ export default function PermissionsPage() {
       setIsModalOpen(false);
       loadData();
     } catch (err: any) {
-      console.error('Failed to save permission:', err);
+      console.error('Failed to save permission:', err?.message || 'Error occurred');
       if (err.response?.data?.errors) {
         setErrors(err.response.data.errors);
       } else {

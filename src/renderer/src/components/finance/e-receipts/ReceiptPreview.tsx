@@ -121,7 +121,7 @@ export default function ReceiptPreview({ item }: ReceiptPreviewProps) {
     try {
       await apiService.printToPDF(generateReceiptHtml(), `receipt-${item.receiptNo}.pdf`);
     } catch (err) {
-      console.error('Failed to export PDF:', err);
+      console.error('Failed to export PDF:', err?.message || 'Error occurred');
     }
   };
 

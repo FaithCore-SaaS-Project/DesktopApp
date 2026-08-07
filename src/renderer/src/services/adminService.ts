@@ -6,7 +6,7 @@ export const adminService = {
       const res = await api.get('/users');
       return Array.isArray(res.data) ? res.data : [];
     } catch (err) {
-      console.error('Failed to get users', err);
+      console.error('Failed to get users', err?.message || 'Error occurred');
       return [];
     }
   },
@@ -41,7 +41,7 @@ export const adminService = {
       const res = await api.get('/roles');
       return Array.isArray(res.data) ? res.data : [];
     } catch (err) {
-      console.error('Failed to get roles', err);
+      console.error('Failed to get roles', err?.message || 'Error occurred');
       return [];
     }
   },
@@ -69,7 +69,7 @@ export const adminService = {
       const res = await api.get('/permissions');
       return Array.isArray(res.data) ? res.data : [];
     } catch (err) {
-      console.error('Failed to get permissions', err);
+      console.error('Failed to get permissions', err?.message || 'Error occurred');
       return [];
     }
   },

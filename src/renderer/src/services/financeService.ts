@@ -42,7 +42,7 @@ export const financeService = {
             });
           }
         } catch (e) {
-          console.error('Failed to sync finance record to local SQLite cache:', e);
+          console.error('Failed to sync finance record to local SQLite cache:', e?.message || 'Error occurred');
         }
       }
 
@@ -64,7 +64,7 @@ export const financeService = {
             receipt: r.receipt || ''
           }));
         } catch (e) {
-          console.error('Failed to load finance records from local SQLite:', e);
+          console.error('Failed to load finance records from local SQLite:', e?.message || 'Error occurred');
         }
       }
       return [];
@@ -112,7 +112,7 @@ export const financeService = {
             syncStatus: 'synced'
           });
         } catch (e) {
-          console.error('Failed to update local finance cache:', e);
+          console.error('Failed to update local finance cache:', e?.message || 'Error occurred');
         }
       }
     } catch (err) {
@@ -133,7 +133,7 @@ export const financeService = {
           });
           return;
         } catch (e) {
-          console.error('Failed to save finance record to local SQLite offline:', e);
+          console.error('Failed to save finance record to local SQLite offline:', e?.message || 'Error occurred');
         }
       }
       throw err;
@@ -147,7 +147,7 @@ export const financeService = {
         try {
           await window.electronAPI.deleteFinanceRecord(id);
         } catch (e) {
-          console.error('Failed to delete finance record from local SQLite:', e);
+          console.error('Failed to delete finance record from local SQLite:', e?.message || 'Error occurred');
         }
       }
     } catch (err) {
@@ -156,7 +156,7 @@ export const financeService = {
         try {
           await window.electronAPI.deleteFinanceRecord(id);
         } catch (e) {
-          console.error('Failed to delete finance record from local database:', e);
+          console.error('Failed to delete finance record from local database:', e?.message || 'Error occurred');
         }
         return;
       }
@@ -187,7 +187,7 @@ export const financeService = {
         tenantId: a.church_id.toString()
       }));
     } catch (err) {
-      console.error('Failed to load bank accounts from backend', err);
+      console.error('Failed to load bank accounts from backend', err?.message || 'Error occurred');
       return [];
     }
   },
@@ -234,7 +234,7 @@ export const financeService = {
         tenantId: c.church_id.toString()
       }));
     } catch (err) {
-      console.error('Failed to load categories from backend', err);
+      console.error('Failed to load categories from backend', err?.message || 'Error occurred');
       return [];
     }
   },
@@ -279,7 +279,7 @@ export const financeService = {
         tenantId: b.church_id.toString()
       }));
     } catch (err) {
-      console.error('Failed to load budgets from backend', err);
+      console.error('Failed to load budgets from backend', err?.message || 'Error occurred');
       return [];
     }
   },

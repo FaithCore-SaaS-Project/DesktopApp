@@ -40,7 +40,7 @@ export default function CertificatesPage() {
           setSelectedPrinter(defaultPrinter.name);
         }
       } catch (err) {
-        console.error('Error fetching hardware printers:', err);
+        console.error('Error fetching hardware printers:', err?.message || 'Error occurred');
       }
     };
     fetchPrinters();

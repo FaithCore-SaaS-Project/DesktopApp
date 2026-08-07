@@ -67,7 +67,7 @@ export default function SendNotificationModal({ members, initialSelectedMembers 
       onSuccess();
       onClose();
     } catch (err: any) {
-      console.error(err);
+      console.error(err?.message || 'Error occurred');
       alert(err.response?.data?.message || 'Failed to send message.');
     } finally {
       setSubmitting(false);

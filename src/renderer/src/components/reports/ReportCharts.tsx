@@ -128,7 +128,7 @@ export default function ReportCharts() {
         alert(`Export failed: ${res.error}`);
       }
     } catch (err) {
-      console.error(err);
+      console.error(err?.message || 'Error occurred');
       alert('Error exporting Period Summary.');
     }
   };

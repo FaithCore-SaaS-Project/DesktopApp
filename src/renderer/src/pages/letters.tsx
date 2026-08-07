@@ -69,7 +69,7 @@ export default function LettersPage() {
         setSelectedLetter(null);
       }
     } catch (err) {
-      console.error('Error loading letters:', err);
+      console.error('Error loading letters:', err?.message || 'Error occurred');
     } finally {
       setLoading(false);
     }
@@ -187,7 +187,7 @@ export default function LettersPage() {
           setSelectedLetter(list.length > 0 ? list[0] : null);
         }
       } catch (err) {
-        console.error('Error deleting letter:', err);
+        console.error('Error deleting letter:', err?.message || 'Error occurred');
       }
     }
   };
@@ -202,7 +202,7 @@ export default function LettersPage() {
       setLetters(list);
       setSelectedLetter(updated);
     } catch (err) {
-      console.error('Error updating status:', err);
+      console.error('Error updating status:', err?.message || 'Error occurred');
     }
   };
 
@@ -267,7 +267,7 @@ export default function LettersPage() {
         setSelectedLetter(target);
       }
     } catch (err) {
-      console.error('Error saving letter:', err);
+      console.error('Error saving letter:', err?.message || 'Error occurred');
     }
   };
 

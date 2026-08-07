@@ -57,7 +57,7 @@ export default function FinanceBudgetsPage() {
         setSelectedBudget(null);
       }
     } catch (err) {
-      console.error('Error loading budgets data:', err);
+      console.error('Error loading budgets data:', err?.message || 'Error occurred');
     } finally {
       setLoading(false);
     }
@@ -157,7 +157,7 @@ export default function FinanceBudgetsPage() {
           setCurrentPage(maxPages);
         }
       } catch (err) {
-        console.error('Error deleting budget:', err);
+        console.error('Error deleting budget:', err?.message || 'Error occurred');
       }
     }
   };
@@ -214,7 +214,7 @@ export default function FinanceBudgetsPage() {
         setSelectedBudget(target);
       }
     } catch (err) {
-      console.error('Error saving budget:', err);
+      console.error('Error saving budget:', err?.message || 'Error occurred');
     }
   };
 
