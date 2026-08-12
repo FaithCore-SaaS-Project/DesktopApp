@@ -9,18 +9,7 @@ import DepartmentsFilters from '../components/departments/DepartmentsFilters';
 import DepartmentsTable from '../components/departments/DepartmentsTable';
 import DepartmentDetails from '../components/departments/DepartmentDetails';
 
-const DEFAULT_DEPARTMENTS = [
-  { name: 'Worship Ministry', category: 'Ministry', leader: 'Daniel Wilson', members: 65, iconLetter: '♪', iconBg: 'bg-[#5B3DF5]', categoryColor: 'text-[#5B3DF5]', description: 'Responsible for leading worship services and musical ministries.' },
-  { name: 'Sunday School', category: 'Education', leader: 'Sarah Johnson', members: 48, iconLetter: '📖', iconBg: 'bg-green-500', categoryColor: 'text-green-500', description: 'Provides Bible education and training for children and young students.' },
-  { name: 'Outreach Ministry', category: 'Ministry', leader: 'Michael Peters', members: 72, iconLetter: '🎤', iconBg: 'bg-orange-500', categoryColor: 'text-[#5B3DF5]', description: 'Community support and local outreach programs.' },
-  { name: 'Youth Ministry', category: 'Ministry', leader: 'Emily Davis', members: 84, iconLetter: '♥', iconBg: 'bg-red-500', categoryColor: 'text-[#5B3DF5]', description: 'Youth fellowship and spiritual development.' },
-  { name: 'Children\'s Ministry', category: 'Ministry', leader: 'Lisa Anderson', members: 61, iconLetter: '👥', iconBg: 'bg-blue-500', categoryColor: 'text-[#5B3DF5]', description: 'Ministries tailored for children under 12.' },
-  { name: 'Care & Support', category: 'Ministry', leader: 'James Thompson', members: 38, iconLetter: '♡', iconBg: 'bg-cyan-500', categoryColor: 'text-[#5B3DF5]', description: 'Caring for families and elderly support.' },
-  { name: 'Finance Department', category: 'Administration', leader: 'Robert Miller', members: 12, iconLetter: '$', iconBg: 'bg-yellow-500', categoryColor: 'text-blue-500', description: 'Handles church accounting and bookkeeping.' },
-  { name: 'Communications', category: 'Administration', leader: 'Olivia Martinez', members: 15, iconLetter: '📢', iconBg: 'bg-purple-500', categoryColor: 'text-blue-500', description: 'Public relations and social media announcements.' },
-  { name: 'Events Department', category: 'Administration', leader: 'David Brown', members: 18, iconLetter: '📅', iconBg: 'bg-pink-500', categoryColor: 'text-blue-500', description: 'Plans church events and guest services.' },
-  { name: 'Administration', category: 'Administration', leader: 'Pastor John', members: 8, iconLetter: '📋', iconBg: 'bg-green-500', categoryColor: 'text-blue-500', description: 'Overall management and operational systems.' },
-];
+// No dummy data in production
 
 const parseDescription = (desc: string | null) => {
   if (!desc) return { category: 'Ministry', description: '' };
@@ -58,7 +47,7 @@ export default function DepartmentsPage() {
       const membersData = membersRes.data.data ?? membersRes.data;
       setMembers(Array.isArray(membersData) ? membersData : []);
 
-      if (Array.isArray(deptData) && deptData.length > 0) {
+      if (Array.isArray(deptData)) {
         const formatted = deptData.map((d: any) => {
           const parsed = parseDescription(d.description);
           return {
@@ -69,7 +58,7 @@ export default function DepartmentsPage() {
             leader_id: d.leader_id,
             members: d.members?.length || 0,
             description: parsed.description,
-            created_at: d.created_at ? new Date(d.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '10 Jan 2024',
+            created_at: d.created_at ? new Date(d.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : new Date().toLocaleDateString(),
             status: 'Active',
             iconLetter: d.department_name.charAt(0),
             iconBg: 'bg-[#5B3DF5]',
@@ -77,32 +66,18 @@ export default function DepartmentsPage() {
           };
         });
         setDepartments(formatted);
-        // Automatically select the first department if none is selected
         if (formatted.length > 0) {
           setSelectedDepartment(formatted[0]);
+        } else {
+          setSelectedDepartment(null);
         }
-      } else {
-        // Fallback
-        loadFromLocalStorage();
       }
-    } catch (err) {
-      console.error('Failed to load departments from backend, falling back to local storage:', err?.message || 'Error occurred');
-      loadFromLocalStorage();
+    } catch (err: any) {
+      console.error('Failed to load departments from backend', err?.message || 'Error occurred');
+      setDepartments([]);
+      setSelectedDepartment(null);
     } finally {
       setLoading(false);
-    }
-  };
-
-  const loadFromLocalStorage = () => {
-    const stored = localStorage.getItem('fc_departments');
-    if (stored) {
-      const parsed = JSON.parse(stored);
-      setDepartments(parsed);
-      if (parsed.length > 0) setSelectedDepartment(parsed[0]);
-    } else {
-      localStorage.setItem('fc_departments', JSON.stringify(DEFAULT_DEPARTMENTS));
-      setDepartments(DEFAULT_DEPARTMENTS);
-      if (DEFAULT_DEPARTMENTS.length > 0) setSelectedDepartment(DEFAULT_DEPARTMENTS[0]);
     }
   };
 
@@ -150,82 +125,22 @@ export default function DepartmentsPage() {
       }
       await loadData();
       setIsModalOpen(false);
-    } catch (err) {
-      console.error('Failed to save department on backend, saving locally:', err?.message || 'Error occurred');
-      // Fallback
-      const leaderName = formLeaderId
-        ? (members.find((m) => m.id === parseInt(formLeaderId))
-            ? `${members.find((m) => m.id === parseInt(formLeaderId)).first_name} ${members.find((m) => m.id === parseInt(formLeaderId)).last_name}`
-            : 'Assigned Leader')
-        : 'No Leader';
-
-      if (editingDepartment) {
-        const updated = departments.map((d) => {
-          if (d.id === editingDepartment.id) {
-            return {
-              ...d,
-              name: formName.trim(),
-              category: formCategory,
-              leader: leaderName,
-              leader_id: formLeaderId,
-              description: formDescription.trim(),
-            };
-          }
-          return d;
-        });
-        setDepartments(updated);
-        localStorage.setItem('fc_departments', JSON.stringify(updated));
-        if (selectedDepartment && selectedDepartment.id === editingDepartment.id) {
-          setSelectedDepartment({
-            ...selectedDepartment,
-            name: formName.trim(),
-            category: formCategory,
-            leader: leaderName,
-            leader_id: formLeaderId,
-            description: formDescription.trim(),
-          });
-        }
-      } else {
-        const newDept = {
-          id: 'local-' + Date.now(),
-          name: formName.trim(),
-          category: formCategory,
-          leader: leaderName,
-          leader_id: formLeaderId,
-          members: 0,
-          description: formDescription.trim(),
-          created_at: new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
-          status: 'Active',
-          iconLetter: formName.charAt(0),
-          iconBg: 'bg-[#5B3DF5]',
-          categoryColor: 'text-[#5B3DF5]'
-        };
-        const updated = [newDept, ...departments];
-        setDepartments(updated);
-        localStorage.setItem('fc_departments', JSON.stringify(updated));
-        setSelectedDepartment(newDept);
-      }
-      setIsModalOpen(false);
+    } catch (err: any) {
+      alert('Failed to save department. ' + (err?.response?.data?.message || err?.message));
     }
   };
 
   const handleDeleteDepartment = async (id: number | string) => {
     if (!window.confirm('Are you sure you want to delete this department?')) return;
 
+    const deptId = typeof id === 'number' ? id : parseInt(id as string, 10);
     try {
-      if (typeof id === 'number' || !id.toString().startsWith('local-')) {
-        await api.delete(`/departments/${id}`);
+      if (deptId) {
+        await api.delete(`/departments/${deptId}`);
         await loadData();
-      } else {
-        throw new Error('Local item');
       }
-    } catch (err) {
-      console.error('Failed to delete department on backend, deleting locally:', err?.message || 'Error occurred');
-      const updated = departments.filter((d) => d.id !== id);
-      setDepartments(updated);
-      localStorage.setItem('fc_departments', JSON.stringify(updated));
-      if (updated.length > 0) setSelectedDepartment(updated[0]);
-      else setSelectedDepartment(null);
+    } catch (err: any) {
+      alert('Failed to delete department. ' + (err?.message || 'Error occurred'));
     }
   };
 

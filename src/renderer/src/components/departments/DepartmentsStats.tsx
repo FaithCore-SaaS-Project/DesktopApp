@@ -63,7 +63,7 @@ export default function DepartmentsStats({ departments }: DepartmentsStatsProps)
     },
     {
       title: 'Total Activities',
-      value: totalActivities > 0 ? totalActivities.toString() : '86',
+      value: totalActivities.toString(),
       subtitle: 'Events scheduled this year',
       icon: CalendarDays,
       themeColor: 'cyan',
