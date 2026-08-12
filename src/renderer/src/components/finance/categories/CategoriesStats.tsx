@@ -34,7 +34,7 @@ export default function CategoriesStats({ categories }: CategoriesStatsProps) {
     {
       title: "Total Categories",
       value: totalCount.toString(),
-      subtext: `+${thisMonthCount > 0 ? thisMonthCount : 3} this month`,
+      subtext: `+${thisMonthCount} this month`,
       subtextColor: "text-green-600",
       icon: Grid2X2,
       color: "bg-[#5B3DF5] shadow-[#5B3DF5]/15",
