@@ -308,15 +308,56 @@ export const financeService = {
   },
 
   getReceipts: async (tenantId: string): Promise<ReceiptMock[]> => {
-    const receipts = JSON.parse(localStorage.getItem('fc_receipts') || '[]');
-    return receipts.filter((r: ReceiptMock) => r.tenantId === tenantId);
+    try {
+      const res = await api.get('/receipts');
+      if (res.status === 403) return [];
+      const data = res.data.data || res.data;
+      if (!Array.isArray(data)) return [];
+      
+      return data.map((r: any) => ({
+        id: r.id.toString(),
+        receiptNo: r.receipt_no,
+        date: r.receipt_date,
+        memberName: r.member_name,
+        memberEmail: r.member_email || '',
+        memberPhone: r.member_phone || '',
+        category: r.category,
+        amount: parseFloat(r.amount),
+        method: r.method,
+        status: r.status,
+        receivedBy: r.received_by,
+        description: r.description || '',
+        tenantId: r.church_id.toString()
+      }));
+    } catch (err) {
+      console.error('Failed to load receipts from backend', err?.message || 'Error occurred');
+      return [];
+    }
   },
 
   saveReceipt: async (receipt: ReceiptMock): Promise<void> => {
-    const receipts = JSON.parse(localStorage.getItem('fc_receipts') || '[]');
-    const index = receipts.findIndex((r: ReceiptMock) => r.id === receipt.id);
-    if (index >= 0) receipts[index] = receipt;
-    else receipts.push(receipt);
-    localStorage.setItem('fc_receipts', JSON.stringify(receipts));
+    const payload = {
+      receipt_no: receipt.receiptNo,
+      receipt_date: receipt.date,
+      member_name: receipt.memberName,
+      member_email: receipt.memberEmail,
+      member_phone: receipt.memberPhone,
+      category: receipt.category,
+      amount: receipt.amount,
+      method: receipt.method,
+      status: receipt.status,
+      received_by: receipt.receivedBy,
+      description: receipt.description
+    };
+    
+    if (receipt.id.startsWith('rcp-')) {
+      await api.post('/receipts', payload);
+    } else {
+      await api.put(`/receipts/${receipt.id}`, payload);
+    }
+  },
+  
+  deleteReceipt: async (id: string): Promise<void> => {
+    await api.delete(`/receipts/${id}`);
   }
 };

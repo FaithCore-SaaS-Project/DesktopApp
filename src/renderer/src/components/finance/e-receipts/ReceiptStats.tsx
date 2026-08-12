@@ -14,23 +14,13 @@ export default function ReceiptStats({ receipts }: ReceiptStatsProps) {
   // Printed Receipts: 146
   // Total Amount: Rs. 2,450,000.00
 
-  const baseTotalReceipts = 1238; // base before current list
-  const baseEmailed = 1092;
-  const basePrinted = 146;
-  const baseAmount = 2377000;
+  const totalReceipts = receipts.length;
+  const totalEmailed = receipts.filter(r => r.status === 'Emailed').length;
+  const totalPrinted = receipts.filter(r => r.status === 'Printed').length;
+  const totalAmount = receipts.reduce((sum, r) => sum + r.amount, 0);
 
-  const currentTotal = receipts.length;
-  const currentEmailed = receipts.filter(r => r.status === 'Emailed').length;
-  const currentPrinted = receipts.filter(r => r.status === 'Printed').length;
-  const currentAmount = receipts.reduce((sum, r) => sum + r.amount, 0);
-
-  const totalReceipts = baseTotalReceipts + currentTotal;
-  const totalEmailed = baseEmailed + currentEmailed;
-  const totalPrinted = basePrinted + currentPrinted;
-  const totalAmount = baseAmount + currentAmount;
-
-  const emailedPercentage = ((totalEmailed / totalReceipts) * 100).toFixed(1);
-  const printedPercentage = ((totalPrinted / totalReceipts) * 100).toFixed(1);
+  const emailedPercentage = totalReceipts > 0 ? ((totalEmailed / totalReceipts) * 100).toFixed(1) : "0.0";
+  const printedPercentage = totalReceipts > 0 ? ((totalPrinted / totalReceipts) * 100).toFixed(1) : "0.0";
 
   const formatLKR = (val: number) => {
     return "Rs. " + val.toLocaleString('en-LK', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -44,7 +34,7 @@ export default function ReceiptStats({ receipts }: ReceiptStatsProps) {
       iconColor: "text-purple-600 bg-purple-100/80 border-purple-200/50",
       subtext: (
         <span className="text-emerald-600 font-bold">
-          +18 this month
+          {totalReceipts > 0 ? "+1" : "0"} this month
         </span>
       )
     },
