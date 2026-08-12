@@ -153,8 +153,8 @@ export default function Header() {
                 {unreadCount > 0 ? (
                   notifications.unread.map((notif: any) => (
                     <div key={notif.id} className="px-4 py-3 border-b border-slate-50 hover:bg-slate-50 cursor-pointer transition-colors" onClick={() => handleMarkAsRead(notif.id)}>
-                      <p className="text-xs font-bold text-slate-800">{notif.subject || 'New Notification'}</p>
-                      <p className="text-[11px] text-slate-500 mt-1 line-clamp-2">{notif.message}</p>
+                      <p className="text-xs font-bold text-slate-800">{notif.data?.subject || notif.subject || 'New Notification'}</p>
+                      <p className="text-[11px] text-slate-500 mt-1 line-clamp-2">{notif.data?.message || notif.message}</p>
                     </div>
                   ))
                 ) : (
