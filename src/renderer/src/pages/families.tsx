@@ -49,9 +49,10 @@ export default function FamiliesPage() {
   const fetchFamilies = async () => {
     try {
       const res = await api.get('/families');
-      setFamilies(res.data.data);
+      setFamilies(res.data?.data || []);
     } catch (err) {
       console.error('Error fetching families:', err);
+      setFamilies([]);
     }
   };
 
@@ -59,13 +60,14 @@ export default function FamiliesPage() {
     try {
       const res = await api.get('/members');
       // Extract members for dropdown (can filter out those already in a family if preferred)
-      const mapped = res.data.data.map((m: any) => ({
+      const mapped = (res.data?.data || []).map((m: any) => ({
         id: m.id,
         name: `${m.first_name} ${m.last_name}`,
       }));
       setAvailableMembers(mapped);
     } catch (err) {
       console.error('Error fetching members:', err);
+      setAvailableMembers([]);
     }
   };
 
@@ -171,11 +173,12 @@ export default function FamiliesPage() {
   };
 
   // Compute lists of status and cell group options for filter selectors
-  const statusOptions = Array.from(new Set(families.map(f => f.status)));
-  const cellGroupOptions = Array.from(new Set(families.map(f => f.cellGroup))).filter(Boolean);
+  const safeFamilies = families || [];
+  const statusOptions = Array.from(new Set(safeFamilies.map(f => f.status)));
+  const cellGroupOptions = Array.from(new Set(safeFamilies.map(f => f.cellGroup))).filter(Boolean);
 
   // Filter computation
-  const filteredFamilies = families.filter(f => {
+  const filteredFamilies = safeFamilies.filter(f => {
     // Search filter
     const matchesSearch = f.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
                           f.district.toLowerCase().includes(searchTerm.toLowerCase());
@@ -205,11 +208,11 @@ export default function FamiliesPage() {
   );
 
   // Compute stats totals
-  const totalFamiliesCount = families.length;
-  const totalMembersCount = families.reduce((sum, f) => sum + f.members, 0);
-  const newFamiliesCount = families.filter(f => f.joined.includes('May 2023') || f.joined.includes('2026') || f.joined.includes('Jun')).length;
-  const withoutAddressCount = families.filter(f => !f.hasAddress).length;
-  const withoutPhoneCount = families.filter(f => !f.hasPhone).length;
+  const totalFamiliesCount = safeFamilies.length;
+  const totalMembersCount = safeFamilies.reduce((sum, f) => sum + (f.members || 0), 0);
+  const newFamiliesCount = safeFamilies.filter(f => f.joined?.includes('May 2023') || f.joined?.includes('2026') || f.joined?.includes('Jun')).length;
+  const withoutAddressCount = safeFamilies.filter(f => !f.hasAddress).length;
+  const withoutPhoneCount = safeFamilies.filter(f => !f.hasPhone).length;
 
   return (
     <div className="p-8 bg-[#f5f6fa] min-h-full select-none animate-fade-in relative">
