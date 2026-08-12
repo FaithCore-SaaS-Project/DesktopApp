@@ -115,51 +115,36 @@ export default function FinanceExpensesPage() {
     }
   };
 
-  // Math Calculations for seed bases plus database totals
-  const SEED_MINISTRY = 358400;
-  const SEED_UTILITIES = 201600;
-  const SEED_SALARIES = 190400;
-  const SEED_MAINTENANCE = 134400;
-  const SEED_OFFICE = 89600;
-  const SEED_OTHERS = 145600;
-
-  // DB Accumulations
-  let dbMinistry = 0;
-  let dbUtilities = 0;
-  let dbSalaries = 0;
-  let dbMaintenance = 0;
-  let dbOffice = 0;
-  let dbOthers = 0;
+  // DB Accumulations (Live Data Only)
+  let totalMinistry = 0;
+  let totalUtilities = 0;
+  let totalSalaries = 0;
+  let totalMaintenance = 0;
+  let totalOffice = 0;
+  let totalOthers = 0;
 
   records.forEach(r => {
     const cleanCat = r.category.toLowerCase();
     if (cleanCat === 'ministry') {
-      dbMinistry += r.amount;
+      totalMinistry += r.amount;
     } else if (cleanCat === 'utilities') {
-      dbUtilities += r.amount;
+      totalUtilities += r.amount;
     } else if (cleanCat === 'salary' || cleanCat === 'salaries') {
-      dbSalaries += r.amount;
+      totalSalaries += r.amount;
     } else if (cleanCat === 'maintenance') {
-      dbMaintenance += r.amount;
+      totalMaintenance += r.amount;
     } else if (cleanCat === 'office' || cleanCat === 'administration') {
-      dbOffice += r.amount;
+      totalOffice += r.amount;
     } else {
-      dbOthers += r.amount;
+      totalOthers += r.amount;
     }
   });
-
-  const totalMinistry = SEED_MINISTRY + dbMinistry;
-  const totalUtilities = SEED_UTILITIES + dbUtilities;
-  const totalSalaries = SEED_SALARIES + dbSalaries;
-  const totalMaintenance = SEED_MAINTENANCE + dbMaintenance;
-  const totalOffice = SEED_OFFICE + dbOffice;
-  const totalOthers = SEED_OTHERS + dbOthers;
 
   const totalExpenses = totalMinistry + totalUtilities + totalSalaries + totalMaintenance + totalOffice + totalOthers;
   
   // Stats derivations
-  const totalTransactionsCount = 89 + records.length;
-  const avgExpensePerDay = totalExpenses / 31;
+  const totalTransactionsCount = records.length;
+  const avgExpensePerDay = totalExpenses > 0 ? totalExpenses / 31 : 0;
 
   // Derive Top Category dynamically
   const categoriesList = [
@@ -321,7 +306,7 @@ export default function FinanceExpensesPage() {
               {/* Amount and Ref */}
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                  <label htmlFor="expense-amount" className="text-xs font-bold text-gray-400 uppercase">Amount (Rs. LKR)</label>
+                  <label htmlFor="expense-amount" className="text-xs font-bold text-gray-400 uppercase">Amount (Rs.)</label>
                   <input
                     id="expense-amount"
                     type="number"
