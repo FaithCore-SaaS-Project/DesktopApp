@@ -113,41 +113,28 @@ export default function FinanceIncomePage() {
     }
   };
 
-  // Math Calculations for seed bases plus database totals
-  const SEED_TITHES = 1102000;
-  const SEED_OFFERINGS = 612000;
-  const SEED_DONATIONS = 367000;
-  const SEED_THANKSGIVING = 122000;
-  const SEED_OTHERS = 247000;
-
-  // DB Accumulations
-  let dbTithes = 0;
-  let dbOfferings = 0;
-  let dbDonations = 0;
-  let dbThanksgiving = 0;
-  let dbOthers = 0;
+  // DB Accumulations (Live Data Only)
+  let totalTithes = 0;
+  let totalOfferings = 0;
+  let totalDonations = 0;
+  let totalThanksgiving = 0;
+  let totalOthers = 0;
 
   records.forEach(r => {
     const cleanCat = r.category.toLowerCase();
     if (cleanCat === 'tithe' || cleanCat === 'tithes') {
-      dbTithes += r.amount;
+      totalTithes += r.amount;
     } else if (cleanCat === 'offering' || cleanCat === 'offerings') {
-      dbOfferings += r.amount;
+      totalOfferings += r.amount;
     } else if (cleanCat === 'donation' || cleanCat === 'donations' || cleanCat === 'building fund') {
-      dbDonations += r.amount;
+      totalDonations += r.amount;
     } else if (cleanCat === 'thanksgiving') {
-      dbThanksgiving += r.amount;
+      totalThanksgiving += r.amount;
     } else {
-      dbOthers += r.amount;
+      totalOthers += r.amount;
     }
   });
 
-  const totalTithes = SEED_TITHES + dbTithes;
-  const totalOfferings = SEED_OFFERINGS + dbOfferings;
-  const totalDonations = SEED_DONATIONS + dbDonations;
-  const totalThanksgiving = SEED_THANKSGIVING + dbThanksgiving;
-  const totalOthers = SEED_OTHERS + dbOthers;
-  
   const totalIncome = totalTithes + totalOfferings + totalDonations + totalThanksgiving + totalOthers;
   const totalOthersAndThanksCombined = totalThanksgiving + totalOthers; // Grouped "Other Income" on stats cards
 
@@ -291,7 +278,7 @@ export default function FinanceIncomePage() {
               {/* Amount and Receipt */}
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                  <label htmlFor="income-amount" className="text-xs font-bold text-gray-400 uppercase">Amount (Rs. LKR)</label>
+                  <label htmlFor="income-amount" className="text-xs font-bold text-gray-400 uppercase">Amount (Rs.)</label>
                   <input
                     id="income-amount"
                     type="number"
