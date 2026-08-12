@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useApp } from '../../context/AppContext';
 import { apiService } from '../../services/api';
+import { notificationService } from '../../services/notificationService';
 import {
   Menu,
   Search,
@@ -17,6 +18,28 @@ export default function Header() {
   const { user, logout, isOnline, toggleNetworkStatus, currentTenant } = useApp();
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [isSyncing, setIsSyncing] = useState(false);
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [notifications, setNotifications] = useState<any>({ unread: [], all: [] });
+
+  useEffect(() => {
+    fetchNotifications();
+  }, []);
+
+  const fetchNotifications = async () => {
+    if (isOnline) {
+      const data = await notificationService.getNotifications();
+      if (data && data.unread) {
+        setNotifications(data);
+      }
+    }
+  };
+
+  const handleMarkAsRead = async (id: string) => {
+    await notificationService.markNotificationRead(id);
+    fetchNotifications();
+  };
+
+  const unreadCount = notifications?.unread?.length || 0;
 
   return (
     <div className="bg-white/80 border-b border-slate-100 px-8 py-4 flex items-center justify-between sticky top-0 z-20 backdrop-blur-md shadow-sm shadow-slate-100/30">
@@ -104,16 +127,44 @@ export default function Header() {
           </button>
         )}
 
-        {/* Notifications and Mail */}
-        <div className="flex items-center gap-4 text-slate-500">
-          <button className="relative p-2 hover:bg-slate-50 rounded-xl transition-all text-slate-500 hover:text-slate-800">
+        {/* Notifications */}
+        <div className="relative">
+          <button 
+            onClick={() => setShowNotifications(!showNotifications)}
+            className="relative p-2 hover:bg-slate-50 rounded-xl transition-all text-slate-500 hover:text-slate-800 outline-none"
+          >
             <Bell size={18} />
-            <span className="absolute top-2 right-2 h-2 w-2 rounded-full bg-red-500 ring-2 ring-white"></span>
+            {unreadCount > 0 && (
+              <span className="absolute top-1 right-1 h-4 w-4 flex items-center justify-center rounded-full bg-red-500 ring-2 ring-white text-[9px] font-bold text-white">
+                {unreadCount}
+              </span>
+            )}
           </button>
-          <button className="relative p-2 hover:bg-slate-50 rounded-xl transition-all text-slate-500 hover:text-slate-800">
-            <Mail size={18} />
-            <span className="absolute top-2 right-2 h-2 w-2 rounded-full bg-blue-500 ring-2 ring-white"></span>
-          </button>
+          
+          {showNotifications && (
+            <div className="absolute right-0 mt-2 w-72 bg-white border border-slate-100 rounded-2xl shadow-xl z-30 animate-fade-in overflow-hidden">
+              <div className="px-4 py-3 border-b border-slate-50 flex justify-between items-center bg-slate-50/50">
+                <p className="text-xs font-bold text-slate-700">Notifications</p>
+                {unreadCount > 0 && (
+                  <span className="text-[10px] font-semibold text-violet-600 bg-violet-100 px-2 py-0.5 rounded-full">{unreadCount} New</span>
+                )}
+              </div>
+              <div className="max-h-64 overflow-y-auto">
+                {unreadCount > 0 ? (
+                  notifications.unread.map((notif: any) => (
+                    <div key={notif.id} className="px-4 py-3 border-b border-slate-50 hover:bg-slate-50 cursor-pointer transition-colors" onClick={() => handleMarkAsRead(notif.id)}>
+                      <p className="text-xs font-bold text-slate-800">{notif.subject || 'New Notification'}</p>
+                      <p className="text-[11px] text-slate-500 mt-1 line-clamp-2">{notif.message}</p>
+                    </div>
+                  ))
+                ) : (
+                  <div className="px-4 py-6 text-center">
+                    <p className="text-xs text-slate-400 font-medium">No new notifications</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Vertical Divider */}
@@ -125,11 +176,9 @@ export default function Header() {
             onClick={() => setShowProfileMenu(!showProfileMenu)}
             className="flex items-center gap-3 p-1 hover:bg-slate-50 rounded-2xl transition-all outline-none"
           >
-            <img
-              src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=150"
-              alt="Avatar"
-              className="h-10 w-10 rounded-full object-cover border border-slate-100"
-            />
+            <div className="h-10 w-10 rounded-full bg-violet-100 flex items-center justify-center border border-violet-200 text-violet-600 font-black text-sm">
+              {currentTenant?.name?.charAt(0) || user?.username?.charAt(0) || 'A'}
+            </div>
             <div className="text-left hidden md:block pr-1">
               <h4 className="font-bold text-slate-750 text-sm leading-tight">
                 {user?.username || 'Admin'}

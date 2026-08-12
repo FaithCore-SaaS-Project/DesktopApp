@@ -39,7 +39,7 @@ export default function StatsCards({
     {
       icon: TrendingUp,
       title: "Monthly Income",
-      value: `$${monthlyIncome.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+      value: `LKR ${monthlyIncome.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
       growth: "This Month",
       textColor: "text-emerald-600",
       iconBg: "bg-emerald-500/10",
@@ -47,7 +47,7 @@ export default function StatsCards({
     {
       icon: TrendingDown,
       title: "Monthly Expense",
-      value: `$${monthlyExpense.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+      value: `LKR ${monthlyExpense.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
       growth: "This Month",
       textColor: "text-orange-600",
       iconBg: "bg-orange-500/10",
