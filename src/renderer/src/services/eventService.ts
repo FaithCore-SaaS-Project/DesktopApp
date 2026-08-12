@@ -45,7 +45,7 @@ export const eventService = {
       createdOn: evt.createdOn
     };
 
-    if (evt.id.startsWith('EVT-2025-')) {
+    if (!evt.id) {
       await api.post('/events', payload);
     } else {
       await api.put(`/events/${evt.id}`, payload);

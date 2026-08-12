@@ -194,19 +194,7 @@ export default function EventsPage() {
     }
 
     let eventId = '';
-    if (modalMode === 'add') {
-      const pattern = /^EVT-2025-(\d+)$/;
-      let maxNum = 0;
-      events.forEach(item => {
-        const match = item.id.match(pattern);
-        if (match) {
-          const num = parseInt(match[1]);
-          if (num > maxNum) maxNum = num;
-        }
-      });
-      const nextNum = (maxNum + 1).toString().padStart(4, '0');
-      eventId = `EVT-2025-${nextNum}`;
-    } else {
+    if (modalMode === 'edit') {
       eventId = editId;
     }
 
