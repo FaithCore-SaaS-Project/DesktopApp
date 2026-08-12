@@ -38,7 +38,7 @@ export default function FamilyFilters({
           <Download size={16} />
         </button>
         <button 
-          className="rounded-xl border border-gray-200 bg-white hover:bg-gray-50 px-4 py-2.5 text-xs font-bold text-gray-650 transition-colors shadow-sm cursor-pointer"
+          className="rounded-xl border border-gray-200 bg-white hover:bg-gray-50 px-4 py-2.5 text-xs font-bold text-gray-600 transition-colors shadow-sm cursor-pointer"
         >
           More
         </button>
@@ -74,7 +74,7 @@ export default function FamilyFilters({
             <select
               value={statusFilter}
               onChange={(e) => onStatusFilterChange(e.target.value)}
-              className="w-full rounded-xl border border-gray-250 py-2.5 px-3 text-xs font-bold text-gray-650 outline-none focus:border-[#5B3DF5] transition-all bg-white cursor-pointer appearance-none"
+              className="w-full rounded-xl border border-gray-250 py-2.5 px-3 text-xs font-bold text-gray-700 outline-none focus:border-[#5B3DF5] transition-all bg-white cursor-pointer appearance-none"
             >
               <option value="all">All Statuses</option>
               {statusOptions.map((opt) => (
@@ -89,7 +89,7 @@ export default function FamilyFilters({
             <select
               value={cellGroupFilter}
               onChange={(e) => onCellGroupFilterChange(e.target.value)}
-              className="w-full rounded-xl border border-gray-250 py-2.5 px-3 text-xs font-bold text-gray-650 outline-none focus:border-[#5B3DF5] transition-all bg-white cursor-pointer appearance-none"
+              className="w-full rounded-xl border border-gray-250 py-2.5 px-3 text-xs font-bold text-gray-700 outline-none focus:border-[#5B3DF5] transition-all bg-white cursor-pointer appearance-none"
             >
               <option value="all">All Cell Groups</option>
               {cellGroupOptions.map((opt) => (

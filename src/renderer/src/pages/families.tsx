@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import api from '../lib/axios';
 import { Home, ChevronRight, X, AlertCircle, Sparkles } from 'lucide-react';
 import FamilyStats from '../components/families/FamilyStats';
 import FamilyFilters from '../components/families/FamilyFilters';
@@ -17,88 +18,15 @@ interface Family {
   hasPhone: boolean;
 }
 
-const DEFAULT_FAMILIES: Family[] = [
-  {
-    id: "fam-1",
-    name: "Perera Family",
-    members: 5,
-    district: "Kandy",
-    joined: "10 Jan 2023",
-    status: "Active",
-    cellGroup: "Kandy Cell Group 2",
-    hasAddress: true,
-    hasPhone: true
-  },
-  {
-    id: "fam-2",
-    name: "Fernando Family",
-    members: 4,
-    district: "Colombo",
-    joined: "22 Feb 2023",
-    status: "Active",
-    cellGroup: "Colombo Cell Group A",
-    hasAddress: true,
-    hasPhone: true
-  },
-  {
-    id: "fam-3",
-    name: "Jayasinghe Family",
-    members: 6,
-    district: "Gampaha",
-    joined: "15 Mar 2023",
-    status: "Active",
-    cellGroup: "Gampaha Fellowship",
-    hasAddress: true,
-    hasPhone: true
-  },
-  {
-    id: "fam-4",
-    name: "Dissanayake Family",
-    members: 3,
-    district: "",
-    joined: "05 Apr 2023",
-    status: "Active",
-    cellGroup: "Southern Cells",
-    hasAddress: false,
-    hasPhone: true
-  },
-  {
-    id: "fam-5",
-    name: "Samuel Family",
-    members: 7,
-    district: "Batticaloa",
-    joined: "30 Apr 2023",
-    status: "Active",
-    cellGroup: "East Coast Fellowship",
-    hasAddress: true,
-    hasPhone: false
-  },
-  {
-    id: "fam-6",
-    name: "Gunawardena Family",
-    members: 2,
-    district: "Kandy",
-    joined: "12 May 2023",
-    status: "Inactive",
-    cellGroup: "Kandy Cell Group 1",
-    hasAddress: true,
-    hasPhone: true
-  },
-  {
-    id: "fam-7",
-    name: "Silva Family",
-    members: 5,
-    district: "",
-    joined: "28 May 2023",
-    status: "Active",
-    cellGroup: "Negombo Outreach",
-    hasAddress: false,
-    hasPhone: false
-  }
-];
+interface Member {
+  id: string;
+  name: string;
+}
 
 export default function FamiliesPage() {
   const [families, setFamilies] = useState<Family[]>([]);
+  const [availableMembers, setAvailableMembers] = useState<Member[]>([]);
+  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [cellGroupFilter, setCellGroupFilter] = useState('all');
@@ -109,38 +37,52 @@ export default function FamiliesPage() {
   // Modals state
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingFamily, setEditingFamily] = useState<Family | null>(null);
-  const [viewingFamily, setViewingFamily] = useState<Family | null>(null);
+  const [viewingFamily, setViewingFamily] = useState<any | null>(null);
 
   // Form inputs
   const [familyName, setFamilyName] = useState('');
-  const [membersCount, setMembersCount] = useState(3);
+  const [selectedMembers, setSelectedMembers] = useState<string[]>([]);
   const [district, setDistrict] = useState('');
   const [status, setStatus] = useState<'Active' | 'Inactive'>('Active');
   const [cellGroup, setCellGroup] = useState('Kandy Cell Group 2');
 
-  // Load from local storage
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const stored = localStorage.getItem('fc_families');
-      if (stored) {
-        setFamilies(JSON.parse(stored));
-      } else {
-        setFamilies(DEFAULT_FAMILIES);
-        localStorage.setItem('fc_families', JSON.stringify(DEFAULT_FAMILIES));
-      }
+  const fetchFamilies = async () => {
+    try {
+      const res = await api.get('/families');
+      setFamilies(res.data.data);
+    } catch (err) {
+      console.error('Error fetching families:', err);
     }
-  }, []);
-
-  // Save to local storage helper
-  const saveFamiliesToStorage = (updatedList: Family[]) => {
-    setFamilies(updatedList);
-    localStorage.setItem('fc_families', JSON.stringify(updatedList));
   };
+
+  const fetchMembers = async () => {
+    try {
+      const res = await api.get('/members');
+      // Extract members for dropdown (can filter out those already in a family if preferred)
+      const mapped = res.data.data.map((m: any) => ({
+        id: m.id,
+        name: `${m.first_name} ${m.last_name}`,
+      }));
+      setAvailableMembers(mapped);
+    } catch (err) {
+      console.error('Error fetching members:', err);
+    }
+  };
+
+  useEffect(() => {
+    const loadData = async () => {
+      setLoading(true);
+      await fetchFamilies();
+      await fetchMembers();
+      setLoading(false);
+    };
+    loadData();
+  }, []);
 
   const handleOpenAddModal = () => {
     setEditingFamily(null);
     setFamilyName('');
-    setMembersCount(3);
+    setSelectedMembers([]);
     setDistrict('');
     setStatus('Active');
     setCellGroup('Kandy Cell Group 2');
@@ -150,7 +92,7 @@ export default function FamiliesPage() {
   const handleOpenEditModal = (family: Family) => {
     setEditingFamily(family);
     setFamilyName(family.name);
-    setMembersCount(family.members);
+    setSelectedMembers([]); // In a complete app, we would fetch existing members of the family
     setDistrict(family.district);
     setStatus(family.status);
     setCellGroup(family.cellGroup);
@@ -162,57 +104,60 @@ export default function FamiliesPage() {
     setEditingFamily(null);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!familyName.trim()) return;
 
-    if (editingFamily) {
-      // Edit mode
-      const updated = families.map(f => {
-        if (f.id === editingFamily.id) {
-          return {
-            ...f,
-            name: familyName,
-            members: Number(membersCount),
-            district,
-            status,
-            cellGroup,
-            hasAddress: district.trim().length > 0
-          };
-        }
-        return f;
-      });
-      saveFamiliesToStorage(updated);
-    } else {
-      // Create mode
-      const newFamily: Family = {
-        id: `fam-${Date.now()}`,
-        name: familyName,
-        members: Number(membersCount),
+    try {
+      const payload = {
+        family_name: familyName,
         district,
-        joined: new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
+        address: district,
         status,
-        cellGroup,
-        hasAddress: district.trim().length > 0,
-        hasPhone: true // defaulted for new family
+        cell_group: cellGroup,
+        member_ids: selectedMembers
       };
-      saveFamiliesToStorage([newFamily, ...families]);
-    }
 
-    handleCloseModal();
+      if (editingFamily) {
+        await api.put(`/families/${editingFamily.id}`, payload);
+      } else {
+        await api.post('/families', payload);
+      }
+      
+      await fetchFamilies();
+      handleCloseModal();
+    } catch (err) {
+      console.error('Error saving family:', err);
+      alert('Failed to save family profile.');
+    }
   };
 
-  const handleDelete = (id: string) => {
+  const handleDelete = async (id: string) => {
     if (confirm('Are you sure you want to delete this family profile?')) {
-      const updated = families.filter(f => f.id !== id);
-      saveFamiliesToStorage(updated);
-      
-      // Adjust page if we deleted the last item of a page
-      const newTotal = updated.length;
-      const newMaxPages = Math.ceil(newTotal / pageSize);
-      if (currentPage > newMaxPages && newMaxPages > 0) {
-        setCurrentPage(newMaxPages);
+      try {
+        await api.delete(`/families/${id}`);
+        await fetchFamilies();
+        
+        // Adjust page if we deleted the last item of a page
+        const newTotal = families.length - 1;
+        const newMaxPages = Math.ceil(newTotal / pageSize);
+        if (currentPage > newMaxPages && newMaxPages > 0) {
+          setCurrentPage(newMaxPages);
+        }
+      } catch (err) {
+        console.error('Error deleting family:', err);
+        alert('Failed to delete family profile.');
       }
+    }
+  };
+
+  const handleViewFamily = async (fam: Family) => {
+    try {
+      const res = await api.get(`/families/${fam.id}`);
+      setViewingFamily(res.data.data);
+    } catch (err) {
+      console.error('Error viewing family:', err);
+      alert('Failed to load household details.');
     }
   };
 
@@ -321,7 +266,7 @@ export default function FamiliesPage() {
       {/* Family Data Table */}
       <FamilyTable
         families={paginatedFamilies}
-        onViewClick={(fam) => setViewingFamily(fam)}
+        onViewClick={handleViewFamily}
         onEditClick={handleOpenEditModal}
         onDeleteClick={handleDelete}
         currentPage={currentPage}
@@ -361,19 +306,32 @@ export default function FamiliesPage() {
                 />
               </div>
 
-              {/* Members count */}
+              {/* Members Selection */}
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-gray-400 uppercase">Household Members Count</label>
-                <input
-                  type="number"
-                  min="1"
-                  max="25"
-                  required
-                  value={membersCount}
-                  onChange={(e) => setMembersCount(Number(e.target.value))}
-                  placeholder="3"
-                  className="w-full bg-gray-50/50 border border-gray-250 focus:border-[#5B3DF5] rounded-xl px-4 py-2.5 text-xs font-semibold text-gray-800 focus:outline-none"
-                />
+                <label className="text-xs font-bold text-gray-400 uppercase">Household Members</label>
+                <div className="w-full bg-gray-50/50 border border-gray-250 rounded-xl px-4 py-2.5 max-h-40 overflow-y-auto">
+                  {availableMembers.length === 0 ? (
+                    <p className="text-xs text-gray-500 italic">No available members to assign.</p>
+                  ) : (
+                    availableMembers.map(member => (
+                      <label key={member.id} className="flex items-center gap-2 mb-2 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={selectedMembers.includes(member.id)}
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              setSelectedMembers([...selectedMembers, member.id]);
+                            } else {
+                              setSelectedMembers(selectedMembers.filter(id => id !== member.id));
+                            }
+                          }}
+                          className="w-4 h-4 text-[#5B3DF5] rounded border-gray-300 focus:ring-[#5B3DF5]"
+                        />
+                        <span className="text-sm font-semibold text-gray-800">{member.name}</span>
+                      </label>
+                    ))
+                  )}
+                </div>
               </div>
 
               {/* Location */}
@@ -497,19 +455,14 @@ export default function FamiliesPage() {
               <div className="space-y-2">
                 <h4 className="text-xs font-bold text-gray-400 uppercase">Household Members</h4>
                 <div className="space-y-1.5">
-                  <p className="text-xs font-semibold text-gray-700 flex items-center gap-2">
-                    <span className="h-1.5 w-1.5 rounded-full bg-[#5B3DF5]" />
-                    Saman Perera (Head of Household)
-                  </p>
-                  <p className="text-xs font-semibold text-gray-700 flex items-center gap-2">
-                    <span className="h-1.5 w-1.5 rounded-full bg-[#5B3DF5]" />
-                    Nadeesha Perera (Spouse)
-                  </p>
-                  {viewingFamily.members > 2 && (
-                    <p className="text-xs font-semibold text-gray-750 flex items-center gap-2">
-                      <span className="h-1.5 w-1.5 rounded-full bg-slate-350" />
-                      And {viewingFamily.members - 2} other children...
+                  {viewingFamily.household_members?.map((m: any, index: number) => (
+                    <p key={m.id} className="text-xs font-semibold text-gray-700 flex items-center gap-2">
+                      <span className={`h-1.5 w-1.5 rounded-full ${index === 0 ? 'bg-[#5B3DF5]' : 'bg-slate-350'}`} />
+                      {m.name} {index === 0 ? '(Head)' : ''}
                     </p>
+                  ))}
+                  {(!viewingFamily.household_members || viewingFamily.household_members.length === 0) && (
+                    <p className="text-xs text-gray-400 italic">No members assigned.</p>
                   )}
                 </div>
               </div>
