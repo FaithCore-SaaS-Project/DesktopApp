@@ -24,7 +24,6 @@ export default function SettingsCard({ title, description, icon, color, href }: 
       <div className="flex justify-end mt-4">
         <ArrowRight size={16} className="text-gray-300 group-hover:text-[#5B3DF5] transition-colors" />
       </div>
-      </div>
     </div>
   );
 
