@@ -1,15 +1,14 @@
 import React from 'react';
 
-const departments = [
-  { name: "Administration", count: 12, width: "80%", color: "bg-blue-500" },
-  { name: "Education", count: 10, width: "70%", color: "bg-cyan-500" },
-  { name: "Outreach Ministry", count: 8, width: "60%", color: "bg-[#5B3DF5]" },
-  { name: "Events Department", count: 7, width: "55%", color: "bg-orange-500" },
-  { name: "Finance Department", count: 6, width: "50%", color: "bg-green-500" },
-  { name: "Others", count: 43, width: "95%", color: "bg-gray-400" }
-];
+interface UsersByDepartmentCardProps {
+  users: any[];
+}
 
-export default function UsersByDepartmentCard() {
+export default function UsersByDepartmentCard({ users = [] }: UsersByDepartmentCardProps) {
+  const departments = [
+    { name: "System Users", count: users.length, width: "100%", color: "bg-[#5B3DF5]" }
+  ];
+
   return (
     <div className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm mb-6">
       <div className="flex justify-between items-center mb-5">

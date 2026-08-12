@@ -1,15 +1,23 @@
 import React from 'react';
 import { Users, UserCheck, UserMinus, ShieldCheck, CalendarPlus } from 'lucide-react';
 
-const stats = [
-  { icon: Users, title: "Total Users", value: "86", sub: "All users", color: "text-[#5B3DF5]", bg: "bg-[#5B3DF5]/10" },
-  { icon: UserCheck, title: "Active Users", value: "74", sub: "86.0% of total", color: "text-green-600", bg: "bg-green-50", subColor: "text-green-600" },
-  { icon: UserMinus, title: "Inactive Users", value: "12", sub: "14.0% of total", color: "text-orange-500", bg: "bg-orange-50", subColor: "text-orange-500" },
-  { icon: ShieldCheck, title: "Super Admins", value: "2", sub: "Full system access", color: "text-blue-600", bg: "bg-blue-50", subColor: "text-blue-600" },
-  { icon: CalendarPlus, title: "New This Month", value: "5", sub: "Joined in May 2025", color: "text-cyan-500", bg: "bg-cyan-50", subColor: "text-cyan-500" }
-];
+interface UserStatsCardsProps {
+  users: any[];
+}
 
-export default function UserStatsCards() {
+export default function UserStatsCards({ users = [] }: UserStatsCardsProps) {
+  const activeCount = users.filter(u => u.status).length;
+  const inactiveCount = users.length - activeCount;
+  const superAdminCount = users.filter(u => u.roles?.some((r: any) => r.name === 'Super Admin')).length;
+  
+  const stats = [
+    { icon: Users, title: "Total Users", value: users.length.toString(), sub: "All users", color: "text-[#5B3DF5]", bg: "bg-[#5B3DF5]/10" },
+    { icon: UserCheck, title: "Active Users", value: activeCount.toString(), sub: users.length > 0 ? `${Math.round((activeCount / users.length) * 100)}% of total` : '0% of total', color: "text-green-600", bg: "bg-green-50", subColor: "text-green-600" },
+    { icon: UserMinus, title: "Inactive Users", value: inactiveCount.toString(), sub: users.length > 0 ? `${Math.round((inactiveCount / users.length) * 100)}% of total` : '0% of total', color: "text-orange-500", bg: "bg-orange-50", subColor: "text-orange-500" },
+    { icon: ShieldCheck, title: "Super Admins", value: superAdminCount.toString(), sub: "Full system access", color: "text-blue-600", bg: "bg-blue-50", subColor: "text-blue-600" },
+    { icon: CalendarPlus, title: "New This Month", value: "0", sub: "Joined recently", color: "text-cyan-500", bg: "bg-cyan-50", subColor: "text-cyan-500" }
+  ];
+
   return (
     <div className="grid grid-cols-5 gap-4 mb-6">
       {stats.map((item, index) => {

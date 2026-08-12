@@ -1,18 +1,24 @@
 import React from 'react';
 import { Crown, ShieldCheck, Users, Calendar, DollarSign, Heart, Eye } from 'lucide-react';
 
-const roles = [
-  { name: "Super Admin", count: 2, icon: Crown, color: "text-[#5B3DF5]" },
-  { name: "Administrator", count: 3, icon: ShieldCheck, color: "text-blue-500" },
-  { name: "Ministry Leader", count: 6, icon: Users, color: "text-teal-500" },
-  { name: "Event Manager", count: 4, icon: Calendar, color: "text-red-500" },
-  { name: "Finance Manager", count: 2, icon: DollarSign, color: "text-green-500" },
-  { name: "Member Services", count: 5, icon: Heart, color: "text-pink-500" },
-  { name: "Department User", count: 60, icon: Users, color: "text-indigo-500" },
-  { name: "Viewer", count: 4, icon: Eye, color: "text-orange-500" }
-];
+interface UsersByRoleCardProps {
+  users: any[];
+}
 
-export default function UsersByRoleCard() {
+export default function UsersByRoleCard({ users = [] }: UsersByRoleCardProps) {
+  const roleCounts: Record<string, number> = {};
+  users.forEach(u => {
+    const rName = u.roles?.[0]?.name || 'Member';
+    roleCounts[rName] = (roleCounts[rName] || 0) + 1;
+  });
+
+  const roles = Object.keys(roleCounts).map(name => ({
+    name,
+    count: roleCounts[name],
+    icon: Users,
+    color: "text-blue-500"
+  })).sort((a, b) => b.count - a.count);
+
   return (
     <div className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm mb-6">
       <div className="flex justify-between items-center mb-5">

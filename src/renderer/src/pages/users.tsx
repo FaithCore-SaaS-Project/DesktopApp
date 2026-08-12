@@ -149,7 +149,7 @@ export default function UsersPage() {
       {/* Main Layout */}
       <div className="flex flex-col lg:flex-row gap-6">
         <div className="flex-1 min-w-0 space-y-6">
-          <UserStatsCards />
+          <UserStatsCards users={users} />
           <UserFilters />
           {loading ? (
             <div className="bg-white border border-gray-100 rounded-2xl shadow-sm p-12 flex justify-center items-center">
@@ -161,8 +161,8 @@ export default function UsersPage() {
         </div>
         
         <div className="w-full lg:w-[320px] shrink-0 space-y-6">
-          <UsersByRoleCard />
-          <UsersByDepartmentCard />
+          <UsersByRoleCard users={users} />
+          <UsersByDepartmentCard users={users} />
           <UserQuickActions />
         </div>
       </div>
