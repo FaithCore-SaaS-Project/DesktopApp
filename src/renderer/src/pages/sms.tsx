@@ -174,7 +174,7 @@ export default function SmsCenter() {
               disabled={buying}
               className="flex-1 bg-white hover:bg-slate-50 text-indigo-900 font-bold py-2.5 px-4 rounded-xl transition-all shadow-sm flex items-center justify-center gap-2 disabled:opacity-50"
             >
-              {buying ? 'Processing...' : 'Buy Now'}
+              {buying ? 'Requesting...' : 'Request Top-up'}
             </button>
           </div>
         </div>
@@ -210,7 +210,7 @@ export default function SmsCenter() {
                   placeholder="e.g. +94771234567"
                   value={phone}
                   onChange={e => setPhone(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20 outline-none transition-all font-medium"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20 outline-none transition-all font-medium text-slate-900"
                 />
               </div>
               <div className="p-4 bg-indigo-50/50 rounded-xl border border-indigo-100/50 text-xs text-indigo-800 leading-relaxed font-medium">
@@ -226,7 +226,7 @@ export default function SmsCenter() {
                 placeholder="Type your message here..."
                 value={message}
                 onChange={e => setMessage(e.target.value)}
-                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20 outline-none transition-all font-medium resize-none"
+                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20 outline-none transition-all font-medium resize-none text-slate-900"
               ></textarea>
               <div className="flex justify-between items-center mt-2">
                 <span className="text-xs text-slate-400 font-medium">{message.length} characters</span>
