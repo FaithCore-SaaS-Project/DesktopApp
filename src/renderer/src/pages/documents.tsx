@@ -9,27 +9,7 @@ import DocumentsFilters from '../components/documents/DocumentsFilters';
 import DocumentsTable from '../components/documents/DocumentsTable';
 import DocumentsSidebar from '../components/documents/DocumentsSidebar';
 
-const DEFAULT_DOCUMENTS = [
-  { name: 'Church Constitution.pdf', category: 'Legal', type: 'PDF', uploader: 'Pastor John', date: '24 May 2025', size: '1.2 MB', status: 'Public' },
-  { name: 'Membership Application Form.docx', category: 'Forms', type: 'DOCX', uploader: 'Sarah Johnson', date: '23 May 2025', size: '245 KB', status: 'Public' },
-  { name: '2025 Budget Plan.xlsx', category: 'Finance', type: 'XLSX', uploader: 'Pastor John', date: '22 May 2025', size: '512 KB', status: 'Public' },
-  { name: 'Baptism Guidelines.pdf', category: 'Ministry', type: 'PDF', uploader: 'Michael Peters', date: '20 May 2025', size: '890 KB', status: 'Public' },
-  { name: 'New Member Orientation.pptx', category: 'Training', type: 'PPTX', uploader: 'Sarah Johnson', date: '19 May 2025', size: '3.4 MB', status: 'Private' },
-  { name: 'Event Planning Checklist.pdf', category: 'Events', type: 'PDF', uploader: 'Emily Davis', date: '18 May 2025', size: '678 KB', status: 'Public' },
-  { name: 'Volunteer Agreement Form.docx', category: 'Forms', type: 'DOCX', uploader: 'Sarah Johnson', date: '17 May 2025', size: '310 KB', status: 'Public' },
-  { name: 'Tithe Summary - April 2025.xlsx', category: 'Finance', type: 'XLSX', uploader: 'Pastor John', date: '16 May 2025', size: '420 KB', status: 'Private' },
-  { name: 'Child Protection Policy.pdf', category: 'Policy', type: 'PDF', uploader: 'Michael Peters', date: '15 May 2025', size: '1.1 MB', status: 'Public' },
-  { name: 'Mission Trip Presentation.pptx', category: 'Ministry', type: 'PPTX', uploader: 'Daniel Wilson', date: '14 May 2025', size: '2.3 MB', status: 'Public' }
-];
-
-const mockSize = (name: string) => {
-  const n = name.toLowerCase();
-  if (n.endsWith('.pdf')) return '1.2 MB';
-  if (n.endsWith('.docx') || n.endsWith('.doc')) return '245 KB';
-  if (n.endsWith('.xlsx') || n.endsWith('.xls')) return '512 KB';
-  if (n.endsWith('.pptx') || n.endsWith('.ppt')) return '2.3 MB';
-  return '1.5 MB';
-};
+// No dummy data in production
 
 export default function DocumentsPage() {
   const { user } = useApp();
@@ -47,36 +27,26 @@ export default function DocumentsPage() {
     try {
       const res = await api.get('/documents');
       const apiData = res.data.data ?? res.data;
-      if (Array.isArray(apiData) && apiData.length > 0) {
+      if (Array.isArray(apiData)) {
         const formatted = apiData.map((d: any) => {
           return {
             id: d.id,
             name: d.title,
             category: d.category?.name || 'Others',
             type: d.title.split('.').pop()?.toUpperCase() || 'PDF',
-            uploader: d.uploader?.username || 'Pastor John',
-            date: d.created_at ? new Date(d.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '24 May 2025',
-            size: mockSize(d.title),
+            uploader: d.uploader?.username || 'Admin',
+            date: d.created_at ? new Date(d.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : new Date().toLocaleDateString(),
+            size: d.size ? `${(d.size / (1024 * 1024)).toFixed(1)} MB` : 'Unknown',
             status: 'Public'
           };
         });
         setDocuments(formatted);
       } else {
-        loadFromLocalStorage();
+        setDocuments([]);
       }
-    } catch (err) {
-      console.error('Failed to load documents from backend, using local storage:', err?.message || 'Error occurred');
-      loadFromLocalStorage();
-    }
-  };
-
-  const loadFromLocalStorage = () => {
-    const stored = localStorage.getItem('fc_documents');
-    if (stored) {
-      setDocuments(JSON.parse(stored));
-    } else {
-      localStorage.setItem('fc_documents', JSON.stringify(DEFAULT_DOCUMENTS));
-      setDocuments(DEFAULT_DOCUMENTS);
+    } catch (err: any) {
+      console.error('Failed to load documents from backend', err?.message || 'Error occurred');
+      setDocuments([]);
     }
   };
 
@@ -116,31 +86,8 @@ export default function DocumentsPage() {
       await api.post('/documents', payload);
       await loadDocuments();
       setIsModalOpen(false);
-    } catch (err) {
-      console.error('Failed to save document on backend, saving locally:', err?.message || 'Error occurred');
-      // Fallback
-      const now = new Date();
-      const formattedDate = now.toLocaleDateString('en-GB', {
-        day: '2-digit',
-        month: 'short',
-        year: 'numeric'
-      });
-
-      const newDoc = {
-        id: 'local-' + Date.now(),
-        name: filename,
-        category: formCategory,
-        type: formType,
-        uploader: user?.username || 'Pastor John',
-        date: formattedDate,
-        size: formSize,
-        status: formStatus
-      };
-
-      const updated = [newDoc, ...documents];
-      setDocuments(updated);
-      localStorage.setItem('fc_documents', JSON.stringify(updated));
-      setIsModalOpen(false);
+    } catch (err: any) {
+      alert('Failed to save document. ' + (err?.response?.data?.message || err?.message));
     }
   };
 
@@ -149,17 +96,12 @@ export default function DocumentsPage() {
 
     const docToDelete = documents.find((d) => d.name === name);
     try {
-      if (docToDelete && docToDelete.id && !docToDelete.id.toString().startsWith('local-')) {
+      if (docToDelete && docToDelete.id) {
         await api.delete(`/documents/${docToDelete.id}`);
         await loadDocuments();
-      } else {
-        throw new Error('Local item');
       }
-    } catch (err) {
-      console.error('Failed to delete document from backend, deleting locally:', err?.message || 'Error occurred');
-      const updated = documents.filter((doc) => doc.name !== name);
-      setDocuments(updated);
-      localStorage.setItem('fc_documents', JSON.stringify(updated));
+    } catch (err: any) {
+      alert('Failed to delete document. ' + (err?.message || 'Error occurred'));
     }
   };
 
@@ -198,7 +140,7 @@ export default function DocumentsPage() {
 
       {/* Stats */}
       <div className="mb-6">
-        <DocumentsStats />
+        <DocumentsStats documents={documents} />
       </div>
       
       {/* Filters */}

@@ -1,60 +1,66 @@
 import React from 'react';
 import { FileText, Upload, Star, Folder, Download } from 'lucide-react';
 
-const stats = [
-  {
-    title: 'Total Documents',
-    value: '328',
-    subtitle: 'All time uploads',
-    icon: FileText,
-    themeColor: 'indigo',
-    iconColor: 'text-indigo-600',
-    iconBg: 'bg-indigo-50 border-indigo-100/50',
-    borderHover: 'hover:border-indigo-200/60',
-  },
-  {
-    title: 'Uploaded Documents',
-    value: '276',
-    subtitle: '84.1% of total storage',
-    icon: Upload,
-    themeColor: 'emerald',
-    iconColor: 'text-emerald-600',
-    iconBg: 'bg-emerald-50 border-emerald-100/50',
-    borderHover: 'hover:border-emerald-200/60',
-  },
-  {
-    title: 'Important Documents',
-    value: '52',
-    subtitle: '15.9% starred items',
-    icon: Star,
-    themeColor: 'violet',
-    iconColor: 'text-violet-600',
-    iconBg: 'bg-violet-50 border-violet-100/50',
-    borderHover: 'hover:border-violet-200/60',
-  },
-  {
-    title: 'Categories',
-    value: '12',
-    subtitle: 'Active file folders',
-    icon: Folder,
-    themeColor: 'amber',
-    iconColor: 'text-amber-600',
-    iconBg: 'bg-amber-50 border-amber-100/50',
-    borderHover: 'hover:border-amber-200/60',
-  },
-  {
-    title: 'Total Downloads',
-    value: '1,248',
-    subtitle: 'Downloaded this year',
-    icon: Download,
-    themeColor: 'cyan',
-    iconColor: 'text-cyan-600',
-    iconBg: 'bg-cyan-50 border-cyan-100/50',
-    borderHover: 'hover:border-cyan-200/60',
-  },
-];
+interface DocumentsStatsProps {
+  documents: any[];
+}
 
-export default function DocumentsStats() {
+export default function DocumentsStats({ documents = [] }: DocumentsStatsProps) {
+  const categoriesCount = new Set(documents.map(d => d.category)).size;
+
+  const stats = [
+    {
+      title: 'Total Documents',
+      value: documents.length.toString(),
+      subtitle: 'All time uploads',
+      icon: FileText,
+      themeColor: 'indigo',
+      iconColor: 'text-indigo-600',
+      iconBg: 'bg-indigo-50 border-indigo-100/50',
+      borderHover: 'hover:border-indigo-200/60',
+    },
+    {
+      title: 'Uploaded Documents',
+      value: documents.length.toString(),
+      subtitle: 'From local storage',
+      icon: Upload,
+      themeColor: 'emerald',
+      iconColor: 'text-emerald-600',
+      iconBg: 'bg-emerald-50 border-emerald-100/50',
+      borderHover: 'hover:border-emerald-200/60',
+    },
+    {
+      title: 'Important Documents',
+      value: '0',
+      subtitle: 'Starred items',
+      icon: Star,
+      themeColor: 'violet',
+      iconColor: 'text-violet-600',
+      iconBg: 'bg-violet-50 border-violet-100/50',
+      borderHover: 'hover:border-violet-200/60',
+    },
+    {
+      title: 'Categories',
+      value: categoriesCount.toString(),
+      subtitle: 'Active file folders',
+      icon: Folder,
+      themeColor: 'amber',
+      iconColor: 'text-amber-600',
+      iconBg: 'bg-amber-50 border-amber-100/50',
+      borderHover: 'hover:border-amber-200/60',
+    },
+    {
+      title: 'Total Downloads',
+      value: '0',
+      subtitle: 'Downloaded this year',
+      icon: Download,
+      themeColor: 'cyan',
+      iconColor: 'text-cyan-600',
+      iconBg: 'bg-cyan-50 border-cyan-100/50',
+      borderHover: 'hover:border-cyan-200/60',
+    },
+  ];
+
   return (
     <div className="grid lg:grid-cols-5 gap-4 mb-6">
       {stats.map((item, index) => {
