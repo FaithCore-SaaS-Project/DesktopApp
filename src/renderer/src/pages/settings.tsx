@@ -17,9 +17,9 @@ export default function SettingsPage() {
   ];
 
   const administration = [
-    { title: 'Users & Roles', color: 'bg-purple-600', icon: <Users size={24} />, description: 'Manage users, roles and permissions across the system.' },
-    { title: 'Departments', color: 'bg-green-600', icon: <Building2 size={24} />, description: 'Manage departments and their leaders and settings.' },
-    { title: 'Documents', color: 'bg-amber-500', icon: <FolderOpen size={24} />, description: 'Configure document categories, storage limits and file settings.' },
+    { title: 'Users & Roles', color: 'bg-purple-600', icon: <Users size={24} />, description: 'Manage users, roles and permissions across the system.', href: '/users' },
+    { title: 'Departments', color: 'bg-green-600', icon: <Building2 size={24} />, description: 'Manage departments and their leaders and settings.', href: '/departments' },
+    { title: 'Documents', color: 'bg-amber-500', icon: <FolderOpen size={24} />, description: 'Configure document categories, storage limits and file settings.', href: '/documents' },
     { title: 'Integrations', color: 'bg-blue-600', icon: <Puzzle size={24} />, description: 'Manage third-party integrations and API connections.' },
   ];
 
