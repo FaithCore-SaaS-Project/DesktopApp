@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { ChevronRight, Save, Building2, MapPin, Globe, Image as ImageIcon, CheckCircle, Smartphone } from 'lucide-react';
-import { apiService } from '../../services/api';
+import api from '../../lib/axios';
 
 export default function ChurchProfilePage() {
   const [loading, setLoading] = useState(true);
@@ -43,9 +43,7 @@ export default function ChurchProfilePage() {
   const fetchProfile = async () => {
     try {
       setLoading(true);
-      // We need an apiService method for this, or use raw fetch. 
-      // Assuming apiService.api exposes axios instance
-      const res = await apiService.api.get('/settings/church-profile');
+      const res = await api.get('/settings/church-profile');
       const data = res.data.data;
       
       setFormData({
@@ -128,7 +126,7 @@ export default function ChurchProfilePage() {
       if (logoFile) fd.append('logo', logoFile);
       if (coverFile) fd.append('cover_image', coverFile);
 
-      await apiService.api.post('/settings/church-profile', fd, {
+      await api.post('/settings/church-profile', fd, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
