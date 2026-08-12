@@ -9,7 +9,7 @@ import SettingsHelpCard from '../components/settings/SettingsHelpCard';
 
 export default function SettingsPage() {
   const systemSettings = [
-    { title: 'Church Profile', color: 'bg-indigo-600', icon: <Building2 size={24} />, description: 'Update basic info, services, ministries, and social media.' },
+    { title: 'Church Profile', color: 'bg-indigo-600', icon: <Building2 size={24} />, description: 'Update basic info, services, ministries, and social media.', href: '/settings/church-profile' },
     { title: 'General', color: 'bg-purple-600', icon: <Settings size={24} />, description: 'Manage system details, site information, date & time, language and other preferences.' },
     { title: 'Finance', color: 'bg-green-500', icon: <DollarSign size={24} />, description: 'Configure currency, financial year, payment methods and tax settings and more.' },
     { title: 'Notifications', color: 'bg-orange-500', icon: <Bell size={24} />, description: 'Manage email, SMS and in-app notifications and alert preferences.' },
