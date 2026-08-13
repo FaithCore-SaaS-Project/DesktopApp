@@ -42,7 +42,7 @@ export default function SupportPage() {
       </div>
       
       <div className="mt-8 text-center">
-        <p className="text-[10px] font-bold text-gray-400">&copy; 2025 Kingdom Connect. All rights reserved.</p>
+        <p className="text-[10px] font-bold text-gray-400">&copy; 2025 FaithCore. All rights reserved.</p>
       </div>
     </div>
   );

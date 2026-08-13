@@ -13,7 +13,7 @@ export default function SupportHero() {
             <div>
               <h1 className="text-2xl font-black text-gray-900 tracking-tight">We're here to help!</h1>
               <p className="text-xs font-semibold text-gray-500 mt-2 max-w-md leading-relaxed">
-                Our support team is ready to assist you with any questions or issues you may have with Kingdom Connect.
+                Our support team is ready to assist you with any questions or issues you may have with FaithCore.
               </p>
             </div>
           </div>
