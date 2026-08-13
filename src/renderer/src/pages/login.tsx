@@ -105,8 +105,8 @@ export default function LoginPage() {
         <div className="relative z-10 flex flex-col justify-between p-16 w-full h-full">
           <div>
             <div className="flex items-center gap-4">
-              <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-violet-600 to-purple-500 flex items-center justify-center font-black text-white text-xl shadow-lg shadow-violet-500/20">
-                fc
+              <div className="h-12 w-12 rounded-2xl flex items-center justify-center shadow-lg shadow-violet-500/20 overflow-hidden bg-white">
+                <img src="/logo.jpg" alt="FaithCore Logo" className="w-full h-full object-contain" />
               </div>
               <div>
                 <h1 className="text-3xl tracking-[6px] font-light">
