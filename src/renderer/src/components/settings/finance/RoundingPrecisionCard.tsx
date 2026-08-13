@@ -1,7 +1,12 @@
 import React from 'react';
 import { Info, ChevronDown } from 'lucide-react';
 
-export default function RoundingPrecisionCard() {
+interface RoundingPrecisionCardProps {
+  settings: Record<string, string>;
+  updateSetting: (key: string, value: string) => void;
+}
+
+export default function RoundingPrecisionCard({ settings, updateSetting }: RoundingPrecisionCardProps) {
   return (
     <div className="bg-white border border-gray-100 rounded-2xl p-6 mt-6 shadow-sm">
       <h2 className="text-lg font-black text-gray-900 mb-1">Rounding & Precision</h2>
@@ -12,8 +17,14 @@ export default function RoundingPrecisionCard() {
           <div className="mb-5">
             <label className="text-[11px] font-bold text-gray-900 mb-1.5 block">Rounding Method</label>
             <div className="relative">
-              <select className="w-full appearance-none bg-white border border-gray-200 rounded-xl py-2.5 pl-3 pr-10 text-xs font-semibold text-gray-700 outline-none hover:border-gray-300 focus:border-[#5B3DF5] cursor-pointer shadow-sm">
-                <option>Standard (Round Half Up)</option>
+              <select 
+                value={settings['finance_rounding_method'] || 'Standard (Round Half Up)'}
+                onChange={(e) => updateSetting('finance_rounding_method', e.target.value)}
+                className="w-full appearance-none bg-white border border-gray-200 rounded-xl py-2.5 pl-3 pr-10 text-xs font-semibold text-gray-700 outline-none hover:border-gray-300 focus:border-[#5B3DF5] cursor-pointer shadow-sm"
+              >
+                <option value="Standard (Round Half Up)">Standard (Round Half Up)</option>
+                <option value="Round Up">Round Up</option>
+                <option value="Round Down">Round Down</option>
               </select>
               <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
             </div>
@@ -22,8 +33,14 @@ export default function RoundingPrecisionCard() {
           <div>
             <label className="text-[11px] font-bold text-gray-900 mb-1.5 block">Decimal Precision</label>
             <div className="relative">
-              <select className="w-full appearance-none bg-white border border-gray-200 rounded-xl py-2.5 pl-3 pr-10 text-xs font-semibold text-gray-700 outline-none hover:border-gray-300 focus:border-[#5B3DF5] cursor-pointer shadow-sm">
-                <option>2 (0.00)</option>
+              <select 
+                value={settings['finance_decimal_precision'] || '2'}
+                onChange={(e) => updateSetting('finance_decimal_precision', e.target.value)}
+                className="w-full appearance-none bg-white border border-gray-200 rounded-xl py-2.5 pl-3 pr-10 text-xs font-semibold text-gray-700 outline-none hover:border-gray-300 focus:border-[#5B3DF5] cursor-pointer shadow-sm"
+              >
+                <option value="2">2 (0.00)</option>
+                <option value="0">0 (0)</option>
+                <option value="3">3 (0.000)</option>
               </select>
               <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
             </div>
@@ -41,12 +58,6 @@ export default function RoundingPrecisionCard() {
             </div>
           </div>
         </div>
-      </div>
-      
-      <div className="mt-6">
-        <button className="bg-[#5B3DF5] hover:bg-[#4a30db] text-white px-5 py-2.5 rounded-xl text-xs font-bold shadow-sm shadow-[#5B3DF5]/20 transition-colors cursor-pointer">
-          Save Changes
-        </button>
       </div>
     </div>
   );

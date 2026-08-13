@@ -9,13 +9,14 @@ import FinanceGeneralSettings from '../../components/settings/finance/FinanceGen
 import RoundingPrecisionCard from '../../components/settings/finance/RoundingPrecisionCard';
 import SettingsHelpCard from '../../components/settings/SettingsHelpCard';
 
-import { apiService } from '../../services/api';
+import { settingsService } from '../../services/settingsService';
 
 export default function FinanceSettingsPage() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState('General');
   const [settings, setSettings] = useState<Record<string, string>>({});
   const [originalSettings, setOriginalSettings] = useState<Record<string, string>>({});
+  const [overviewStats, setOverviewStats] = useState<any>(null);
   const [hasChanges, setHasChanges] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   
@@ -25,13 +26,17 @@ export default function FinanceSettingsPage() {
   ];
 
   useEffect(() => {
-    const fetchSettings = async () => {
-      const data = await apiService.getSettings();
+    const fetchData = async () => {
+      const [data, stats] = await Promise.all([
+        settingsService.getSettings(),
+        settingsService.getFinanceOverview()
+      ]);
       setSettings(data || {});
       setOriginalSettings(data || {});
+      setOverviewStats(stats);
       setHasChanges(false);
     };
-    fetchSettings();
+    fetchData();
   }, []);
 
   // Handle route change warning
@@ -62,9 +67,14 @@ export default function FinanceSettingsPage() {
   const handleSave = async () => {
     setIsSaving(true);
     try {
-      await apiService.updateSettings(settings);
+      await settingsService.updateSettings(settings);
       setOriginalSettings(settings);
       setHasChanges(false);
+      
+      // Refresh stats in case settings affect them
+      const stats = await settingsService.getFinanceOverview();
+      setOverviewStats(stats);
+      
       alert('Settings saved successfully!');
     } catch (err) {
       alert('Error saving settings.');
@@ -139,7 +149,7 @@ export default function FinanceSettingsPage() {
           {activeTab === 'General' ? (
             <>
               <FinanceGeneralSettings settings={settings} updateSetting={updateSetting} />
-              <RoundingPrecisionCard />
+              <RoundingPrecisionCard settings={settings} updateSetting={updateSetting} />
             </>
           ) : (
             <div className="flex items-center justify-center h-64 bg-white rounded-2xl border border-gray-100 shadow-sm">
@@ -149,7 +159,7 @@ export default function FinanceSettingsPage() {
         </div>
         
         <div className="lg:col-span-4 xl:col-span-3">
-          <FinanceSystemOverview />
+          <FinanceSystemOverview stats={overviewStats} />
           <FinanceQuickActions />
           <SettingsHelpCard />
         </div>
