@@ -46,31 +46,30 @@ export default function MemberProfilePage() {
         const baseMember = members.find(m => m.id === id);
 
         if (baseMember) {
-          // Overlay extended mock fields dynamically
           const extendedMember = {
             ...baseMember,
             memberId: baseMember.memberNo,
             photoUrl: baseMember.photoUrl ? baseMember.photoUrl : `https://i.pravatar.cc/300?u=${baseMember.id}`,
             nic: baseMember.nic || 'N/A',
             occupation: baseMember.occupation || 'Member',
-            address: baseMember.address || 'Kandy, Sri Lanka',
-            dob: baseMember.dob || '15 May 1990',
+            address: baseMember.address || 'N/A',
+            dob: baseMember.dob || 'N/A',
             passportNumber: 'N/A',
-            gender: baseMember.gender || 'Male',
-            nationality: 'Sri Lankan',
+            gender: baseMember.gender || 'N/A',
+            nationality: 'N/A',
             church: currentTenant.name,
             baptismDate: baseMember.baptismDate || 'N/A',
             baptizedBy: baseMember.baptismPartnerName || 'N/A',
             baptismChurch: baseMember.baptismChurch || 'N/A',
             baptismCertificateUrl: baseMember.baptismCertificateUrl || null,
-            maritalStatus: baseMember.maritalStatus || 'single',
+            maritalStatus: baseMember.maritalStatus || 'Single',
             marriageDate: baseMember.marriageDate || 'N/A',
             marriageCertificateUrl: baseMember.marriageCertificateUrl || null,
             birthCertificateUrl: baseMember.birthCertificateUrl || null,
-            department: 'Worship Ministry',
-            cellGroup: 'Sanctuary Cell Group A',
-            spouse: 'Nadeesha Perera',
-            children: ['Imesh Perera', 'Shenal Perera'],
+            department: 'N/A',
+            cellGroup: 'N/A',
+            spouse: 'N/A',
+            children: [],
             name: `${baseMember.firstName} ${baseMember.lastName}`, // keep for legacy references
           };
           setMember(extendedMember);
@@ -112,13 +111,13 @@ export default function MemberProfilePage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="p-4 bg-slate-50 border border-slate-100 rounded-2xl">
                   <p className="text-xs font-bold text-gray-400 uppercase">Primary Emergency Contact</p>
-                  <p className="text-sm font-semibold text-gray-800 mt-1">{member.spouse || 'Nadeesha Perera'} (Spouse)</p>
-                  <p className="text-xs text-gray-500 mt-1">{member.phone}</p>
+                  <p className="text-sm font-semibold text-gray-800 mt-1">{member.spouse !== 'N/A' ? member.spouse : 'Not Provided'}</p>
+                  <p className="text-xs text-gray-500 mt-1">N/A</p>
                 </div>
                 <div className="p-4 bg-slate-50 border border-slate-100 rounded-2xl">
                   <p className="text-xs font-bold text-gray-400 uppercase">Secondary Emergency Contact</p>
-                  <p className="text-sm font-semibold text-gray-800 mt-1">Imesh Perera (Son)</p>
-                  <p className="text-xs text-gray-500 mt-1">077 987 6543</p>
+                  <p className="text-sm font-semibold text-gray-800 mt-1">Not Provided</p>
+                  <p className="text-xs text-gray-500 mt-1">N/A</p>
                 </div>
               </div>
             </div>
@@ -132,16 +131,7 @@ export default function MemberProfilePage() {
               <h3 className="font-extrabold text-lg text-gray-900 mb-6">Ministry Service Timeline</h3>
               <div className="space-y-6 relative before:absolute before:left-3 before:top-2 before:bottom-2 before:w-0.5 before:bg-indigo-100">
                 <div className="relative pl-8">
-                  <span className="absolute left-1 top-1.5 h-4.5 w-4.5 rounded-full bg-[#5B3DF5] ring-4 ring-indigo-50 border-2 border-white" />
-                  <p className="text-xs font-bold text-gray-400">June 2024 - Present</p>
-                  <p className="text-sm font-semibold text-gray-800">Worship Ministry Cell Leader</p>
-                  <p className="text-xs text-gray-500 mt-0.5">Leads worship team and guides Cell Group meetings.</p>
-                </div>
-                <div className="relative pl-8">
-                  <span className="absolute left-1 top-1.5 h-4.5 w-4.5 rounded-full bg-slate-300 ring-4 ring-slate-50 border-2 border-white" />
-                  <p className="text-xs font-bold text-gray-400">March 2023 - June 2024</p>
-                  <p className="text-sm font-semibold text-gray-800">Sunday Service Usher</p>
-                  <p className="text-xs text-gray-500 mt-0.5">Welcomed members and assisted in service logistics.</p>
+                  <p className="text-sm font-semibold text-gray-500">No ministry service history recorded.</p>
                 </div>
               </div>
             </div>
@@ -159,7 +149,7 @@ export default function MemberProfilePage() {
                 <CreditCard size={18} />
                 <div className="text-left leading-none">
                   <p className="text-[10px] uppercase font-bold text-emerald-600">Total Contributed</p>
-                  <p className="text-sm font-extrabold mt-1">$4,850.00</p>
+                  <p className="text-sm font-extrabold mt-1">$0.00</p>
                 </div>
               </div>
             </div>
@@ -177,25 +167,7 @@ export default function MemberProfilePage() {
                 </thead>
                 <tbody className="divide-y divide-gray-50 text-sm font-medium text-gray-600">
                   <tr>
-                    <td className="py-3.5 px-2">01 Jun 2026</td>
-                    <td className="py-3.5 px-2 font-mono text-xs text-gray-500">TXN-9281-01</td>
-                    <td className="py-3.5 px-2">Tithe</td>
-                    <td className="py-3.5 px-2">Direct Deposit</td>
-                    <td className="py-3.5 px-2 text-right font-bold text-gray-900">$350.00</td>
-                  </tr>
-                  <tr>
-                    <td className="py-3.5 px-2">15 May 2026</td>
-                    <td className="py-3.5 px-2 font-mono text-xs text-gray-500">TXN-4829-12</td>
-                    <td className="py-3.5 px-2">Building Fund</td>
-                    <td className="py-3.5 px-2">Check</td>
-                    <td className="py-3.5 px-2 text-right font-bold text-gray-900">$1,500.00</td>
-                  </tr>
-                  <tr>
-                    <td className="py-3.5 px-2">04 May 2026</td>
-                    <td className="py-3.5 px-2 font-mono text-xs text-gray-500">TXN-3918-49</td>
-                    <td className="py-3.5 px-2">Tithe</td>
-                    <td className="py-3.5 px-2">Cash</td>
-                    <td className="py-3.5 px-2 text-right font-bold text-gray-900">$200.00</td>
+                    <td colSpan={5} className="py-8 text-center text-gray-400 font-semibold">No financial records found.</td>
                   </tr>
                 </tbody>
               </table>
@@ -274,18 +246,18 @@ export default function MemberProfilePage() {
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div className="p-4 bg-indigo-50/50 border border-indigo-100/50 rounded-2xl text-center">
                 <p className="text-[10px] font-bold text-indigo-600 uppercase">Sunday Services</p>
-                <p className="text-2xl font-black text-indigo-950 mt-1.5">92%</p>
-                <p className="text-[10px] text-indigo-500 mt-1">48/52 sessions present</p>
+                <p className="text-2xl font-black text-indigo-950 mt-1.5">0%</p>
+                <p className="text-[10px] text-indigo-500 mt-1">0/0 sessions present</p>
               </div>
               <div className="p-4 bg-emerald-50/50 border border-emerald-100/50 rounded-2xl text-center">
                 <p className="text-[10px] font-bold text-emerald-600 uppercase">Midweek Prayer</p>
-                <p className="text-2xl font-black text-emerald-950 mt-1.5">80%</p>
-                <p className="text-[10px] text-emerald-500 mt-1">42/52 sessions present</p>
+                <p className="text-2xl font-black text-emerald-950 mt-1.5">0%</p>
+                <p className="text-[10px] text-emerald-500 mt-1">0/0 sessions present</p>
               </div>
               <div className="p-4 bg-purple-50/50 border border-purple-100/50 rounded-2xl text-center">
                 <p className="text-[10px] font-bold text-purple-600 uppercase">Cell Meetings</p>
-                <p className="text-2xl font-black text-purple-950 mt-1.5">96%</p>
-                <p className="text-[10px] text-purple-500 mt-1">50/52 sessions present</p>
+                <p className="text-2xl font-black text-purple-950 mt-1.5">0%</p>
+                <p className="text-[10px] text-purple-500 mt-1">0/0 sessions present</p>
               </div>
             </div>
           </div>
@@ -305,24 +277,7 @@ export default function MemberProfilePage() {
             </div>
 
             <div className="space-y-4">
-              <div className="p-4 bg-slate-50 border border-slate-100 rounded-2xl">
-                <div className="flex justify-between items-center">
-                  <p className="text-xs font-bold text-[#5B3DF5]">Pastor Thomas J. Miller</p>
-                  <p className="text-[10px] text-gray-400">12 May 2025</p>
-                </div>
-                <p className="text-sm text-gray-700 mt-2">
-                  Visited family house last Thursday. Spouse Nadeesha has recovered well from outpatient surgery. We extended prayers and grocery support from the Deaconate Fund.
-                </p>
-              </div>
-              <div className="p-4 bg-slate-50 border border-slate-100 rounded-2xl">
-                <div className="flex justify-between items-center">
-                  <p className="text-xs font-bold text-[#5B3DF5]">Elder Sarah Vance</p>
-                  <p className="text-[10px] text-gray-400">08 Jan 2025</p>
-                </div>
-                <p className="text-sm text-gray-700 mt-2">
-                  Saman has expressed interest in assisting the Worship Team's audiovisual controls, utilizing his background as a software engineer. Agreed to transition him into AV training.
-                </p>
-              </div>
+              <p className="text-sm font-semibold text-gray-500">No notes available.</p>
             </div>
           </div>
         );

@@ -31,13 +31,7 @@ export default function SmsCenter() {
       }
     } catch (e: any) {
       console.error('Failed to fetch SMS dashboard', e?.message || 'Error occurred');
-      // Set dummy dashboard if backend fails so it doesn't get stuck loading
-      setDashboard({
-        monthly_limit: 0,
-        monthly_used: 0,
-        topup_balance: 0,
-        sender_id: 'UNKNOWN'
-      });
+      alert('Failed to load SMS Dashboard. Please check your backend connection.');
     } finally {
       setLoading(false);
     }
