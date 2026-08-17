@@ -40,12 +40,12 @@ export const systemService = {
     let membersSynced = 0;
     let financeSynced = 0;
 
-    try {
-      // 1. Sync pending members
-      const localMembers = await window.electronAPI.getMembers(tenantId);
-      const pendingMembers = localMembers.filter((m: any) => m.syncStatus === 'pending');
+    // 1. Sync pending members
+    const localMembers = await window.electronAPI.getMembers(tenantId);
+    const pendingMembers = localMembers.filter((m: any) => m.syncStatus === 'pending');
 
-      for (const m of pendingMembers) {
+    for (const m of pendingMembers) {
+      try {
         const nameParts = m.name.trim().split(' ');
         const firstName = nameParts[0] || 'Unknown';
         const lastName = nameParts.slice(1).join(' ') || 'Member';
@@ -65,13 +65,18 @@ export const systemService = {
 
         await window.electronAPI.saveMember({ ...m, syncStatus: 'synced' });
         membersSynced++;
+      } catch (err: any) {
+        console.error(`Failed to sync member ${m.id}:`, err?.message || 'Error occurred');
+        // Record remains pending, loop continues to the next item
       }
+    }
 
-      // 2. Sync pending finance records
-      const localFinance = await window.electronAPI.getFinanceRecords(tenantId);
-      const pendingFinance = localFinance.filter((f: any) => f.syncStatus === 'pending');
+    // 2. Sync pending finance records
+    const localFinance = await window.electronAPI.getFinanceRecords(tenantId);
+    const pendingFinance = localFinance.filter((f: any) => f.syncStatus === 'pending');
 
-      for (const f of pendingFinance) {
+    for (const f of pendingFinance) {
+      try {
         const endpoint = f.type === 'income' ? '/income' : '/expenses';
         const dateKey = f.type === 'income' ? 'income_date' : 'expense_date';
         
@@ -86,9 +91,10 @@ export const systemService = {
 
         await window.electronAPI.saveFinanceRecord({ ...f, syncStatus: 'synced' });
         financeSynced++;
+      } catch (err: any) {
+        console.error(`Failed to sync finance record ${f.id}:`, err?.message || 'Error occurred');
+        // Record remains pending, loop continues to the next item
       }
-    } catch (e) {
-      console.error('Failed to sync offline records:', e?.message || 'Error occurred');
     }
 
     return { membersSynced, financeSynced };
