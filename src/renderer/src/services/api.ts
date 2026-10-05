@@ -1,4 +1,7 @@
 import { mockMembers, mockFinanceRecords, mockReceipts, mockCategories, mockBankAccounts, mockBudgets, mockLetters, mockCertificates, mockEvents, mockSavedReports } from './mockData';
+import api from '../lib/axios';
+
+export { api };
 
 // Helper to check if running inside Electron
 export const isElectron = (): boolean => {

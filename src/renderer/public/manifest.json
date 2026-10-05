@@ -1,0 +1,17 @@
+{
+  "name": "FaithCore Church Portal",
+  "short_name": "FaithCore",
+  "description": "Multi-Tenant Hybrid Church Management Platform",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#020617",
+  "theme_color": "#0f172a",
+  "icons": [
+    {
+      "src": "/logo.jpg",
+      "sizes": "192x192 512x512",
+      "type": "image/jpeg"
+    }
+  ]
+}
