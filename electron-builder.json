@@ -23,7 +23,8 @@
     "src/renderer/out/**/*"
   ],
   "win": {
-    "target": "nsis"
+    "target": "nsis",
+    "artifactName": "FC.Desktop.Setup.${version}.${ext}"
   },
   "nsis": {
     "oneClick": false,
