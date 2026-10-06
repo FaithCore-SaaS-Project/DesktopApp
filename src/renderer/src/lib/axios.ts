@@ -1,6 +1,13 @@
 import axios from 'axios';
 
-const baseURL = process.env.NEXT_PUBLIC_API_URL || 'https://api.faithcore.org';
+let resolvedURL = process.env.NEXT_PUBLIC_API_URL || 'https://api.faithcore.org';
+
+// Safety safeguard: In production builds, never allow localhost/127.0.0.1 to be bundled
+if (process.env.NODE_ENV === 'production' && (resolvedURL.includes('localhost') || resolvedURL.includes('127.0.0.1'))) {
+  resolvedURL = 'https://api.faithcore.org';
+}
+
+const baseURL = resolvedURL;
 
 const api = axios.create({
   baseURL: `${baseURL}/api`,

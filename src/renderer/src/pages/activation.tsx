@@ -44,9 +44,10 @@ export default function ActivationPage() {
         router.replace('/login');
       }, 1000);
     } catch (err: any) {
+      const isNetworkError = !err.response && (err.message === 'Network Error' || err.code === 'ERR_NETWORK');
       setError(
         err.response?.data?.message || 
-        err.message || 
+        (isNetworkError ? 'Network Error: Unable to connect to FaithCore servers. Please check your internet connection.' : err.message) || 
         'Activation failed. Please check your internet connection.'
       );
       setLoading(false);
