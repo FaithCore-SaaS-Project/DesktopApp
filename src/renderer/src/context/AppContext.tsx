@@ -23,6 +23,8 @@ interface AppContextType {
   activateApp: (tenantId: string, churchName: string) => void;
   isOnline: boolean;
   toggleNetworkStatus: () => void;
+  isSidebarOpen: boolean;
+  toggleSidebar: () => void;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -37,6 +39,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [subscriptionStatus, setSubscriptionStatus] = useState<string | null>(null);
   const [activePlan, setActivePlan] = useState<any | null>(null);
   const [isOnline, setIsOnline] = useState<boolean>(true);
+  const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(false);
 
   // Read initial states from localStorage on mount (client-side only)
   useEffect(() => {
@@ -162,6 +165,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setIsOnline(!isOnline);
   };
 
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
+
   return (
     <AppContext.Provider
       value={{
@@ -180,6 +187,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         activateApp,
         isOnline,
         toggleNetworkStatus,
+        isSidebarOpen,
+        toggleSidebar,
       }}
     >
       {children}

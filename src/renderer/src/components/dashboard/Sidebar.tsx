@@ -80,7 +80,7 @@ const menuItems: MenuItem[] = [
 
 export default function Sidebar() {
   const router = useRouter();
-  const { hasFeature, activePlan } = useApp();
+  const { hasFeature, activePlan, isSidebarOpen, toggleSidebar } = useApp();
   const [openMenus, setOpenMenus] = useState<Record<string, boolean>>({});
 
   // Filter menu items and their sub-items based on plan feature gates
@@ -130,103 +130,122 @@ export default function Sidebar() {
     setOpenMenus(prev => ({ ...prev, [path]: !prev[path] }));
     if (!router.pathname.startsWith(path)) {
       router.push(path);
+      // Optional: Close sidebar on mobile after navigation
+      if (window.innerWidth < 1024) toggleSidebar();
     } else {
       e.preventDefault();
     }
   };
 
+  const handleLinkClick = () => {
+    if (window.innerWidth < 1024) toggleSidebar();
+  };
+
   return (
-    <aside className="w-[280px] bg-[#0A0D18] text-white flex flex-col min-h-screen sticky top-0 h-screen select-none shrink-0 border-r border-white/[0.04]">
-      {/* Logo */}
-      <div className="px-6 py-8 border-b border-white/[0.04]">
-        <h1 className="text-3xl font-extrabold tracking-tight bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent">
-          FAITHCORE
-        </h1>
-        <p className="text-xs text-gray-500 mt-1 font-semibold tracking-wider uppercase">
-          Church Management System
-        </p>
-      </div>
+    <>
+      {/* Mobile/Tablet Backdrop Overlay */}
+      {isSidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-black/50 z-30 lg:hidden transition-opacity backdrop-blur-sm"
+          onClick={toggleSidebar}
+        />
+      )}
+      
+      <aside className={`w-[280px] bg-[#0A0D18] text-white flex flex-col min-h-screen fixed lg:sticky top-0 h-screen select-none shrink-0 border-r border-white/[0.04] transition-transform duration-300 z-40
+        ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0`}
+      >
+        {/* Logo */}
+        <div className="px-6 py-8 border-b border-white/[0.04]">
+          <h1 className="text-3xl font-extrabold tracking-tight bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent">
+            FAITHCORE
+          </h1>
+          <p className="text-xs text-gray-500 mt-1 font-semibold tracking-wider uppercase">
+            Church Management System
+          </p>
+        </div>
 
-      {/* Menu */}
-      <div className="flex-1 px-4 py-6 space-y-1.5 overflow-y-auto custom-scrollbar">
-        {filteredMenuItems.map((item, index) => {
-          const Icon = item.icon;
-          const hasSubItems = !!item.subItems;
-          const isOpen = !!openMenus[item.path];
-          const isAnyChildActive = hasSubItems && item.subItems!.some(sub => router.pathname === sub.path || router.pathname.startsWith(sub.path));
-          const isActive = router.pathname === item.path || (item.path !== '/dashboard' && router.pathname.startsWith(item.path)) || isAnyChildActive;
+        {/* Menu */}
+        <div className="flex-1 px-4 py-6 space-y-1.5 overflow-y-auto custom-scrollbar">
+          {filteredMenuItems.map((item, index) => {
+            const Icon = item.icon;
+            const hasSubItems = !!item.subItems;
+            const isOpen = !!openMenus[item.path];
+            const isAnyChildActive = hasSubItems && item.subItems!.some(sub => router.pathname === sub.path || router.pathname.startsWith(sub.path));
+            const isActive = router.pathname === item.path || (item.path !== '/dashboard' && router.pathname.startsWith(item.path)) || isAnyChildActive;
 
-          const itemContent = (
-            <a
-              onClick={(e) => {
-                if (hasSubItems) {
-                  handleMenuClick(e, item.path);
-                }
-              }}
-              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 cursor-pointer text-sm font-semibold group
-              ${isActive
-                  ? "bg-gradient-to-r from-violet-600 to-indigo-600 text-white shadow-lg shadow-violet-500/15 font-bold"
-                  : "text-slate-400 hover:bg-white/[0.03] hover:text-white"
-                }`}
-            >
-              <Icon size={18} className={`transition-transform duration-300 group-hover:scale-105 ${isActive ? 'text-white' : 'text-slate-500 group-hover:text-white'}`} />
-              <span className="flex-1">{item.label}</span>
-              {hasSubItems && (
-                <ChevronDown
-                  size={14}
-                  className={`transition-transform duration-300 ${isOpen ? 'rotate-180 text-white' : 'text-slate-500 group-hover:text-white'
-                    }`}
-                />
-              )}
-            </a>
-          );
+            const itemContent = (
+              <a
+                onClick={(e) => {
+                  if (hasSubItems) {
+                    handleMenuClick(e, item.path);
+                  }
+                }}
+                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 cursor-pointer text-sm font-semibold group
+                ${isActive
+                    ? "bg-gradient-to-r from-violet-600 to-indigo-600 text-white shadow-lg shadow-violet-500/15 font-bold"
+                    : "text-slate-400 hover:bg-white/[0.03] hover:text-white"
+                  }`}
+              >
+                <Icon size={18} className={`transition-transform duration-300 group-hover:scale-105 ${isActive ? 'text-white' : 'text-slate-500 group-hover:text-white'}`} />
+                <span className="flex-1">{item.label}</span>
+                {hasSubItems && (
+                  <ChevronDown
+                    size={14}
+                    className={`transition-transform duration-300 ${isOpen ? 'rotate-180 text-white' : 'text-slate-500 group-hover:text-white'
+                      }`}
+                  />
+                )}
+              </a>
+            );
 
-          return (
-            <div key={index} className="space-y-1">
-              {hasSubItems ? (
-                <div onClick={(e) => hasSubItems && e.stopPropagation()}>
-                  {itemContent}
-                </div>
-              ) : (
-                <Link href={item.path} passHref legacyBehavior>
-                  {itemContent}
-                </Link>
-              )}
+            return (
+              <div key={index} className="space-y-1">
+                {hasSubItems ? (
+                  <div onClick={(e) => hasSubItems && e.stopPropagation()}>
+                    {itemContent}
+                  </div>
+                ) : (
+                  <Link href={item.path} passHref legacyBehavior>
+                    {React.cloneElement(itemContent, { onClick: handleLinkClick })}
+                  </Link>
+                )}
 
-              {/* Collapsible Subparts Menu */}
-              {hasSubItems && isOpen && item.subItems && (
-                <div className="relative pl-6 pr-2 pb-2 mt-1 space-y-1 transition-all duration-300">
-                  {/* Vertical line running down */}
-                  <div className="absolute left-[20px] top-0 bottom-4 w-[1px] bg-slate-800/80" />
+                {/* Collapsible Subparts Menu */}
+                {hasSubItems && isOpen && item.subItems && (
+                  <div className="relative pl-6 pr-2 pb-2 mt-1 space-y-1 transition-all duration-300">
+                    {/* Vertical line running down */}
+                    <div className="absolute left-[20px] top-0 bottom-4 w-[1px] bg-slate-800/80" />
 
-                  {item.subItems.map((sub, sIdx) => {
-                    const isSubActive = sub.path === item.path 
-                      ? router.pathname === sub.path
-                      : (router.pathname === sub.path || router.pathname.startsWith(sub.path + '/'));
+                    {item.subItems.map((sub, sIdx) => {
+                      const isSubActive = sub.path === item.path 
+                        ? router.pathname === sub.path
+                        : (router.pathname === sub.path || router.pathname.startsWith(sub.path + '/'));
 
-                    return (
-                      <Link href={sub.path} key={sIdx} passHref legacyBehavior>
-                        <a
-                          className={`flex items-center py-2 text-xs font-semibold transition-all relative group/sub cursor-pointer ${isSubActive ? "text-white font-bold" : "text-slate-400 hover:text-white"
-                            }`}
-                        >
-                          {/* Dot Bullet */}
-                          <span className={`absolute left-[17.5px] top-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full border transition-all ${isSubActive
-                              ? "bg-violet-500 border-violet-500 ring-4 ring-violet-500/25 scale-110"
-                              : "bg-[#0A0D18] border-slate-800 group-hover/sub:border-slate-600"
-                            }`} />
-                          <span className="pl-8">{sub.label}</span>
-                        </a>
-                      </Link>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
-          );
-        })}
-      </div>
+                      return (
+                        <Link href={sub.path} key={sIdx} passHref legacyBehavior>
+                          <a
+                            onClick={handleLinkClick}
+                            className={`flex items-center py-2 text-xs font-semibold transition-all relative group/sub cursor-pointer ${isSubActive ? "text-white font-bold" : "text-slate-400 hover:text-white"
+                              }`}
+                          >
+                            {/* Dot Bullet */}
+                            <span className={`absolute left-[17.5px] top-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full border transition-all ${isSubActive
+                                ? "bg-violet-500 border-violet-500 ring-4 ring-violet-500/25 scale-110"
+                                : "bg-[#0A0D18] border-slate-800 group-hover/sub:border-slate-600"
+                              }`} />
+                            <span className="pl-8">{sub.label}</span>
+                          </a>
+                        </Link>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
 
-    </aside>
+      </aside>
+    </>
   );
 }

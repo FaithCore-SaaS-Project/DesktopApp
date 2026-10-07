@@ -68,7 +68,7 @@ export default function StatsCards({
                 <p className="text-slate-400 text-[10px] font-bold uppercase tracking-wider">
                   {card.title}
                 </p>
-                <h3 className="text-3xl font-extrabold text-slate-800 tracking-tight mt-3 leading-none">
+                <h3 className="text-2xl font-bold text-slate-800 tracking-tight mt-2 leading-none truncate max-w-[140px] xl:max-w-[180px]" title={card.value}>
                   {card.value}
                 </h3>
               </div>

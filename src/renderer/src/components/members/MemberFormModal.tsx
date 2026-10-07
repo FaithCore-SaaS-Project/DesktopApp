@@ -294,7 +294,7 @@ export default function MemberFormModal({ isOpen, onClose, editingMember, famili
           <div className="space-y-2 bg-slate-50 p-4 rounded-2xl border border-slate-100">
             <label className="text-xs font-bold text-gray-500 block mb-1">Address Details</label>
             <div className="flex flex-wrap gap-x-4 gap-y-2 mb-2">
-              <label className="flex items-center gap-1.5 cursor-pointer text-xs font-bold text-gray-650">
+              <label className="flex items-center gap-1.5 cursor-pointer text-xs font-bold text-gray-700">
                 <input
                   type="radio"
                   name="address_type"
@@ -305,7 +305,7 @@ export default function MemberFormModal({ isOpen, onClose, editingMember, famili
                 />
                 <span>Permanent Address</span>
               </label>
-              <label className="flex items-center gap-1.5 cursor-pointer text-xs font-bold text-gray-650">
+              <label className="flex items-center gap-1.5 cursor-pointer text-xs font-bold text-gray-700">
                 <input
                   type="radio"
                   name="address_type"
@@ -316,7 +316,7 @@ export default function MemberFormModal({ isOpen, onClose, editingMember, famili
                 />
                 <span>Postal Address</span>
               </label>
-              <label className="flex items-center gap-1.5 cursor-pointer text-xs font-bold text-gray-650">
+              <label className="flex items-center gap-1.5 cursor-pointer text-xs font-bold text-gray-700">
                 <input
                   type="radio"
                   name="address_type"

@@ -15,7 +15,7 @@ import {
 } from "lucide-react";
 
 export default function Header() {
-  const { user, logout, isOnline, toggleNetworkStatus, currentTenant } = useApp();
+  const { user, logout, isOnline, toggleNetworkStatus, currentTenant, toggleSidebar } = useApp();
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [isSyncing, setIsSyncing] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
@@ -44,7 +44,10 @@ export default function Header() {
   return (
     <div className="bg-white/80 border-b border-slate-100 px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between sticky top-0 z-20 backdrop-blur-md shadow-sm shadow-slate-100/30">
       <div className="flex items-center gap-3 sm:gap-5">
-        <button className="text-slate-500 hover:text-slate-800 transition-colors p-2 hover:bg-slate-50 rounded-xl">
+        <button 
+          onClick={toggleSidebar}
+          className="text-slate-500 hover:text-slate-800 transition-colors p-2 hover:bg-slate-50 rounded-xl lg:hidden"
+        >
           <Menu size={20} />
         </button>
         <div className="relative group flex-1 max-w-[200px] sm:max-w-[280px] lg:max-w-[420px]">

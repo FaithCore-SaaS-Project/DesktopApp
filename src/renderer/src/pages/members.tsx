@@ -260,7 +260,7 @@ export default function MembersPage() {
                       </div>
                     </td>
                     <td className="p-4">
-                      <span className="px-2.5 py-1 rounded-lg text-[10px] font-black bg-gray-100 text-gray-700 border border-gray-200 tracking-wider">
+                      <span className="px-2.5 py-1 rounded-lg text-[10px] font-black bg-gray-100 text-gray-700 border border-gray-200 tracking-wider whitespace-nowrap inline-block">
                         {member.member_no}
                       </span>
                     </td>
