@@ -42,6 +42,24 @@ body {
   background: rgba(99, 102, 241, 0.4);
 }
 
+/* Custom form & webkit date input styling for touch devices */
+input[type="date"] {
+  color-scheme: light;
+  color: #0f172a !important;
+  -webkit-appearance: textfield;
+}
+
+input[type="date"]::-webkit-date-and-time-value {
+  color: #0f172a !important;
+  text-align: left;
+  min-height: 1.2em;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  filter: invert(0.3);
+}
+
 /* Print Styling rules */
 @media print {
   body {
@@ -49,3 +67,4 @@ body {
     color: black !important;
   }
 }
+

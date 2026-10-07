@@ -388,7 +388,7 @@ export default function MemberFormModal({ isOpen, onClose, editingMember, famili
               <div className="space-y-3 pt-3 border-t border-slate-200/60">
                 <div className="grid grid-cols-2 gap-3">
                   <div className="space-y-1">
-                    <label className="text-[9px] font-bold text-gray-450 uppercase">Baptism Church</label>
+                    <label className="text-[9px] font-bold text-gray-500 uppercase">Baptism Church</label>
                     <input
                       name="baptism_church" type="text" value={form.baptism_church} onChange={handleChange}
                       placeholder="e.g. Grace Fellowship"
@@ -396,7 +396,7 @@ export default function MemberFormModal({ isOpen, onClose, editingMember, famili
                     />
                   </div>
                   <div className="space-y-1">
-                    <label className="text-[9px] font-bold text-gray-450 uppercase">Partner Pastor Name</label>
+                    <label className="text-[9px] font-bold text-gray-500 uppercase">Partner Pastor Name</label>
                     <input
                       name="baptism_partner_name" type="text" value={form.baptism_partner_name} onChange={handleChange}
                       placeholder="e.g. Rev. Miller"
@@ -406,14 +406,14 @@ export default function MemberFormModal({ isOpen, onClose, editingMember, famili
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div className="space-y-1">
-                    <label className="text-[9px] font-bold text-gray-450 uppercase">Baptism Date</label>
+                    <label className="text-[9px] font-bold text-gray-500 uppercase">Baptism Date</label>
                     <input
                       name="baptism_date" type="date" value={form.baptism_date} onChange={handleChange}
-                      className="w-full bg-white border border-gray-200 focus:border-[#5B3DF5] rounded-xl px-3 py-2 text-xs text-gray-800 font-semibold focus:outline-none"
+                      className="w-full bg-white border border-gray-200 focus:border-[#5B3DF5] rounded-xl px-3 py-2 text-xs text-gray-900 font-semibold focus:outline-none min-h-[38px]"
                     />
                   </div>
                   <div className="space-y-1">
-                    <label className="text-[9px] font-bold text-gray-450 uppercase">Baptism Certificate</label>
+                    <label className="text-[9px] font-bold text-gray-500 uppercase">Baptism Certificate</label>
                     <label className="flex items-center gap-2 border border-dashed border-gray-300 hover:border-[#5B3DF5] hover:bg-gray-50/50 rounded-xl px-3 py-2 cursor-pointer transition-colors group">
                       <div className="h-6 w-6 rounded bg-gray-100 group-hover:bg-indigo-50 flex items-center justify-center text-gray-400 group-hover:text-[#5B3DF5]">
                         {baptismCertFile ? <FileText className="h-3 w-3" /> : <UploadCloud className="h-3 w-3" />}
@@ -449,14 +449,14 @@ export default function MemberFormModal({ isOpen, onClose, editingMember, famili
               <div className="space-y-3 pt-3 border-t border-slate-200/60">
                 <div className="grid grid-cols-2 gap-3">
                   <div className="space-y-1">
-                    <label className="text-[9px] font-bold text-gray-450 uppercase">Marriage Date</label>
+                    <label className="text-[9px] font-bold text-gray-500 uppercase">Marriage Date</label>
                     <input
                       name="marriage_date" type="date" value={form.marriage_date} onChange={handleChange}
-                      className="w-full bg-white border border-gray-200 focus:border-[#5B3DF5] rounded-xl px-3 py-2 text-xs text-gray-800 font-semibold focus:outline-none"
+                      className="w-full bg-white border border-gray-200 focus:border-[#5B3DF5] rounded-xl px-3 py-2 text-xs text-gray-900 font-semibold focus:outline-none min-h-[38px]"
                     />
                   </div>
                   <div className="space-y-1">
-                    <label className="text-[9px] font-bold text-gray-450 uppercase">Marriage Certificate</label>
+                    <label className="text-[9px] font-bold text-gray-500 uppercase">Marriage Certificate</label>
                     <label className="flex items-center gap-2 border border-dashed border-gray-300 hover:border-[#5B3DF5] hover:bg-gray-50/50 rounded-xl px-3 py-2 cursor-pointer transition-colors group">
                       <div className="h-6 w-6 rounded bg-gray-100 group-hover:bg-indigo-50 flex items-center justify-center text-gray-400 group-hover:text-[#5B3DF5]">
                         {marriageCertFile ? <FileText className="h-3 w-3" /> : <UploadCloud className="h-3 w-3" />}
