@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { X, UploadCloud, Image as ImageIcon, FileText, AlertCircle } from 'lucide-react';
-import { api } from '../../services/api';
+import { api, isElectron } from '../../services/api';
 
 const STATUS_OPTIONS = ['active', 'inactive', 'transferred', 'deceased'];
 
@@ -78,7 +78,10 @@ export default function MemberFormModal({ isOpen, onClose, editingMember, famili
 
     const formData = new FormData();
     Object.entries(form).forEach(([key, value]) => {
-      formData.append(key, typeof value === 'boolean' ? (value ? '1' : '0') : (value as string));
+      // Omit empty strings so Laravel nullable rules (dates, foreign keys, integers) pass cleanly
+      if (value !== '' && value !== null && value !== undefined) {
+        formData.append(key, typeof value === 'boolean' ? (value ? '1' : '0') : (value as string));
+      }
     });
 
     if (photoFile) formData.append('photo', photoFile);
@@ -87,23 +90,56 @@ export default function MemberFormModal({ isOpen, onClose, editingMember, famili
     if (birthCertFile) formData.append('birth_certificate', birthCertFile);
 
     try {
+      const requestConfig = {
+        headers: { 'Content-Type': undefined }
+      };
+
       if (editingMember) {
         formData.append('_method', 'PUT');
-        await api.post(`/members/${editingMember.id}`, formData, {
-          headers: { 'Content-Type': 'multipart/form-data' }
-        });
+        await api.post(`/members/${editingMember.id}`, formData, requestConfig);
       } else {
-        await api.post('/members', formData, {
-          headers: { 'Content-Type': 'multipart/form-data' }
-        });
+        await api.post('/members', formData, requestConfig);
       }
       onSuccess();
       onClose();
     } catch (err: any) {
+      console.error('Member form submission error:', err);
       if (err.response?.status === 422) {
-        setErrors(err.response.data.errors ?? {});
+        const validationErrors = err.response.data.errors ?? {};
+        setErrors(validationErrors);
+        const firstErrorKey = Object.keys(validationErrors)[0];
+        if (firstErrorKey) {
+          const fieldName = firstErrorKey.replace(/_/g, ' ');
+          setServerError(`${fieldName}: ${validationErrors[firstErrorKey][0]}`);
+        } else {
+          setServerError(err.response?.data?.message ?? 'Validation error. Please check form fields.');
+        }
       } else {
-        setServerError(err.response?.data?.message ?? 'An unexpected error occurred.');
+        const msg = err.response?.data?.message || err.response?.data?.error || err.message || 'An unexpected error occurred.';
+        setServerError(msg);
+
+        // Offline / Electron local SQLite fallback
+        if (isElectron() && !err.response) {
+          try {
+            const tenantId = localStorage.getItem('tenantId') || '1';
+            await (window as any).electronAPI.saveMember({
+              id: editingMember ? editingMember.id.toString() : 'MEM-' + Date.now(),
+              name: `${form.first_name} ${form.last_name}`,
+              email: form.email,
+              phone: form.phone,
+              role: form.occupation,
+              joinedDate: new Date().toISOString().split('T')[0],
+              status: form.status === 'active' ? 'active' : 'inactive',
+              tenantId: tenantId,
+              syncStatus: 'pending'
+            });
+            onSuccess();
+            onClose();
+            return;
+          } catch (e) {
+            console.error('Local fallback save failed:', e);
+          }
+        }
       }
     } finally {
       setSubmitting(false);

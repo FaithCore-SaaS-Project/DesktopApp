@@ -120,14 +120,14 @@ export const memberService = {
     const formData = new FormData();
     formData.append('file', file);
     const res = await api.post('/members/import', formData, {
-      headers: { 'Content-Type': 'multipart/form-data' }
+      headers: { 'Content-Type': undefined }
     });
     return res.data;
   },
 
   saveMember: async (member: MemberMock): Promise<any> => {
     let payload: any;
-    let headers = {};
+    let headers: any = {};
     const hasFiles = !!(member.photoFile || member.baptismCertFile || member.marriageCertFile || member.birthCertFile);
 
     if (hasFiles) {
@@ -159,7 +159,7 @@ export const memberService = {
       if (member.marriageCertFile) payload.append('marriage_certificate', member.marriageCertFile);
       if (member.birthCertFile) payload.append('birth_certificate', member.birthCertFile);
 
-      headers = { 'Content-Type': 'multipart/form-data' };
+      headers = { 'Content-Type': undefined };
       
       if (!member.id.startsWith('MEM-')) {
         payload.append('_method', 'PUT');
