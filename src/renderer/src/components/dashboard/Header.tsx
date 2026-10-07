@@ -42,12 +42,12 @@ export default function Header() {
   const unreadCount = notifications?.unread?.length || 0;
 
   return (
-    <div className="bg-white/80 border-b border-slate-100 px-8 py-4 flex items-center justify-between sticky top-0 z-20 backdrop-blur-md shadow-sm shadow-slate-100/30">
-      <div className="flex items-center gap-5">
+    <div className="bg-white/80 border-b border-slate-100 px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between sticky top-0 z-20 backdrop-blur-md shadow-sm shadow-slate-100/30">
+      <div className="flex items-center gap-3 sm:gap-5">
         <button className="text-slate-500 hover:text-slate-800 transition-colors p-2 hover:bg-slate-50 rounded-xl">
           <Menu size={20} />
         </button>
-        <div className="relative group">
+        <div className="relative group flex-1 max-w-[200px] sm:max-w-[280px] lg:max-w-[420px]">
           <Search
             className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-violet-500 transition-colors"
             size={16}
@@ -55,12 +55,12 @@ export default function Header() {
           <input
             type="text"
             placeholder="Search members, receipts, letters..."
-            className="w-[380px] sm:w-[420px] rounded-2xl border border-slate-100 pl-11 pr-4 py-2.5 outline-none text-xs font-semibold text-slate-700 bg-slate-50/50 focus:bg-white focus:border-violet-500 focus:ring-2 focus:ring-violet-500/10 transition-all duration-300 placeholder:text-slate-450 placeholder:font-medium"
+            className="w-full rounded-2xl border border-slate-100 pl-11 pr-4 py-2.5 outline-none text-xs font-semibold text-slate-700 bg-slate-50/50 focus:bg-white focus:border-violet-500 focus:ring-2 focus:ring-violet-500/10 transition-all duration-300 placeholder:text-slate-450 placeholder:font-medium"
           />
         </div>
       </div>
 
-      <div className="flex items-center gap-6">
+      <div className="flex items-center gap-3 sm:gap-6 shrink-0">
         {/* Network Connection Toggle */}
         <button
           onClick={toggleNetworkStatus}
@@ -179,15 +179,15 @@ export default function Header() {
             <div className="h-10 w-10 rounded-full bg-violet-100 flex items-center justify-center border border-violet-200 text-violet-600 font-black text-sm">
               {currentTenant?.name?.charAt(0) || user?.username?.charAt(0) || 'A'}
             </div>
-            <div className="text-left hidden md:block pr-1">
-              <h4 className="font-bold text-slate-750 text-sm leading-tight">
+            <div className="text-left hidden md:block pr-1 max-w-[100px] lg:max-w-[150px]">
+              <h4 className="font-bold text-slate-750 text-sm leading-tight truncate">
                 {user?.username || 'Admin'}
               </h4>
-              <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wide mt-0.5">
+              <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wide mt-0.5 truncate">
                 {currentTenant?.name || 'Super Admin'}
               </p>
             </div>
-            <ChevronDown size={14} className="text-slate-400 hidden md:block" />
+            <ChevronDown size={14} className="text-slate-400 hidden md:block shrink-0" />
           </button>
 
           {showProfileMenu && (
