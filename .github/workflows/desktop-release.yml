@@ -1,0 +1,39 @@
+name: Build & Publish Desktop App (Windows)
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      release_notes:
+        description: 'Release Notes / Changelog'
+        required: false
+        default: 'Production release of FC Desktop Client'
+
+jobs:
+  release-windows:
+    name: Build Windows EXE & Publish Release
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20.x
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+          cache-dependency-path: 'package-lock.json'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Build Next.js Renderer & Electron Main
+        run: npm run build
+
+      - name: Package & Publish Windows Setup (.exe, latest.yml, .blockmap)
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_RELEASE_TOKEN || secrets.GITHUB_TOKEN }}
+        run: npx electron-builder --win --publish always
