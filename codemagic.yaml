@@ -1,60 +1,28 @@
 workflows:
-  build-mac-desktop-app:
-    name: Build FaithCore Mac App (Intel Core x64 ONLY - ~160 MB)
-    instance_type: mac_mini_m1
+  mac-desktop-release:
+    name: Build FC Desktop macOS DMG
+    max_build_duration: 30
+    instance_type: mac_mini_m2
     environment:
-      groups:
-        - publish
-      vars:
-        NEXT_PUBLIC_API_URL: "https://api.faithcore.org"
-      node: 18
+      node: 20.18.0
     scripts:
-      - name: Install Dependencies
-        script: npm install
-      - name: Build Application
-        script: npm run build
-      - name: Build Electron Mac App (Intel Core x64)
-        script: npx electron-builder --mac --x64 --publish always
+      - name: Install dependencies
+        script: |
+          npm ci
+      - name: Build Next.js & Electron
+        script: |
+          npm run build
+      - name: Build macOS DMG (Universal)
+        script: |
+          npx electron-builder --mac dmg --universal
     artifacts:
       - release/*.dmg
-      - dist/*.dmg
-
-  build-mac-silicon-arm64:
-    name: Build FaithCore Mac App (Apple Silicon M-Series ONLY - ~160 MB)
-    instance_type: mac_mini_m1
-    environment:
-      groups:
-        - publish
-      vars:
-        NEXT_PUBLIC_API_URL: "https://api.faithcore.org"
-      node: 18
-    scripts:
-      - name: Install Dependencies
-        script: npm install
-      - name: Build Application
-        script: npm run build
-      - name: Build Electron Mac App (Apple Silicon arm64)
-        script: npx electron-builder --mac --arm64 --publish always
-    artifacts:
-      - release/*.dmg
-      - dist/*.dmg
-
-  build-mac-universal:
-    name: Build FaithCore Mac App (Universal Both Intel & Silicon - ~300 MB)
-    instance_type: mac_mini_m1
-    environment:
-      groups:
-        - publish
-      vars:
-        NEXT_PUBLIC_API_URL: "https://api.faithcore.org"
-      node: 18
-    scripts:
-      - name: Install Dependencies
-        script: npm install
-      - name: Build Application
-        script: npm run build
-      - name: Build Electron Mac App (Universal)
-        script: npx electron-builder --mac --universal --publish always
-    artifacts:
-      - release/*.dmg
-      - dist/*.dmg
+      - release/*.blockmap
+      - release/latest-mac.yml
+    publishing:
+      email:
+        recipients:
+          - dulaj@faithcore.org
+        notify:
+          on_success: true
+          on_failure: true
