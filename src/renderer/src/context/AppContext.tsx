@@ -39,11 +39,14 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [subscriptionStatus, setSubscriptionStatus] = useState<string | null>(null);
   const [activePlan, setActivePlan] = useState<any | null>(null);
   const [isOnline, setIsOnline] = useState<boolean>(true);
-  const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(true);
 
   // Read initial states from localStorage on mount (client-side only)
   useEffect(() => {
     if (typeof window !== 'undefined') {
+      if (window.innerWidth < 1024) {
+        setIsSidebarOpen(false);
+      }
       const tid = localStorage.getItem('tenantId');
       const cname = localStorage.getItem('churchName');
       const token = localStorage.getItem('token');

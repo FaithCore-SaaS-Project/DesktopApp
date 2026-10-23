@@ -42,9 +42,35 @@ export default function FinanceGeneralSettings({ settings, updateSetting }: Fina
               onChange={(e) => updateSetting('finance_currency', e.target.value)}
               className="w-full appearance-none bg-white border border-gray-200 rounded-xl py-2.5 pl-3 pr-10 text-xs font-semibold text-gray-700 outline-none hover:border-gray-300 focus:border-[#5B3DF5] cursor-pointer shadow-sm"
             >
+              <option value="LKR">Sri Lankan Rupee (LKR) - Rs.</option>
               <option value="USD">US Dollar (USD) - $</option>
               <option value="EUR">Euro (EUR) - €</option>
               <option value="GBP">British Pound (GBP) - £</option>
+              <option value="INR">Indian Rupee (INR) - ₹</option>
+              <option value="AUD">Australian Dollar (AUD) - A$</option>
+              <option value="CAD">Canadian Dollar (CAD) - C$</option>
+              <option value="SGD">Singapore Dollar (SGD) - S$</option>
+              <option value="NZD">New Zealand Dollar (NZD) - NZ$</option>
+              <option value="AED">UAE Dirham (AED) - د.إ</option>
+              <option value="SAR">Saudi Riyal (SAR) - ﷼</option>
+              <option value="QAR">Qatari Rial (QAR) - QR</option>
+              <option value="KWD">Kuwaiti Dinar (KWD) - KD</option>
+              <option value="MYR">Malaysian Ringgit (MYR) - RM</option>
+              <option value="JPY">Japanese Yen (JPY) - ¥</option>
+              <option value="CNY">Chinese Yuan (CNY) - ¥</option>
+              <option value="CHF">Swiss Franc (CHF) - CHF</option>
+              <option value="ZAR">South African Rand (ZAR) - R</option>
+              <option value="KRW">South Korean Won (KRW) - ₩</option>
+              <option value="PHP">Philippine Peso (PHP) - ₱</option>
+              <option value="IDR">Indonesian Rupiah (IDR) - Rp</option>
+              <option value="THB">Thai Baht (THB) - ฿</option>
+              <option value="PKR">Pakistani Rupee (PKR) - ₨</option>
+              <option value="BDT">Bangladeshi Taka (BDT) - ৳</option>
+              <option value="NGN">Nigerian Naira (NGN) - ₦</option>
+              <option value="KES">Kenyan Shilling (KES) - KSh</option>
+              <option value="GHS">Ghanaian Cedi (GHS) - GH₵</option>
+              <option value="BRL">Brazilian Real (BRL) - R$</option>
+              <option value="MXN">Mexican Peso (MXN) - Mex$</option>
             </select>
             <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
           </div>
@@ -166,8 +192,8 @@ export default function FinanceGeneralSettings({ settings, updateSetting }: Fina
               <div className="mt-4">
                 <label className="text-[10px] font-bold text-gray-900 mb-1.5 block">Large Transaction Approval Limit</label>
                 <div className="flex shadow-sm rounded-xl overflow-hidden">
-                  <span className="bg-gray-50 border border-gray-200 border-r-0 px-3 flex items-center text-xs font-bold text-gray-500">
-                    USD
+                  <span className="bg-gray-50 border border-gray-200 border-r-0 px-3 flex items-center text-xs font-bold text-gray-500 uppercase">
+                    {settings['finance_currency'] || 'LKR'}
                   </span>
                   <input
                     type="text"

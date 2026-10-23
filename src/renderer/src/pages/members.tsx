@@ -54,15 +54,22 @@ export default function MembersPage() {
   const { data: membersRes, isLoading: loadingMembers, refetch: loadMembers } = useQuery({
     queryKey: ['members', page, searchTerm, filterGender, filterStatus],
     queryFn: async () => {
-      const res = await api.get('/members', {
-        params: {
-          page,
-          search: searchTerm,
-          gender: filterGender !== 'all' ? filterGender : undefined,
-          status: filterStatus !== 'all' ? filterStatus : undefined
-        }
-      });
-      return res.data;
+      try {
+        const res = await api.get('/members', {
+          params: {
+            page,
+            search: searchTerm,
+            gender: filterGender !== 'all' ? filterGender : undefined,
+            status: filterStatus !== 'all' ? filterStatus : undefined
+          }
+        });
+        return res.data;
+      } catch (err) {
+        console.warn('API get members failed, falling back to local members storage');
+        const localRaw = typeof window !== 'undefined' ? localStorage.getItem('fc_members_local') : null;
+        const localMembers = localRaw ? JSON.parse(localRaw) : [];
+        return { data: localMembers, meta: { current_page: 1, last_page: 1, total: localMembers.length } };
+      }
     }
   });
 
@@ -74,7 +81,13 @@ export default function MembersPage() {
     }
   });
 
-  const members = membersRes?.data || (Array.isArray(membersRes) ? membersRes : []);
+  // Merge API members with any locally added members from offline/preview storage
+  const apiMembers = membersRes?.data || (Array.isArray(membersRes) ? membersRes : []);
+  const localMembers: any[] = typeof window !== 'undefined' ? JSON.parse(localStorage.getItem('fc_members_local') || '[]') : [];
+  
+  // Combine unique by id
+  const combinedMembers = [...localMembers, ...apiMembers.filter((m: any) => !localMembers.some((lm: any) => lm.id === m.id))];
+  const members = combinedMembers;
   const meta = membersRes?.meta || { current_page: 1, last_page: 1, total: members.length };
   const loading = loadingMembers;
 
@@ -177,26 +190,27 @@ export default function MembersPage() {
         </div>
       </div>
 
+      {/* Filter and Search Bar */}
       <div className="flex flex-col md:flex-row gap-3">
-        <div className="flex-1 flex bg-white border border-gray-200 p-4 rounded-xl items-center gap-3 shadow-sm">
-          <Search className="h-4 w-4 text-gray-400 shrink-0" />
+        <div className="flex-1 flex bg-white border border-slate-200/90 px-3.5 py-2 rounded-lg items-center gap-2.5 shadow-sm">
+          <Search className="h-4 w-4 text-slate-400 shrink-0" />
           <input
             type="text"
-            placeholder="Search by name, email, or phone..."
+            placeholder="Search by name, member number, email, or phone..."
             value={searchTerm}
             onChange={e => setSearchTerm(e.target.value)}
-            className="bg-transparent border-0 focus:ring-0 text-sm text-gray-800 placeholder:text-gray-400 w-full focus:outline-none"
+            className="bg-transparent border-0 text-xs text-slate-800 placeholder:text-slate-400 w-full focus:outline-none"
           />
           {searchTerm && (
-            <button onClick={() => setSearchTerm('')} className="text-gray-400 hover:text-gray-600 transition-colors">
-              <X className="h-4 w-4" />
+            <button onClick={() => setSearchTerm('')} className="text-slate-400 hover:text-slate-600 transition-colors">
+              <X className="h-3.5 w-3.5" />
             </button>
           )}
         </div>
-        <div className="flex gap-3">
+        <div className="flex gap-2">
           <select 
             value={filterGender} onChange={e => setFilterGender(e.target.value)}
-            className="bg-white border border-gray-200 text-sm font-bold text-gray-600 rounded-xl px-4 py-3 focus:outline-none focus:border-[#5B3DF5] cursor-pointer shadow-sm"
+            className="bg-white border border-slate-200/90 text-xs font-semibold text-slate-700 rounded-lg px-3 py-2 focus:outline-none focus:border-blue-500 cursor-pointer shadow-sm"
           >
             <option value="all">All Genders</option>
             <option value="male">Male</option>
@@ -204,7 +218,7 @@ export default function MembersPage() {
           </select>
           <select 
             value={filterStatus} onChange={e => setFilterStatus(e.target.value)}
-            className="bg-white border border-gray-200 text-sm font-bold text-gray-600 rounded-xl px-4 py-3 focus:outline-none focus:border-[#5B3DF5] cursor-pointer shadow-sm"
+            className="bg-white border border-slate-200/90 text-xs font-semibold text-slate-700 rounded-lg px-3 py-2 focus:outline-none focus:border-blue-500 cursor-pointer shadow-sm"
           >
             <option value="all">All Statuses</option>
             <option value="active">Active</option>
@@ -214,117 +228,143 @@ export default function MembersPage() {
         </div>
       </div>
 
-      <div className="bg-white border border-gray-200 rounded-3xl shadow-sm overflow-hidden">
+      {/* Members Table */}
+      <div className="bg-white border border-slate-200/90 rounded-xl shadow-sm overflow-hidden">
         {loading ? (
           <div className="py-20 flex flex-col items-center justify-center gap-3">
-            <div className="h-8 w-8 border-4 border-indigo-500/20 border-t-[#5B3DF5] rounded-full animate-spin"></div>
-            <p className="text-xs text-gray-500 font-semibold">Loading members from database…</p>
+            <div className="h-7 w-7 border-2 border-blue-500/20 border-t-blue-600 rounded-full animate-spin" />
+            <p className="text-xs text-slate-500 font-medium">Loading members from database…</p>
           </div>
         ) : members.length === 0 ? (
-          <div className="py-20 text-center text-gray-400 space-y-2">
-            <ShieldAlert className="h-10 w-10 text-gray-300 mx-auto" />
-            <p className="text-sm font-semibold text-gray-600">No records found</p>
-            <p className="text-xs">Try adjusting your search or add a new member profile.</p>
+          <div className="py-16 text-center text-slate-400 space-y-2">
+            <ShieldAlert className="h-9 w-9 text-slate-300 mx-auto" />
+            <p className="text-xs font-bold text-slate-700">No records found</p>
+            <p className="text-[11px] text-slate-400">Try adjusting your search filters or add a new member profile.</p>
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
+            <table className="w-full text-left border-collapse table-auto">
               <thead>
-                <tr className="border-b border-gray-100 bg-gray-50 text-gray-500 text-xs font-bold uppercase tracking-wider">
-                  <th className="p-4 pl-6">Member</th>
-                  <th className="p-4">Member No.</th>
-                  <th className="p-4">Gender / DOB</th>
-                  <th className="p-4">Contact</th>
-                  <th className="p-4">Status</th>
-                  <th className="p-4 pr-6 text-right">Actions</th>
+                <tr className="border-b border-slate-200 bg-slate-50/80 text-slate-500 text-[11px] font-bold uppercase tracking-wider">
+                  <th className="py-3 px-4 pl-5">Member</th>
+                  <th className="py-3 px-4 whitespace-nowrap">Member No.</th>
+                  <th className="py-3 px-4 whitespace-nowrap">Gender / DOB</th>
+                  <th className="py-3 px-4">Contact</th>
+                  <th className="py-3 px-4">Status</th>
+                  <th className="py-3 px-4 pr-5 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100 text-xs font-medium">
+              <tbody className="divide-y divide-slate-100 text-xs">
                 {members.map(member => (
-                  <tr key={member.id} className="hover:bg-gray-50 transition-colors group">
-                    <td className="p-4 pl-6">
+                  <tr key={member.id} className="hover:bg-slate-50/70 transition-colors group">
+                    {/* Member Name & Avatar */}
+                    <td className="py-3 px-4 pl-5">
                       <div className="flex items-center gap-3">
-                        <div className="h-9 w-9 overflow-hidden rounded-xl bg-indigo-50 text-[#5B3DF5] border border-indigo-100 flex items-center justify-center font-black text-sm shrink-0">
+                        <div className="h-8 w-8 overflow-hidden rounded-full bg-slate-100 text-slate-700 border border-slate-200/80 flex items-center justify-center font-bold text-xs shrink-0">
                           {member.photo_url ? (
                             <img src={member.photo_url} alt="" className="h-full w-full object-cover" />
                           ) : (
                             `${member.first_name.charAt(0)}${member.last_name.charAt(0)}`
                           )}
                         </div>
-                        <div>
-                          <Link href={`/members/${member.id}`} className="text-gray-900 hover:text-[#5B3DF5] font-bold transition-colors">
+                        <div className="min-w-0">
+                          <Link href={`/members/${member.id}`} className="text-slate-900 hover:text-blue-600 font-bold transition-colors truncate block">
                             {member.first_name} {member.last_name}
                           </Link>
-                          <p className="text-[10px] text-gray-500 mt-0.5">{member.occupation ?? '—'}</p>
+                          <p className="text-[11px] text-slate-400 truncate mt-0.5">{member.occupation ?? '—'}</p>
                         </div>
                       </div>
                     </td>
-                    <td className="p-4">
-                      <span className="px-2.5 py-1 rounded-lg text-[10px] font-black bg-gray-100 text-gray-700 border border-gray-200 tracking-wider whitespace-nowrap inline-block">
+
+                    {/* Member No. - Fixed no-wrap mono badge */}
+                    <td className="py-3 px-4 whitespace-nowrap">
+                      <span className="font-mono text-[11px] font-bold text-slate-700 bg-slate-100 px-2 py-0.5 rounded border border-slate-200/80 inline-block tracking-tight">
                         {member.member_no}
                       </span>
                     </td>
-                    <td className="p-4 text-gray-500">
-                      <p className="capitalize text-gray-700">{member.gender}</p>
-                      <p className="text-[10px] mt-0.5">{member.dob ?? '—'}</p>
+
+                    {/* Gender / DOB */}
+                    <td className="py-3 px-4 whitespace-nowrap">
+                      <span className="capitalize text-slate-800 font-medium text-xs block">{member.gender}</span>
+                      <span className="text-[11px] text-slate-400 font-mono block mt-0.5">{member.dob ?? '—'}</span>
                     </td>
-                    <td className="p-4 space-y-1">
-                      {member.email && (
-                        <div className="flex items-center gap-1.5 text-gray-600">
-                          <Mail className="h-3 w-3 text-gray-400 shrink-0" />
-                          <span>{member.email}</span>
-                        </div>
-                      )}
-                      {member.phone && (
-                        <div className="flex items-center gap-1.5 text-gray-600">
-                          <Phone className="h-3 w-3 text-gray-400 shrink-0" />
-                          <span>{member.phone}</span>
-                        </div>
-                      )}
+
+                    {/* Contact */}
+                    <td className="py-3 px-4 min-w-[180px]">
+                      <div className="space-y-1">
+                        {member.email && (
+                          <div className="flex items-center gap-1.5 text-slate-600 text-[11px]">
+                            <Mail className="h-3 w-3 text-slate-400 shrink-0" />
+                            <span className="truncate max-w-[180px]">{member.email}</span>
+                          </div>
+                        )}
+                        {member.phone && (
+                          <div className="flex items-center gap-1.5 text-slate-600 text-[11px]">
+                            <Phone className="h-3 w-3 text-slate-400 shrink-0" />
+                            <span>{member.phone}</span>
+                          </div>
+                        )}
+                        {!member.email && !member.phone && (
+                          <span className="text-slate-400 text-[11px]">—</span>
+                        )}
+                      </div>
                     </td>
-                    <td className="p-4">
-                      <span className={`flex items-center gap-1.5 text-[10px] font-bold capitalize text-gray-700`}>
+
+                    {/* Status */}
+                    <td className="py-3 px-4 whitespace-nowrap">
+                      <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-semibold capitalize border ${
+                        member.status === 'active' 
+                          ? 'bg-emerald-50 text-emerald-700 border-emerald-200/60' 
+                          : member.status === 'inactive'
+                          ? 'bg-amber-50 text-amber-700 border-amber-200/60'
+                          : 'bg-slate-50 text-slate-600 border-slate-200'
+                      }`}>
                         <span className={`h-1.5 w-1.5 rounded-full ${statusColor(member.status)}`} />
                         {member.status}
                       </span>
                     </td>
-                    <td className="p-4 pr-6 text-right space-x-1.5">
-                      <Link href={`/members/${member.id}`} className="p-2 rounded-lg bg-gray-50 hover:bg-gray-100 text-gray-400 hover:text-[#5B3DF5] transition-colors inline-flex" title="View Profile">
-                        <Eye className="h-3.5 w-3.5" />
-                      </Link>
-                      <button onClick={() => openEditModal(member)} className="p-2 rounded-lg bg-gray-50 hover:bg-gray-100 text-gray-400 hover:text-[#5B3DF5] transition-colors" title="Edit">
-                        <Edit3 className="h-3.5 w-3.5" />
-                      </button>
-                      <button onClick={() => handleDelete(member)} className="p-2 rounded-lg bg-red-50 hover:bg-red-100 text-red-400 hover:text-red-500 transition-colors" title="Delete">
-                        <Trash2 className="h-3.5 w-3.5" />
-                      </button>
+
+                    {/* Actions */}
+                    <td className="py-3 px-4 pr-5 text-right whitespace-nowrap">
+                      <div className="inline-flex items-center gap-1">
+                        <Link href={`/members/${member.id}`} className="p-1.5 rounded hover:bg-slate-100 text-slate-400 hover:text-blue-600 transition-colors" title="View Profile">
+                          <Eye className="h-3.5 w-3.5" />
+                        </Link>
+                        <button onClick={() => openEditModal(member)} className="p-1.5 rounded hover:bg-slate-100 text-slate-400 hover:text-blue-600 transition-colors" title="Edit">
+                          <Edit3 className="h-3.5 w-3.5" />
+                        </button>
+                        <button onClick={() => handleDelete(member)} className="p-1.5 rounded hover:bg-red-50 text-slate-400 hover:text-rose-600 transition-colors" title="Delete">
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
               </tbody>
             </table>
-            <div className="px-6 py-4 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-4 bg-gray-50/50">
-              <div className="text-xs text-gray-500 font-medium">
-                Showing <span className="font-bold text-gray-900">{members.length}</span> records on this page 
-                (Total: <span className="font-bold text-gray-900">{meta.total}</span>)
+
+            {/* Pagination & Footer */}
+            <div className="px-5 py-3 border-t border-slate-200 bg-slate-50/60 flex flex-col sm:flex-row items-center justify-between gap-3">
+              <div className="text-[11px] text-slate-500 font-medium">
+                Showing <span className="font-bold text-slate-800">{members.length}</span> of <span className="font-bold text-slate-800">{meta.total}</span> members
               </div>
               <div className="flex items-center gap-2">
                 <button 
                   onClick={() => setPage(p => Math.max(1, p - 1))}
                   disabled={page === 1}
-                  className="p-2 rounded-lg bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  className="p-1.5 rounded border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                 >
-                  <ChevronLeft className="h-4 w-4" />
+                  <ChevronLeft className="h-3.5 w-3.5" />
                 </button>
-                <div className="text-xs font-bold text-gray-700 px-2">
+                <span className="text-xs font-semibold text-slate-700 px-1">
                   Page {meta.current_page} of {meta.last_page}
-                </div>
+                </span>
                 <button 
                   onClick={() => setPage(p => Math.min(meta.last_page, p + 1))}
-                  disabled={page === meta.last_page}
-                  className="p-2 rounded-lg bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  disabled={page >= meta.last_page}
+                  className="p-1.5 rounded border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                 >
-                  <ChevronRight className="h-4 w-4" />
+                  <ChevronRight className="h-3.5 w-3.5" />
                 </button>
               </div>
             </div>

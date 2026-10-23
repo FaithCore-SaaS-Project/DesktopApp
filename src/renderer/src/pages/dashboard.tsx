@@ -49,20 +49,25 @@ export default function DashboardPage() {
   }, [currentTenant?.id]);
 
   return (
-    <div className="p-8 bg-gradient-to-tr from-slate-50 via-slate-100 to-indigo-50/20 min-h-full animate-fade-in select-none">
+    <div className="p-6 lg:p-8 bg-slate-50/70 min-h-full select-none">
       {/* Welcome Banner */}
-      <div className="mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      <div className="mb-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4 pb-4 border-b border-slate-200/60">
         <div>
-          <h1 className="text-3xl font-extrabold text-slate-800 tracking-tight">
-            Welcome back, {user?.username || 'Admin'}! 👋
-          </h1>
-          <p className="text-slate-400 mt-1.5 text-sm font-medium">
-            Here's what's happening at {currentTenant?.name || 'your church'} today.
+          <div className="flex items-center gap-2">
+            <h1 className="text-2xl font-bold text-slate-900 tracking-tight">
+              Welcome back, {user?.username || 'Pastor John Silva'}
+            </h1>
+            <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-semibold bg-blue-50 text-blue-700 border border-blue-200/50">
+              Pastor View
+            </span>
+          </div>
+          <p className="text-slate-500 mt-1 text-xs font-medium">
+            Here is your daily operational summary for <span className="font-semibold text-slate-700">{currentTenant?.name || 'Beracah Christian Ministry'}</span>.
           </p>
         </div>
-        <div className="flex items-center gap-2 text-xs font-bold text-slate-500 bg-white/90 border border-slate-150/80 px-4 py-2.5 rounded-2xl shadow-sm shadow-slate-100/40 backdrop-blur-md self-start md:self-auto select-none">
-          <CalendarDays size={15} className="text-violet-500" />
-          <span>{currentDateString || 'Saturday, 24 May 2025'}</span>
+        <div className="flex items-center gap-2 text-xs font-semibold text-slate-600 bg-white border border-slate-200/80 px-3 py-1.5 rounded-lg shadow-sm self-start md:self-auto select-none">
+          <CalendarDays size={14} className="text-slate-400" />
+          <span>{currentDateString || 'Tuesday, October 6, 2026'}</span>
         </div>
       </div>
 

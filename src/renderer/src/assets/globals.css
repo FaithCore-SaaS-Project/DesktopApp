@@ -42,22 +42,38 @@ body {
   background: rgba(99, 102, 241, 0.4);
 }
 
-/* Custom form & webkit date input styling for touch devices */
-input[type="date"] {
-  color-scheme: light;
+/* Custom form & webkit date input styling for touch devices (iPad / Tablets) */
+input[type="date"],
+input[type="datetime-local"],
+input[type="time"] {
+  color-scheme: light !important;
   color: #0f172a !important;
+  -webkit-text-fill-color: #0f172a !important;
+  opacity: 1 !important;
   -webkit-appearance: textfield;
 }
 
 input[type="date"]::-webkit-date-and-time-value {
   color: #0f172a !important;
+  -webkit-text-fill-color: #0f172a !important;
   text-align: left;
-  min-height: 1.2em;
+  min-height: 1.3em;
+}
+
+input[type="date"]::-webkit-datetime-edit,
+input[type="date"]::-webkit-datetime-edit-fields-wrapper,
+input[type="date"]::-webkit-datetime-edit-text,
+input[type="date"]::-webkit-datetime-edit-month-field,
+input[type="date"]::-webkit-datetime-edit-day-field,
+input[type="date"]::-webkit-datetime-edit-year-field {
+  color: #0f172a !important;
+  -webkit-text-fill-color: #0f172a !important;
 }
 
 input[type="date"]::-webkit-calendar-picker-indicator {
   cursor: pointer;
-  filter: invert(0.3);
+  filter: invert(0.2);
+  opacity: 0.7;
 }
 
 /* Print Styling rules */

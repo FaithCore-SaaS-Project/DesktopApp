@@ -115,30 +115,86 @@ export default function MemberFormModal({ isOpen, onClose, editingMember, famili
           setServerError(err.response?.data?.message ?? 'Validation error. Please check form fields.');
         }
       } else {
-        const msg = err.response?.data?.message || err.response?.data?.error || err.message || 'An unexpected error occurred.';
-        setServerError(msg);
+        // Fallback for offline mode, Netlify preview, or network disconnects
+        try {
+          const tenantId = (typeof window !== 'undefined' ? localStorage.getItem('tenantId') : '1') || '1';
+          const localMembersRaw = typeof window !== 'undefined' ? localStorage.getItem('fc_members_local') : null;
+          const localMembers: any[] = localMembersRaw ? JSON.parse(localMembersRaw) : [];
 
-        // Offline / Electron local SQLite fallback
-        if (isElectron() && !err.response) {
-          try {
-            const tenantId = localStorage.getItem('tenantId') || '1';
-            await (window as any).electronAPI.saveMember({
-              id: editingMember ? editingMember.id.toString() : 'MEM-' + Date.now(),
-              name: `${form.first_name} ${form.last_name}`,
+          if (editingMember) {
+            const index = localMembers.findIndex(m => m.id === editingMember.id);
+            const updated = {
+              ...editingMember,
+              first_name: form.first_name,
+              last_name: form.last_name,
               email: form.email,
               phone: form.phone,
-              role: form.occupation,
-              joinedDate: new Date().toISOString().split('T')[0],
-              status: form.status === 'active' ? 'active' : 'inactive',
-              tenantId: tenantId,
-              syncStatus: 'pending'
-            });
-            onSuccess();
-            onClose();
-            return;
-          } catch (e) {
-            console.error('Local fallback save failed:', e);
+              gender: form.gender,
+              dob: form.dob,
+              nic: form.nic,
+              address: form.permanent_address || form.postal_address || '',
+              occupation: form.occupation,
+              status: form.status,
+              family_id: form.family_id ? Number(form.family_id) : null
+            };
+            if (index >= 0) {
+              localMembers[index] = updated;
+            } else {
+              localMembers.unshift(updated);
+            }
+          } else {
+            const newId = Date.now();
+            const newMember = {
+              id: newId,
+              member_no: `MBR-${new Date().getFullYear()}-${String(localMembers.length + 1001).slice(-4)}`,
+              first_name: form.first_name,
+              last_name: form.last_name,
+              email: form.email || null,
+              phone: form.phone || null,
+              gender: form.gender,
+              dob: form.dob || null,
+              nic: form.nic || null,
+              address: form.permanent_address || form.postal_address || null,
+              occupation: form.occupation || null,
+              status: form.status || 'active',
+              membership_date: new Date().toISOString().split('T')[0],
+              family_id: form.family_id ? Number(form.family_id) : null,
+              photo_url: photoFile ? URL.createObjectURL(photoFile) : null,
+              created_at: new Date().toISOString()
+            };
+            localMembers.unshift(newMember);
           }
+
+          if (typeof window !== 'undefined') {
+            localStorage.setItem('fc_members_local', JSON.stringify(localMembers));
+          }
+
+          // If Electron is active, also sync to SQLite
+          if (isElectron()) {
+            try {
+              await (window as any).electronAPI.saveMember({
+                id: editingMember ? editingMember.id.toString() : 'MEM-' + Date.now(),
+                name: `${form.first_name} ${form.last_name}`,
+                email: form.email,
+                phone: form.phone,
+                role: form.occupation,
+                joinedDate: new Date().toISOString().split('T')[0],
+                status: form.status === 'active' ? 'active' : 'inactive',
+                tenantId: tenantId,
+                syncStatus: 'pending'
+              });
+            } catch (electronErr) {
+              console.warn('Electron SQLite cache sync skipped:', electronErr);
+            }
+          }
+
+          onSuccess();
+          onClose();
+          return;
+        } catch (fallbackErr) {
+          console.error('All save mechanisms failed:', fallbackErr);
+          const msg = err.response?.data?.message || err.response?.data?.error || err.message || 'An unexpected error occurred.';
+          setServerError(msg);
         }
       }
     } finally {
@@ -279,10 +335,10 @@ export default function MemberFormModal({ isOpen, onClose, editingMember, famili
           {/* Date of Birth / Birth Certificate */}
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-gray-500">Date of Birth</label>
+              <label className="text-xs font-bold text-gray-700">Date of Birth</label>
               <input
                 name="dob" type="date" value={form.dob} onChange={handleChange}
-                className="w-full bg-gray-50 border border-gray-200 focus:border-[#5B3DF5] rounded-xl px-4 py-2.5 text-xs text-gray-800 font-semibold focus:outline-none"
+                className="w-full bg-white border border-gray-200 focus:border-[#5B3DF5] rounded-xl px-4 py-2.5 text-xs text-slate-900 font-semibold focus:outline-none min-h-[40px] shadow-sm"
               />
             </div>
             <div className="space-y-1.5">
@@ -327,41 +383,41 @@ export default function MemberFormModal({ isOpen, onClose, editingMember, famili
           </div>
 
           {/* Address Details (Permanent / Postal / Both) */}
-          <div className="space-y-2 bg-slate-50 p-4 rounded-2xl border border-slate-100">
-            <label className="text-xs font-bold text-gray-500 block mb-1">Address Details</label>
-            <div className="flex flex-wrap gap-x-4 gap-y-2 mb-2">
-              <label className="flex items-center gap-1.5 cursor-pointer text-xs font-bold text-gray-700">
+          <div className="space-y-3 bg-slate-50 p-4 rounded-xl border border-slate-200/80">
+            <label className="text-xs font-bold text-slate-800 block mb-1">Address Details</label>
+            <div className="flex flex-wrap gap-3 mb-2">
+              <label className="flex items-center gap-2 cursor-pointer text-xs font-bold text-slate-900 bg-white border border-slate-200 px-3 py-1.5 rounded-lg hover:border-blue-400 transition-colors shadow-sm select-none">
                 <input
                   type="radio"
                   name="address_type"
                   value="permanent"
                   checked={form.address_type === 'permanent'}
                   onChange={handleChange}
-                  className="text-[#5B3DF5] focus:ring-[#5B3DF5]"
+                  className="text-blue-600 focus:ring-blue-500 h-3.5 w-3.5"
                 />
-                <span>Permanent Address</span>
+                <span className="text-slate-900 font-bold">Permanent Address</span>
               </label>
-              <label className="flex items-center gap-1.5 cursor-pointer text-xs font-bold text-gray-700">
+              <label className="flex items-center gap-2 cursor-pointer text-xs font-bold text-slate-900 bg-white border border-slate-200 px-3 py-1.5 rounded-lg hover:border-blue-400 transition-colors shadow-sm select-none">
                 <input
                   type="radio"
                   name="address_type"
                   value="postal"
                   checked={form.address_type === 'postal'}
                   onChange={handleChange}
-                  className="text-[#5B3DF5] focus:ring-[#5B3DF5]"
+                  className="text-blue-600 focus:ring-blue-500 h-3.5 w-3.5"
                 />
-                <span>Postal Address</span>
+                <span className="text-slate-900 font-bold">Postal Address</span>
               </label>
-              <label className="flex items-center gap-1.5 cursor-pointer text-xs font-bold text-gray-700">
+              <label className="flex items-center gap-2 cursor-pointer text-xs font-bold text-slate-900 bg-white border border-slate-200 px-3 py-1.5 rounded-lg hover:border-blue-400 transition-colors shadow-sm select-none">
                 <input
                   type="radio"
                   name="address_type"
                   value="both"
                   checked={form.address_type === 'both'}
                   onChange={handleChange}
-                  className="text-[#5B3DF5] focus:ring-[#5B3DF5]"
+                  className="text-blue-600 focus:ring-blue-500 h-3.5 w-3.5"
                 />
-                <span>Both Addresses</span>
+                <span className="text-slate-900 font-bold">Both Addresses</span>
               </label>
             </div>
 
@@ -391,31 +447,31 @@ export default function MemberFormModal({ isOpen, onClose, editingMember, famili
           </div>
 
           {/* Holy Baptism Status (Yes / No) */}
-          <div className="space-y-3 bg-slate-50 p-4 rounded-2xl border border-slate-100">
+          <div className="space-y-3 bg-slate-50 p-4 rounded-xl border border-slate-200/80">
             <div className="flex justify-between items-center">
-              <label className="text-xs font-bold text-gray-500">Holy Baptism Status</label>
-              <div className="flex gap-4">
-                <label className="flex items-center gap-1.5 cursor-pointer text-xs font-bold text-gray-700">
+              <label className="text-xs font-bold text-slate-800">Holy Baptism Status</label>
+              <div className="flex gap-2">
+                <label className="flex items-center gap-1.5 cursor-pointer text-xs font-bold text-slate-900 bg-white border border-slate-200 px-3 py-1 rounded-lg hover:border-blue-400 transition-colors shadow-sm select-none">
                   <input
                     type="radio"
                     name="is_baptized"
                     value="true"
                     checked={form.is_baptized === true}
                     onChange={() => setForm(prev => ({ ...prev, is_baptized: true }))}
-                    className="text-[#5B3DF5] focus:ring-[#5B3DF5]"
+                    className="text-blue-600 focus:ring-blue-500 h-3.5 w-3.5"
                   />
-                  <span>Yes</span>
+                  <span className="text-slate-900 font-bold">Yes</span>
                 </label>
-                <label className="flex items-center gap-1.5 cursor-pointer text-xs font-bold text-gray-700">
+                <label className="flex items-center gap-1.5 cursor-pointer text-xs font-bold text-slate-900 bg-white border border-slate-200 px-3 py-1 rounded-lg hover:border-blue-400 transition-colors shadow-sm select-none">
                   <input
                     type="radio"
                     name="is_baptized"
                     value="false"
                     checked={form.is_baptized === false}
                     onChange={() => setForm(prev => ({ ...prev, is_baptized: false }))}
-                    className="text-[#5B3DF5] focus:ring-[#5B3DF5]"
+                    className="text-blue-600 focus:ring-blue-500 h-3.5 w-3.5"
                   />
-                  <span>No</span>
+                  <span className="text-slate-900 font-bold">No</span>
                 </label>
               </div>
             </div>
@@ -442,15 +498,15 @@ export default function MemberFormModal({ isOpen, onClose, editingMember, famili
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div className="space-y-1">
-                    <label className="text-[9px] font-bold text-gray-500 uppercase">Baptism Date</label>
+                    <label className="text-[9px] font-bold text-gray-700 uppercase">Baptism Date</label>
                     <input
                       name="baptism_date" type="date" value={form.baptism_date} onChange={handleChange}
-                      className="w-full bg-white border border-gray-200 focus:border-[#5B3DF5] rounded-xl px-3 py-2 text-xs text-gray-900 font-semibold focus:outline-none min-h-[38px]"
+                      className="w-full bg-white border border-gray-200 focus:border-[#5B3DF5] rounded-xl px-3 py-2 text-xs text-slate-900 font-semibold focus:outline-none min-h-[40px] shadow-sm"
                     />
                   </div>
                   <div className="space-y-1">
                     <label className="text-[9px] font-bold text-gray-500 uppercase">Baptism Certificate</label>
-                    <label className="flex items-center gap-2 border border-dashed border-gray-300 hover:border-[#5B3DF5] hover:bg-gray-50/50 rounded-xl px-3 py-2 cursor-pointer transition-colors group">
+                    <label className="flex items-center gap-2 border border-dashed border-gray-300 hover:border-[#5B3DF5] hover:bg-gray-50/50 rounded-xl px-3 py-2 cursor-pointer transition-colors group min-h-[40px]">
                       <div className="h-6 w-6 rounded bg-gray-100 group-hover:bg-indigo-50 flex items-center justify-center text-gray-400 group-hover:text-[#5B3DF5]">
                         {baptismCertFile ? <FileText className="h-3 w-3" /> : <UploadCloud className="h-3 w-3" />}
                       </div>
@@ -469,12 +525,12 @@ export default function MemberFormModal({ isOpen, onClose, editingMember, famili
           </div>
 
           {/* Marital Status (Single / Married) */}
-          <div className="space-y-3 bg-slate-50 p-4 rounded-2xl border border-slate-100">
+          <div className="space-y-3 bg-slate-50 p-4 rounded-xl border border-slate-200/80">
             <div className="flex justify-between items-center">
-              <label className="text-xs font-bold text-gray-500">Marital Status</label>
+              <label className="text-xs font-bold text-slate-800">Marital Status</label>
               <select
                 name="marital_status" value={form.marital_status} onChange={handleChange}
-                className="bg-white border border-gray-200 focus:border-[#5B3DF5] rounded-xl px-3 py-1.5 text-xs text-gray-800 font-bold focus:outline-none cursor-pointer"
+                className="bg-white border border-gray-200 focus:border-[#5B3DF5] rounded-xl px-3 py-1.5 text-xs text-slate-900 font-bold focus:outline-none cursor-pointer shadow-sm"
               >
                 <option value="single">Single / Unmarried</option>
                 <option value="married">Married</option>
@@ -485,10 +541,10 @@ export default function MemberFormModal({ isOpen, onClose, editingMember, famili
               <div className="space-y-3 pt-3 border-t border-slate-200/60">
                 <div className="grid grid-cols-2 gap-3">
                   <div className="space-y-1">
-                    <label className="text-[9px] font-bold text-gray-500 uppercase">Marriage Date</label>
+                    <label className="text-[9px] font-bold text-gray-700 uppercase">Marriage Date</label>
                     <input
                       name="marriage_date" type="date" value={form.marriage_date} onChange={handleChange}
-                      className="w-full bg-white border border-gray-200 focus:border-[#5B3DF5] rounded-xl px-3 py-2 text-xs text-gray-900 font-semibold focus:outline-none min-h-[38px]"
+                      className="w-full bg-white border border-gray-200 focus:border-[#5B3DF5] rounded-xl px-3 py-2 text-xs text-slate-900 font-semibold focus:outline-none min-h-[40px] shadow-sm"
                     />
                   </div>
                   <div className="space-y-1">

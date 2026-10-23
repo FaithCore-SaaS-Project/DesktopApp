@@ -7,13 +7,15 @@ import {
   Mail,
   BadgeCheck,
   DollarSign,
+  ArrowRight,
 } from "lucide-react";
 
 interface ActionItem {
   icon: React.ComponentType<any>;
   title: string;
-  color: string;
-  bgColor: string;
+  description: string;
+  iconColor: string;
+  iconBg: string;
   path: string;
 }
 
@@ -21,68 +23,85 @@ const actions: ActionItem[] = [
   {
     icon: UserPlus,
     title: "Add Member",
-    color: "text-purple-600",
-    bgColor: "bg-purple-50 hover:bg-purple-100/70 border-purple-100",
+    description: "Register new church attendee",
+    iconColor: "text-blue-600",
+    iconBg: "bg-blue-50 group-hover:bg-blue-600 group-hover:text-white",
     path: "/members",
   },
   {
     icon: Users,
     title: "Add Family",
-    color: "text-cyan-600",
-    bgColor: "bg-cyan-50 hover:bg-cyan-100/70 border-cyan-100",
+    description: "Create family unit folder",
+    iconColor: "text-violet-600",
+    iconBg: "bg-violet-50 group-hover:bg-violet-600 group-hover:text-white",
     path: "/families",
   },
   {
     icon: Receipt,
     title: "Add Receipt",
-    color: "text-green-600",
-    bgColor: "bg-green-50 hover:bg-green-100/70 border-green-100",
+    description: "Record tithe & donation",
+    iconColor: "text-emerald-600",
+    iconBg: "bg-emerald-50 group-hover:bg-emerald-600 group-hover:text-white",
     path: "/finance",
   },
   {
     icon: Mail,
     title: "New Letter",
-    color: "text-blue-600",
-    bgColor: "bg-blue-50 hover:bg-blue-100/70 border-blue-100",
+    description: "Issue official letter",
+    iconColor: "text-indigo-600",
+    iconBg: "bg-indigo-50 group-hover:bg-indigo-600 group-hover:text-white",
     path: "/letters",
   },
   {
     icon: BadgeCheck,
     title: "New Certificate",
-    color: "text-orange-500",
-    bgColor: "bg-orange-50 hover:bg-orange-100/70 border-orange-100",
+    description: "Generate baptism / dedication",
+    iconColor: "text-amber-600",
+    iconBg: "bg-amber-50 group-hover:bg-amber-600 group-hover:text-white",
     path: "/certificates",
   },
   {
     icon: DollarSign,
     title: "Add Expense",
-    color: "text-red-500",
-    bgColor: "bg-red-50 hover:bg-red-100/70 border-red-100",
+    description: "Log ministry disbursement",
+    iconColor: "text-rose-600",
+    iconBg: "bg-rose-50 group-hover:bg-rose-600 group-hover:text-white",
     path: "/finance",
   },
 ];
 
 export default function QuickActions() {
   return (
-    <div className="bg-white rounded-[2rem] border border-slate-100 p-6 shadow-sm shadow-slate-100/50 flex flex-col h-full justify-between">
-      <h2 className="text-xl font-extrabold text-slate-800 tracking-tight mb-6">
-        Quick Actions
-      </h2>
-      <div className="grid grid-cols-2 gap-4 flex-1">
+    <div className="bg-white rounded-xl border border-slate-200/80 p-5 shadow-sm flex flex-col h-full justify-between">
+      <div className="flex items-center justify-between mb-4">
+        <div>
+          <h2 className="text-sm font-bold text-slate-900 tracking-tight">
+            Quick Actions
+          </h2>
+          <p className="text-xs text-slate-500 font-medium">Common daily operations</p>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 flex-1">
         {actions.map((action, index) => {
           const Icon = action.icon;
           return (
             <Link href={action.path} key={index} passHref legacyBehavior>
-              <a className={`border rounded-2xl p-4 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 active:scale-[0.98] flex flex-col items-center justify-center text-center cursor-pointer ${action.bgColor}`}>
-                <div className="flex justify-center items-center">
-                  <Icon
-                    size={28}
-                    className={action.color}
-                  />
+              <a className="group flex items-center justify-between p-3 rounded-lg border border-slate-200/70 hover:border-slate-300 hover:bg-slate-50/70 transition-all duration-150 cursor-pointer">
+                <div className="flex items-center gap-3">
+                  <div className={`h-8 w-8 rounded-lg flex items-center justify-center ${action.iconBg} ${action.iconColor} transition-colors shrink-0`}>
+                    <Icon size={16} strokeWidth={2} />
+                  </div>
+                  <div>
+                    <p className="text-xs font-semibold text-slate-800 group-hover:text-slate-900">
+                      {action.title}
+                    </p>
+                    <p className="text-[10px] text-slate-400 font-medium line-clamp-1">
+                      {action.description}
+                    </p>
+                  </div>
                 </div>
-                <p className="mt-3 text-xs font-bold text-slate-700">
-                  {action.title}
-                </p>
+                <ArrowRight size={13} className="text-slate-300 group-hover:text-slate-600 group-hover:translate-x-0.5 transition-all shrink-0 ml-1" />
               </a>
             </Link>
           );

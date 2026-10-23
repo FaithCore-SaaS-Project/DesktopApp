@@ -45,29 +45,31 @@ export default function IncomeTableRow({
   };
 
   return (
-    <tr className="border-b border-gray-100 hover:bg-gray-55/30 transition-colors">
-      <td className="py-4 pl-4 text-xs font-semibold text-gray-600">
+    <tr className="border-b border-slate-100 hover:bg-slate-50/70 transition-colors">
+      <td className="py-3 px-3 text-xs font-medium text-slate-500 whitespace-nowrap">
         {transaction.date}
       </td>
-      <td className="py-4 text-xs font-mono font-bold text-gray-700">
-        {transaction.receipt || 'RCP-2025-1000'}
+      <td className="py-3 px-3 text-xs font-mono font-bold text-slate-700 whitespace-nowrap">
+        <span className="bg-slate-100 px-2 py-0.5 rounded border border-slate-200/80 inline-block">
+          {transaction.receipt || 'RCP-2025-1000'}
+        </span>
       </td>
-      <td className="py-4 text-xs font-bold text-gray-850">
+      <td className="py-3 px-3 text-xs font-bold text-slate-900 whitespace-nowrap">
         {getSenderName()}
       </td>
-      <td className="py-4">
-        <span className={`rounded-xl px-2.5 py-1 text-[10px] font-bold border uppercase tracking-wider ${getCategoryBadge(transaction.category)}`}>
+      <td className="py-3 px-3 whitespace-nowrap">
+        <span className={`rounded-md px-2 py-0.5 text-[10px] font-bold border uppercase tracking-wider ${getCategoryBadge(transaction.category)}`}>
           {transaction.category}
         </span>
       </td>
-      <td className="py-4 text-xs text-gray-500 max-w-[220px] truncate" title={transaction.description}>
+      <td className="py-3 px-3 text-xs text-slate-500 max-w-[200px] truncate" title={transaction.description}>
         {transaction.description}
       </td>
-      <td className="py-4 text-sm font-black text-emerald-600">
-        {formatLKR(transaction.amount)}
+      <td className="py-3 px-3 text-xs font-bold text-emerald-600 whitespace-nowrap">
+        Rs. {formatLKR(transaction.amount)}
       </td>
-      <td className="py-4">
-        <span className={`rounded-xl px-2 py-0.5 text-[9px] font-extrabold border uppercase tracking-wider ${getMethodStyle(transaction.method)}`}>
+      <td className="py-3 px-3 whitespace-nowrap">
+        <span className={`rounded-md px-2 py-0.5 text-[9px] font-bold border uppercase tracking-wider ${getMethodStyle(transaction.method)}`}>
           {transaction.method || 'Cash'}
         </span>
       </td>

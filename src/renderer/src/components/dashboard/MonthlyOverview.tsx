@@ -1,4 +1,5 @@
 import React from 'react';
+import { ArrowUpRight, ArrowDownRight, Wallet } from 'lucide-react';
 
 interface MonthlyOverviewProps {
   income?: string;
@@ -12,135 +13,154 @@ export default function MonthlyOverview({
   balance = "Rs. 1,330,000"
 }: MonthlyOverviewProps) {
   return (
-    <div className="bg-white rounded-[2rem] border border-slate-100 p-6 shadow-sm shadow-slate-100/50">
-      <div className="flex items-center justify-between mb-8">
-        <h2 className="text-xl font-extrabold text-slate-800 tracking-tight">
-          Monthly Overview
-        </h2>
-        <select className="border border-slate-100 rounded-xl px-3.5 py-1.5 text-xs font-bold text-slate-500 outline-none bg-slate-50/50 focus:border-violet-500 cursor-pointer transition-all duration-300">
-          <option>This Month</option>
-          <option>Last Month</option>
-          <option>This Year</option>
-        </select>
+    <div className="bg-white rounded-xl border border-slate-200/80 p-5 shadow-sm">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-100 gap-3">
+        <div>
+          <h2 className="text-sm font-bold text-slate-900 tracking-tight">
+            Financial Performance
+          </h2>
+          <p className="text-xs text-slate-500 font-medium">Income vs Expenditure breakdown</p>
+        </div>
+        <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3 text-xs font-medium text-slate-500 mr-2">
+            <span className="inline-flex items-center gap-1.5">
+              <span className="h-2 w-2 rounded-full bg-emerald-500" />
+              Income
+            </span>
+            <span className="inline-flex items-center gap-1.5">
+              <span className="h-2 w-2 rounded-full bg-rose-500" />
+              Expenses
+            </span>
+          </div>
+          <select className="border border-slate-200 rounded-lg px-2.5 py-1 text-xs font-semibold text-slate-600 outline-none bg-slate-50 hover:bg-white focus:border-blue-500 transition-colors cursor-pointer">
+            <option>This Month</option>
+            <option>Last Month</option>
+            <option>This Quarter</option>
+            <option>This Year</option>
+          </select>
+        </div>
       </div>
       
-      <div className="grid lg:grid-cols-3 gap-8">
-        <div className="flex flex-col justify-center pl-2">
-          <div className="mb-6">
-            <p className="text-slate-400 text-[10px] font-bold uppercase tracking-wider">
-              Income
-            </p>
-            <h3 className="text-3xl font-extrabold text-emerald-600 tracking-tight mt-1">
+      <div className="grid lg:grid-cols-12 gap-6 pt-5">
+        {/* Metric summary */}
+        <div className="lg:col-span-4 flex flex-col justify-between space-y-4">
+          <div className="p-3.5 rounded-lg border border-slate-100 bg-slate-50/60">
+            <div className="flex items-center justify-between text-xs text-slate-500 font-medium mb-1">
+              <span>Total Income</span>
+              <span className="text-emerald-600 font-semibold flex items-center text-[11px]">
+                <ArrowUpRight size={14} /> +12.4%
+              </span>
+            </div>
+            <h3 className="text-xl font-bold text-slate-900 tracking-tight">
               {income}
             </h3>
           </div>
-          <div className="mb-6">
-            <p className="text-slate-400 text-[10px] font-bold uppercase tracking-wider">
-              Expenses
-            </p>
-            <h3 className="text-3xl font-extrabold text-rose-500 tracking-tight mt-1">
+
+          <div className="p-3.5 rounded-lg border border-slate-100 bg-slate-50/60">
+            <div className="flex items-center justify-between text-xs text-slate-500 font-medium mb-1">
+              <span>Total Expenses</span>
+              <span className="text-rose-500 font-semibold flex items-center text-[11px]">
+                <ArrowDownRight size={14} /> -4.1%
+              </span>
+            </div>
+            <h3 className="text-xl font-bold text-slate-900 tracking-tight">
               {expenses}
             </h3>
           </div>
-          <div>
-            <p className="text-slate-400 text-[10px] font-bold uppercase tracking-wider">
-              Net Balance
-            </p>
-            <h3 className="text-3xl font-black text-slate-800 tracking-tight mt-1">
+
+          <div className="p-3.5 rounded-lg border border-blue-100 bg-blue-50/40">
+            <div className="flex items-center justify-between text-xs text-blue-700 font-medium mb-1">
+              <span className="flex items-center gap-1.5">
+                <Wallet size={13} /> Net Reserve
+              </span>
+              <span className="text-[11px] font-semibold text-blue-600 bg-blue-100/60 px-1.5 py-0.5 rounded">
+                Healthy
+              </span>
+            </div>
+            <h3 className="text-xl font-bold text-blue-950 tracking-tight">
               {balance}
             </h3>
           </div>
         </div>
 
-        {/* Premium SVG Line Chart Container */}
-        <div className="lg:col-span-2">
-          <div className="h-[280px] rounded-2xl bg-slate-50/40 border border-slate-100/70 p-4 relative flex flex-col justify-between overflow-hidden shadow-inner">
-            {/* Chart Legend */}
-            <div className="flex items-center justify-end gap-4 text-[10px] font-bold text-slate-400 uppercase tracking-wider absolute top-4 right-4 z-10">
-              <div className="flex items-center gap-1.5">
-                <span className="h-2 w-2 rounded-full bg-emerald-500" />
-                <span>Income</span>
+        {/* Crisp vector chart */}
+        <div className="lg:col-span-8 flex flex-col justify-between">
+          <div className="h-[210px] w-full relative flex flex-col justify-between pt-2">
+            {/* Horizontal guide lines */}
+            <div className="absolute inset-0 flex flex-col justify-between text-[10px] font-medium text-slate-400 pointer-events-none select-none">
+              <div className="w-full flex items-center justify-between border-b border-dashed border-slate-200/80 pb-0.5">
+                <span>3.0M</span>
               </div>
-              <div className="flex items-center gap-1.5">
-                <span className="h-2 w-2 rounded-full bg-rose-400" />
-                <span>Expenses</span>
+              <div className="w-full flex items-center justify-between border-b border-dashed border-slate-200/80 pb-0.5">
+                <span>2.0M</span>
+              </div>
+              <div className="w-full flex items-center justify-between border-b border-dashed border-slate-200/80 pb-0.5">
+                <span>1.0M</span>
+              </div>
+              <div className="w-full flex items-center justify-between border-b border-slate-200/80">
+                <span>0.0</span>
               </div>
             </div>
 
-            {/* Grid & SVG Chart */}
-            <div className="relative flex-1 w-full mt-6">
-              {/* Y Axis Guides */}
-              <div className="absolute inset-0 flex flex-col justify-between text-[9px] font-bold text-slate-400/80 pointer-events-none select-none">
-                <div className="w-full flex items-center justify-between border-b border-slate-100/60 pb-1">
-                  <span>3M</span>
-                </div>
-                <div className="w-full flex items-center justify-between border-b border-slate-100/60 pb-1">
-                  <span>2M</span>
-                </div>
-                <div className="w-full flex items-center justify-between border-b border-slate-100/60 pb-1">
-                  <span>1M</span>
-                </div>
-                <div className="w-full flex items-center justify-between">
-                  <span>0</span>
-                </div>
-              </div>
-
-              {/* Vector Lines */}
-              <svg className="w-full h-full absolute inset-0" viewBox="0 0 500 180" preserveAspectRatio="none">
+            {/* SVG Wave lines */}
+            <div className="relative flex-1 w-full mt-2">
+              <svg className="w-full h-full" viewBox="0 0 500 160" preserveAspectRatio="none">
                 <defs>
-                  {/* Gradients */}
-                  <linearGradient id="income-grad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#10B981" stopOpacity="0.2" />
+                  <linearGradient id="income-fill" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#10B981" stopOpacity="0.18" />
                     <stop offset="100%" stopColor="#10B981" stopOpacity="0.0" />
                   </linearGradient>
-                  <linearGradient id="expense-grad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#EF4444" stopOpacity="0.15" />
-                    <stop offset="100%" stopColor="#EF4444" stopOpacity="0.0" />
+                  <linearGradient id="expense-fill" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#F43F5E" stopOpacity="0.12" />
+                    <stop offset="100%" stopColor="#F43F5E" stopOpacity="0.0" />
                   </linearGradient>
                 </defs>
 
-                {/* Grid vertical lines */}
-                <line x1="125" y1="0" x2="125" y2="180" stroke="#F1F5F9" strokeWidth="1" strokeDasharray="3 3" />
-                <line x1="250" y1="0" x2="250" y2="180" stroke="#F1F5F9" strokeWidth="1" strokeDasharray="3 3" />
-                <line x1="375" y1="0" x2="375" y2="180" stroke="#F1F5F9" strokeWidth="1" strokeDasharray="3 3" />
+                {/* Vertical markers */}
+                <line x1="125" y1="0" x2="125" y2="160" stroke="#F1F5F9" strokeWidth="1" strokeDasharray="3 3" />
+                <line x1="250" y1="0" x2="250" y2="160" stroke="#F1F5F9" strokeWidth="1" strokeDasharray="3 3" />
+                <line x1="375" y1="0" x2="375" y2="160" stroke="#F1F5F9" strokeWidth="1" strokeDasharray="3 3" />
 
-                {/* Expense Fill Area */}
+                {/* Expense area */}
                 <path
-                  d="M 0 140 Q 60 120 120 125 T 240 100 T 360 115 T 500 95 L 500 180 L 0 180 Z"
-                  fill="url(#expense-grad)"
+                  d="M 0 120 C 80 115, 140 100, 220 110 C 300 120, 380 90, 500 95 L 500 160 L 0 160 Z"
+                  fill="url(#expense-fill)"
                 />
-                {/* Expense Line */}
                 <path
-                  d="M 0 140 Q 60 120 120 125 T 240 100 T 360 115 T 500 95"
+                  d="M 0 120 C 80 115, 140 100, 220 110 C 300 120, 380 90, 500 95"
                   fill="none"
-                  stroke="#EF4444"
+                  stroke="#F43F5E"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                />
+
+                {/* Income area */}
+                <path
+                  d="M 0 90 C 70 70, 150 75, 230 55 C 310 35, 400 50, 500 35 L 500 160 L 0 160 Z"
+                  fill="url(#income-fill)"
+                />
+                <path
+                  d="M 0 90 C 70 70, 150 75, 230 55 C 310 35, 400 50, 500 35"
+                  fill="none"
+                  stroke="#10B981"
                   strokeWidth="2.5"
                   strokeLinecap="round"
                 />
 
-                {/* Income Fill Area */}
-                <path
-                  d="M 0 100 Q 65 75 125 85 T 250 65 T 375 75 T 500 50 L 500 180 L 0 180 Z"
-                  fill="url(#income-grad)"
-                />
-                {/* Income Line */}
-                <path
-                  d="M 0 100 Q 65 75 125 85 T 250 65 T 375 75 T 500 50"
-                  fill="none"
-                  stroke="#10B981"
-                  strokeWidth="3"
-                  strokeLinecap="round"
-                />
+                {/* Interactive Points */}
+                <circle cx="230" cy="55" r="4" fill="#10B981" stroke="#FFFFFF" strokeWidth="2" />
+                <circle cx="500" cy="35" r="4" fill="#10B981" stroke="#FFFFFF" strokeWidth="2" />
+                <circle cx="220" cy="110" r="3.5" fill="#F43F5E" stroke="#FFFFFF" strokeWidth="2" />
               </svg>
             </div>
 
-            {/* X Axis labels */}
-            <div className="flex justify-between items-center text-[10px] font-bold text-gray-400 mt-2 px-1 border-t border-gray-100 pt-1 select-none">
-              <span>1 May</span>
-              <span>8 May</span>
-              <span>15 May</span>
-              <span>22 May</span>
-              <span>31 May</span>
+            {/* X-axis time series labels */}
+            <div className="flex justify-between items-center text-[11px] font-medium text-slate-400 mt-2 pt-1.5 select-none">
+              <span>Week 1</span>
+              <span>Week 2</span>
+              <span>Week 3</span>
+              <span>Week 4</span>
+              <span>Current</span>
             </div>
           </div>
         </div>

@@ -1,6 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
-import { CalendarDays } from 'lucide-react';
+import { CalendarDays, ChevronRight, Clock, MapPin } from 'lucide-react';
 
 interface Event {
   day: string;
@@ -42,54 +42,60 @@ export default function UpcomingEvents({ events = defaultEvents }: UpcomingEvent
   const hasEvents = events && events.length > 0;
 
   return (
-    <div className="bg-white rounded-[2rem] border border-slate-100 p-6 shadow-sm shadow-slate-100/50 flex flex-col justify-between min-h-[380px] h-full">
-      <div className="flex-1 flex flex-col justify-between">
-        <div className="flex items-center justify-between mb-5">
-          <h2 className="text-xl font-extrabold text-slate-800 tracking-tight">
-            Upcoming Events
-          </h2>
+    <div className="bg-white rounded-xl border border-slate-200/80 p-5 shadow-sm flex flex-col justify-between min-h-[360px] h-full">
+      <div>
+        <div className="flex items-center justify-between pb-3 border-b border-slate-100 mb-3">
+          <div>
+            <h2 className="text-sm font-bold text-slate-900 tracking-tight">
+              Upcoming Events
+            </h2>
+            <p className="text-[11px] text-slate-400 font-medium">Scheduled church calendar</p>
+          </div>
           <Link href="/events" passHref legacyBehavior>
-            <a className="text-xs font-bold text-violet-500 hover:text-violet-600 transition-colors">
-              View All
+            <a className="inline-flex items-center gap-1 text-xs font-semibold text-blue-600 hover:text-blue-700 transition-colors">
+              View all <ChevronRight size={13} />
             </a>
           </Link>
         </div>
 
         {!hasEvents ? (
-          <div className="flex-1 flex flex-col items-center justify-center py-6 text-center">
-            <div className="h-12 w-12 rounded-2xl bg-violet-500/10 text-violet-600 flex items-center justify-center mb-3 border border-violet-100/30">
-              <CalendarDays size={20} />
+          <div className="flex flex-col items-center justify-center py-10 text-center">
+            <div className="h-10 w-10 rounded-lg bg-slate-50 text-slate-400 flex items-center justify-center mb-2.5 border border-slate-200/60">
+              <CalendarDays size={18} />
             </div>
-            <p className="text-xs font-bold text-slate-600">No upcoming events</p>
-            <p className="text-[10px] text-slate-400 max-w-[190px] mt-1 font-medium leading-relaxed">
-              Create upcoming church events to display them here.
+            <p className="text-xs font-semibold text-slate-700">No upcoming events</p>
+            <p className="text-[11px] text-slate-400 max-w-[200px] mt-0.5 font-medium leading-relaxed">
+              New schedule dates will show here.
             </p>
           </div>
         ) : (
-          <div className="space-y-3.5 flex-1">
+          <div className="space-y-2.5">
             {events.slice(0, 3).map((event, index) => (
               <div
                 key={index}
-                className="flex gap-4 p-2 rounded-2xl hover:bg-slate-50/50 transition-all duration-200"
+                className="flex items-center gap-3 p-2 rounded-lg border border-slate-100 bg-slate-50/50 hover:bg-slate-50 transition-colors"
               >
-                <div className="h-14 w-14 min-w-14 rounded-2xl border border-slate-100 bg-slate-50 flex flex-col items-center justify-center select-none shadow-sm shadow-slate-100/30">
-                  <span className="font-extrabold text-lg text-slate-700 leading-none">
+                <div className="h-11 w-11 min-w-[44px] rounded-lg border border-blue-200/60 bg-blue-50/70 flex flex-col items-center justify-center text-center select-none shrink-0">
+                  <span className="font-bold text-sm text-blue-900 leading-none">
                     {event.day}
                   </span>
-                  <span className="text-[9px] text-violet-500 font-black uppercase tracking-wider mt-1">
+                  <span className="text-[9px] text-blue-600 font-bold uppercase tracking-wider mt-0.5">
                     {event.month}
                   </span>
                 </div>
-                <div className="flex flex-col justify-center">
-                  <h4 className="font-bold text-slate-700 text-xs leading-snug">
+                <div className="flex-1 min-w-0">
+                  <h4 className="font-semibold text-slate-900 text-xs leading-snug truncate">
                     {event.title}
                   </h4>
-                  <p className="text-[10px] text-slate-450 font-bold mt-0.5 leading-tight">
-                    {event.time}
-                  </p>
-                  <p className="text-[9px] text-slate-400 font-bold mt-0.5 leading-none">
-                    {event.location}
-                  </p>
+                  <div className="flex items-center gap-2 mt-0.5 text-[10px] text-slate-500 font-medium">
+                    <span className="flex items-center gap-1">
+                      <Clock size={11} className="text-slate-400" /> {event.time}
+                    </span>
+                    <span>•</span>
+                    <span className="flex items-center gap-1 truncate">
+                      <MapPin size={11} className="text-slate-400" /> {event.location}
+                    </span>
+                  </div>
                 </div>
               </div>
             ))}

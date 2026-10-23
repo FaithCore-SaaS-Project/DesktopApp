@@ -42,23 +42,25 @@ export default function Header() {
   const unreadCount = notifications?.unread?.length || 0;
 
   return (
-    <div className="bg-white/80 border-b border-slate-100 px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between sticky top-0 z-20 backdrop-blur-md shadow-sm shadow-slate-100/30">
-      <div className="flex items-center gap-3 sm:gap-5">
+    <div className="bg-white border-b border-slate-200/80 px-4 sm:px-6 py-3 flex items-center justify-between sticky top-0 z-20 shadow-sm">
+      <div className="flex items-center gap-3 sm:gap-4 flex-1">
         <button 
           onClick={toggleSidebar}
-          className="text-slate-500 hover:text-slate-800 transition-colors p-2 hover:bg-slate-50 rounded-xl lg:hidden"
+          className="text-slate-600 hover:text-slate-900 transition-colors p-1.5 hover:bg-slate-100 rounded-lg cursor-pointer flex items-center justify-center shrink-0"
+          title="Toggle Sidebar"
+          aria-label="Toggle Sidebar"
         >
-          <Menu size={20} />
+          <Menu size={18} />
         </button>
-        <div className="relative group flex-1 max-w-[200px] sm:max-w-[280px] lg:max-w-[420px]">
+        <div className="relative group flex-1 max-w-[240px] sm:max-w-[320px] lg:max-w-[400px]">
           <Search
-            className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-violet-500 transition-colors"
-            size={16}
+            className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-600 transition-colors"
+            size={15}
           />
           <input
             type="text"
-            placeholder="Search members, receipts, letters..."
-            className="w-full rounded-2xl border border-slate-100 pl-11 pr-4 py-2.5 outline-none text-xs font-semibold text-slate-700 bg-slate-50/50 focus:bg-white focus:border-violet-500 focus:ring-2 focus:ring-violet-500/10 transition-all duration-300 placeholder:text-slate-450 placeholder:font-medium"
+            placeholder="Search members, transactions, letters..."
+            className="w-full rounded-lg border border-slate-200 pl-9 pr-3 py-1.5 outline-none text-xs text-slate-800 bg-slate-50/70 focus:bg-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all placeholder:text-slate-400 placeholder:font-normal"
           />
         </div>
       </div>
@@ -177,39 +179,43 @@ export default function Header() {
         <div className="relative">
           <button
             onClick={() => setShowProfileMenu(!showProfileMenu)}
-            className="flex items-center gap-3 p-1 hover:bg-slate-50 rounded-2xl transition-all outline-none"
+            className="flex items-center gap-2.5 p-1.5 hover:bg-slate-100 rounded-lg transition-colors outline-none cursor-pointer"
           >
-            <div className="h-10 w-10 rounded-full bg-violet-100 flex items-center justify-center border border-violet-200 text-violet-600 font-black text-sm">
-              {currentTenant?.name?.charAt(0) || user?.username?.charAt(0) || 'A'}
+            <div className="h-8 w-8 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-xs shadow-sm shrink-0">
+              {currentTenant?.name?.charAt(0) || user?.username?.charAt(0) || 'P'}
             </div>
-            <div className="text-left hidden md:block pr-1 max-w-[100px] lg:max-w-[150px]">
-              <h4 className="font-bold text-slate-750 text-sm leading-tight truncate">
-                {user?.username || 'Admin'}
+            <div className="text-left hidden sm:block max-w-[120px] md:max-w-[160px]">
+              <h4 className="font-semibold text-slate-800 text-xs leading-tight truncate">
+                {user?.username || 'Pastor John Silva'}
               </h4>
-              <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wide mt-0.5 truncate">
-                {currentTenant?.name || 'Super Admin'}
+              <p className="text-[10px] text-slate-400 font-medium truncate mt-0.5">
+                {currentTenant?.name || 'Beracah Christian Ministry'}
               </p>
             </div>
-            <ChevronDown size={14} className="text-slate-400 hidden md:block shrink-0" />
+            <ChevronDown size={14} className="text-slate-400 shrink-0" />
           </button>
 
           {showProfileMenu && (
-            <div className="absolute right-0 mt-2.5 w-48 bg-white border border-slate-100 rounded-2xl shadow-xl py-2.5 z-30 animate-fade-in">
-              <div className="px-4 py-2 border-b border-slate-50">
-                <p className="text-[10px] text-slate-400 font-bold uppercase">Signed in as</p>
-                <p className="text-sm font-bold text-slate-700 truncate mt-0.5">{user?.username || 'Admin'}</p>
-                <p className="text-[9px] text-slate-400 font-bold uppercase mt-2 tracking-wide">Church Activation ID</p>
-                <p className="text-xs font-mono font-bold text-[#5B3DF5] mt-0.5 truncate">
-                  {typeof window !== 'undefined' ? localStorage.getItem('activationCode') || 'FC-123456' : 'FC-123456'}
-                </p>
+            <div className="absolute right-0 mt-2 w-56 bg-white border border-slate-200 rounded-xl shadow-lg py-2 z-50 animate-fade-in">
+              <div className="px-3.5 py-2.5 border-b border-slate-100">
+                <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block">Signed in as</span>
+                <p className="text-xs font-bold text-slate-900 truncate mt-0.5">{user?.username || 'Pastor John Silva'}</p>
+                <div className="mt-2 pt-2 border-t border-slate-100">
+                  <span className="text-[9px] font-semibold text-slate-400 uppercase tracking-wider block">Church Activation ID</span>
+                  <span className="inline-block mt-0.5 px-1.5 py-0.5 bg-blue-50 text-blue-700 font-mono text-[11px] font-bold rounded border border-blue-200/60">
+                    {typeof window !== 'undefined' ? localStorage.getItem('activationCode') || 'FC-123456' : 'FC-123456'}
+                  </span>
+                </div>
               </div>
-              <button
-                onClick={logout}
-                className="w-full flex items-center gap-2.5 px-4 py-2.5 text-xs font-bold text-red-500 hover:bg-red-50/70 hover:text-red-600 transition-colors text-left mt-1"
-              >
-                <LogOut size={14} />
-                <span>Log Out</span>
-              </button>
+              <div className="p-1">
+                <button
+                  onClick={logout}
+                  className="w-full flex items-center gap-2 px-3 py-2 text-xs font-semibold text-rose-600 hover:bg-rose-50 rounded-lg transition-colors text-left"
+                >
+                  <LogOut size={14} />
+                  <span>Log Out</span>
+                </button>
+              </div>
             </div>
           )}
         </div>

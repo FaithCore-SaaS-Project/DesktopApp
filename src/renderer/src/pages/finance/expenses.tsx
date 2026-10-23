@@ -81,7 +81,7 @@ export default function FinanceExpensesPage() {
       category,
       amount: parsedAmount,
       date,
-      description,
+      description: description.trim() || `${category} - General`,
       tenantId: currentTenant.id,
       method,
       receipt
@@ -360,16 +360,18 @@ export default function FinanceExpensesPage() {
                 </div>
               </div>
 
-              {/* Description */}
+              {/* Description (Optional) */}
               <div className="space-y-1.5">
-                <label htmlFor="expense-desc" className="text-xs font-bold text-gray-400 uppercase">Description / Memo</label>
+                <label htmlFor="expense-desc" className="text-xs font-bold text-gray-500 uppercase flex items-center justify-between">
+                  <span>Description / Memo</span>
+                  <span className="text-[10px] text-gray-400 font-normal lowercase">(optional)</span>
+                </label>
                 <input
                   id="expense-desc"
                   type="text"
-                  required
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  placeholder="e.g. sanctuary electric bill payment"
+                  placeholder="e.g. sanctuary electric bill payment (optional)"
                   className="w-full bg-gray-50/50 border border-gray-250 focus:border-[#5B3DF5] rounded-xl px-4 py-2.5 text-xs font-semibold text-gray-800 focus:outline-none"
                 />
               </div>

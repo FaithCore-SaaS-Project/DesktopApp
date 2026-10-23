@@ -55,49 +55,49 @@ export default function FamilyTable({
     <div className="overflow-hidden rounded-3xl border border-gray-150 bg-white shadow-sm">
       <div className="overflow-x-auto">
         <table className="w-full text-left border-collapse">
-          <thead className="bg-gray-50/70 text-xs font-bold uppercase tracking-wider text-gray-400 border-b border-gray-150">
+          <thead className="bg-slate-50/80 text-[11px] font-bold uppercase tracking-wider text-slate-500 border-b border-slate-200">
             <tr>
-              <th className="p-4 pl-6">Family Name</th>
-              <th className="p-4">Members</th>
-              <th className="p-4">District / Location</th>
-              <th className="p-4">Joined Date</th>
-              <th className="p-4">Status</th>
-              <th className="p-4 pr-6 text-center">Actions</th>
+              <th className="py-3 px-4 pl-5">Family Name</th>
+              <th className="py-3 px-4 whitespace-nowrap">Members</th>
+              <th className="py-3 px-4 whitespace-nowrap">District / Location</th>
+              <th className="py-3 px-4 whitespace-nowrap">Joined Date</th>
+              <th className="py-3 px-4 whitespace-nowrap">Status</th>
+              <th className="py-3 px-4 pr-5 text-right">Actions</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-50 text-sm font-medium text-gray-600">
+          <tbody className="divide-y divide-slate-100 text-xs font-medium text-slate-600">
             {families.length === 0 ? (
               <tr>
-                <td colSpan={6} className="py-16 text-center text-gray-400">
-                  <Users className="h-10 w-10 text-gray-300 mx-auto mb-2" />
-                  <p className="font-semibold text-sm">No family profiles match your criteria.</p>
-                  <p className="text-xs text-gray-400">Try loosening your search or create a new family.</p>
+                <td colSpan={6} className="py-16 text-center text-slate-400">
+                  <Users className="h-9 w-9 text-slate-300 mx-auto mb-2" />
+                  <p className="font-bold text-xs text-slate-700">No family profiles match your criteria.</p>
+                  <p className="text-[11px] text-slate-400 mt-0.5">Try loosening your search or create a new family.</p>
                 </td>
               </tr>
             ) : (
               families.map((family) => (
                 <tr
                   key={family.id}
-                  className="hover:bg-gray-55/40 transition-colors border-t border-gray-100 group"
+                  className="hover:bg-slate-50/70 transition-colors group"
                 >
-                  <td className="p-4 pl-6 font-bold text-gray-900 group-hover:text-[#5B3DF5] transition-colors cursor-pointer" onClick={() => onViewClick(family)}>
+                  <td className="py-3 px-4 pl-5 font-bold text-slate-900 group-hover:text-blue-600 transition-colors cursor-pointer whitespace-nowrap" onClick={() => onViewClick(family)}>
                     {family.name}
                   </td>
-                  <td className="p-4">
-                    <div className="flex items-center gap-2 text-gray-750 font-bold">
-                      <Users size={16} className="text-gray-400" />
+                  <td className="py-3 px-4 whitespace-nowrap">
+                    <div className="flex items-center gap-1.5 text-slate-700 font-bold">
+                      <Users size={14} className="text-slate-400" />
                       <span>{family.members}</span>
                     </div>
                   </td>
-                  <td className="p-4 text-gray-600">{family.district}</td>
-                  <td className="p-4 text-gray-500">{family.joined}</td>
-                  <td className="p-4">
-                    <span className={`rounded-xl px-2.5 py-1 text-xs font-bold border ${getStatusStyle(family.status)}`}>
+                  <td className="py-3 px-4 text-slate-600 whitespace-nowrap">{family.district}</td>
+                  <td className="py-3 px-4 text-slate-400 whitespace-nowrap font-mono text-[11px]">{family.joined}</td>
+                  <td className="py-3 px-4 whitespace-nowrap">
+                    <span className={`rounded-md px-2 py-0.5 text-[10px] font-bold border ${getStatusStyle(family.status)}`}>
                       {family.status}
                     </span>
                   </td>
-                  <td className="p-4 pr-6 text-center">
-                    <div className="flex justify-center gap-2">
+                  <td className="py-3 px-4 pr-5 text-right whitespace-nowrap">
+                    <div className="inline-flex justify-end gap-1">
                       <button 
                         onClick={() => onViewClick(family)}
                         className="rounded-lg border border-gray-200 p-2 hover:bg-gray-50 text-gray-500 hover:text-[#5B3DF5] transition-colors cursor-pointer"

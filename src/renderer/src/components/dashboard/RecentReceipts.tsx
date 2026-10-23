@@ -1,6 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
-import { FileText } from 'lucide-react';
+import { FileText, ChevronRight } from 'lucide-react';
 
 interface Receipt {
   number: string;
@@ -44,56 +44,59 @@ export default function RecentReceipts({ receipts = defaultReceipts }: RecentRec
   const hasReceipts = receipts && receipts.length > 0;
 
   return (
-    <div className="bg-white rounded-[2rem] border border-slate-100 p-6 shadow-sm shadow-slate-100/50 flex flex-col justify-between min-h-[380px] h-full">
-      <div className="flex-1 flex flex-col justify-between">
-        <div className="flex items-center justify-between mb-5">
-          <h2 className="text-xl font-extrabold text-slate-800 tracking-tight">
-            Recent E-Receipts
-          </h2>
+    <div className="bg-white rounded-xl border border-slate-200/80 p-5 shadow-sm flex flex-col justify-between min-h-[360px] h-full">
+      <div>
+        <div className="flex items-center justify-between pb-3 border-b border-slate-100 mb-3">
+          <div>
+            <h2 className="text-sm font-bold text-slate-900 tracking-tight">
+              Recent Transactions
+            </h2>
+            <p className="text-[11px] text-slate-400 font-medium">Latest tithes & donations</p>
+          </div>
           <Link href="/finance" passHref legacyBehavior>
-            <a className="text-xs font-bold text-violet-500 hover:text-violet-600 transition-colors">
-              View All
+            <a className="inline-flex items-center gap-1 text-xs font-semibold text-blue-600 hover:text-blue-700 transition-colors">
+              View all <ChevronRight size={13} />
             </a>
           </Link>
         </div>
 
         {!hasReceipts ? (
-          <div className="flex-1 flex flex-col items-center justify-center py-6 text-center">
-            <div className="h-12 w-12 rounded-2xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center mb-3 border border-emerald-100/30">
-              <FileText size={20} />
+          <div className="flex flex-col items-center justify-center py-10 text-center">
+            <div className="h-10 w-10 rounded-lg bg-slate-50 text-slate-400 flex items-center justify-center mb-2.5 border border-slate-200/60">
+              <FileText size={18} />
             </div>
-            <p className="text-xs font-bold text-slate-600">No recent receipts</p>
-            <p className="text-[10px] text-slate-400 max-w-[190px] mt-1 font-medium leading-relaxed">
-              Donations and finance receipts will be listed here once recorded.
+            <p className="text-xs font-semibold text-slate-700">No recent transactions</p>
+            <p className="text-[11px] text-slate-400 max-w-[200px] mt-0.5 font-medium leading-relaxed">
+              Donations will be recorded here.
             </p>
           </div>
         ) : (
-          <div className="space-y-3.5 flex-1">
+          <div className="divide-y divide-slate-100">
             {receipts.slice(0, 4).map((receipt, index) => (
               <div
                 key={index}
-                className="flex items-center justify-between p-2 rounded-2xl hover:bg-slate-50/50 transition-all duration-200"
+                className="flex items-center justify-between py-2.5 hover:bg-slate-50/80 px-1 rounded-lg transition-colors gap-2"
               >
-                <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-450 shrink-0">
-                    <FileText size={18} className="text-violet-500" />
+                <div className="flex items-center gap-2.5 min-w-0 flex-1">
+                  <div className="h-8 w-8 rounded-lg bg-emerald-50 text-emerald-600 border border-emerald-100/80 flex items-center justify-center shrink-0">
+                    <FileText size={15} />
                   </div>
-                  <div>
-                    <h4 className="font-bold text-slate-700 text-xs leading-snug">
+                  <div className="min-w-0 flex-1">
+                    <h4 className="font-mono font-bold text-slate-800 text-xs leading-tight whitespace-nowrap truncate">
                       {receipt.number}
                     </h4>
-                    <p className="text-[10px] text-slate-400 font-bold mt-0.5">
+                    <p className="text-[11px] text-slate-400 font-medium truncate mt-0.5">
                       {receipt.member}
                     </p>
                   </div>
                 </div>
-                <div className="text-right">
-                  <h4 className="font-extrabold text-emerald-600 text-xs leading-snug">
+                <div className="text-right shrink-0">
+                  <span className="font-bold text-emerald-600 text-xs block whitespace-nowrap">
                     {receipt.amount}
-                  </h4>
-                  <p className="text-[9px] text-slate-400 font-bold mt-0.5">
+                  </span>
+                  <span className="text-[10px] text-slate-400 font-medium whitespace-nowrap block mt-0.5">
                     {receipt.date}
-                  </p>
+                  </span>
                 </div>
               </div>
             ))}

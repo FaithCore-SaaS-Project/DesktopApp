@@ -143,7 +143,7 @@ export default function Sidebar() {
 
   return (
     <>
-      {/* Mobile/Tablet Backdrop Overlay */}
+      {/* Mobile/Tablet Backdrop Overlay (only on smaller screens) */}
       {isSidebarOpen && (
         <div 
           className="fixed inset-0 bg-black/50 z-30 lg:hidden transition-opacity backdrop-blur-sm"
@@ -151,21 +151,31 @@ export default function Sidebar() {
         />
       )}
       
-      <aside className={`w-[280px] bg-[#0A0D18] text-white flex flex-col min-h-screen fixed lg:sticky top-0 h-screen select-none shrink-0 border-r border-white/[0.04] transition-transform duration-300 z-40
-        ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0`}
+      <aside className={`bg-[#0c101c] text-slate-300 flex flex-col min-h-screen select-none shrink-0 border-r border-slate-800/80 transition-all duration-300 z-40
+        fixed top-0 h-screen lg:sticky
+        ${isSidebarOpen 
+          ? 'translate-x-0 w-[260px] opacity-100' 
+          : '-translate-x-full lg:translate-x-0 lg:w-0 lg:overflow-hidden lg:border-none lg:opacity-0 opacity-0 pointer-events-none'}`}
       >
         {/* Logo */}
-        <div className="px-6 py-8 border-b border-white/[0.04]">
-          <h1 className="text-3xl font-extrabold tracking-tight bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent">
-            FAITHCORE
-          </h1>
-          <p className="text-xs text-gray-500 mt-1 font-semibold tracking-wider uppercase">
-            Church Management System
-          </p>
+        <div className="px-5 py-5 border-b border-slate-800/80 flex items-center justify-between min-w-[260px]">
+          <div className="flex items-center gap-3">
+            <div className="h-9 w-9 rounded-lg bg-blue-600 flex items-center justify-center text-white font-black text-lg shadow-sm">
+              F
+            </div>
+            <div>
+              <h1 className="text-sm font-bold text-white tracking-wider uppercase font-mono">
+                FAITHCORE
+              </h1>
+              <p className="text-[10px] text-slate-400 font-medium tracking-wide uppercase">
+                Church Management
+              </p>
+            </div>
+          </div>
         </div>
 
         {/* Menu */}
-        <div className="flex-1 px-4 py-6 space-y-1.5 overflow-y-auto custom-scrollbar">
+        <div className="flex-1 px-3 py-4 space-y-1 overflow-y-auto custom-scrollbar">
           {filteredMenuItems.map((item, index) => {
             const Icon = item.icon;
             const hasSubItems = !!item.subItems;
@@ -180,14 +190,14 @@ export default function Sidebar() {
                     handleMenuClick(e, item.path);
                   }
                 }}
-                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 cursor-pointer text-sm font-semibold group
+                className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg transition-colors cursor-pointer text-xs font-medium group
                 ${isActive
-                    ? "bg-gradient-to-r from-violet-600 to-indigo-600 text-white shadow-lg shadow-violet-500/15 font-bold"
-                    : "text-slate-400 hover:bg-white/[0.03] hover:text-white"
+                    ? "bg-blue-600 text-white font-semibold shadow-sm"
+                    : "text-slate-400 hover:bg-slate-800/60 hover:text-slate-200"
                   }`}
               >
-                <Icon size={18} className={`transition-transform duration-300 group-hover:scale-105 ${isActive ? 'text-white' : 'text-slate-500 group-hover:text-white'}`} />
-                <span className="flex-1">{item.label}</span>
+                <Icon size={16} className={`shrink-0 ${isActive ? 'text-white' : 'text-slate-400 group-hover:text-slate-200'}`} />
+                <span className="flex-1 truncate">{item.label}</span>
                 {hasSubItems && (
                   <ChevronDown
                     size={14}
