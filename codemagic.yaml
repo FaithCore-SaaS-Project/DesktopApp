@@ -24,5 +24,5 @@ workflows:
         recipients:
           - dulaj@faithcore.org
         notify:
-          on_success: true
-          on_failure: true
+          success: true
+          failure: true
