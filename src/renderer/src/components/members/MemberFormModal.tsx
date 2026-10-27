@@ -206,7 +206,7 @@ export default function MemberFormModal({ isOpen, onClose, editingMember, famili
 
   return (
     <div className="fixed inset-0 bg-gray-900/40 backdrop-blur-sm z-50 flex items-start justify-center p-4 overflow-y-auto">
-      <div className="my-auto w-full max-w-lg bg-white border border-slate-100 rounded-3xl overflow-hidden shadow-2xl animate-scale-in">
+      <div className="my-auto w-full max-w-xl bg-white border border-slate-100 rounded-3xl overflow-hidden shadow-2xl animate-scale-in">
         {/* Modal Header */}
         <div className="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
           <div>
@@ -237,15 +237,15 @@ export default function MemberFormModal({ isOpen, onClose, editingMember, famili
 
           {/* Photo Upload & Family Selection */}
           <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-1.5">
+            <div className="space-y-1.5 min-w-0">
               <label className="text-xs font-bold text-gray-500">Profile Photo</label>
-              <label className="flex items-center gap-3 border border-dashed border-gray-300 hover:border-[#5B3DF5] hover:bg-gray-50/50 rounded-xl px-4 py-2 cursor-pointer transition-colors group">
-                <div className="h-8 w-8 rounded-lg bg-gray-100 group-hover:bg-indigo-50 flex items-center justify-center text-gray-400 group-hover:text-[#5B3DF5]">
+              <label className="flex items-center gap-3 border border-dashed border-gray-300 hover:border-[#5B3DF5] hover:bg-gray-50/50 rounded-xl px-3 py-2 cursor-pointer transition-colors group min-h-[42px] min-w-0 max-w-full bg-white">
+                <div className="h-7 w-7 rounded-lg bg-gray-100 group-hover:bg-indigo-50 flex items-center justify-center text-gray-400 group-hover:text-[#5B3DF5] shrink-0">
                   {photoFile ? <ImageIcon className="h-4 w-4" /> : <UploadCloud className="h-4 w-4" />}
                 </div>
-                <div className="flex-1 overflow-hidden">
+                <div className="flex-1 min-w-0 overflow-hidden">
                   <p className="text-[10px] font-bold text-gray-700 truncate">{photoFile ? photoFile.name : 'Upload Photo'}</p>
-                  <p className="text-[9px] text-gray-400">JPG, PNG (Max 5MB)</p>
+                  <p className="text-[9px] text-gray-400 truncate">JPG, PNG (Max 5MB)</p>
                 </div>
                 <input
                   type="file" accept="image/*" className="hidden"
@@ -253,11 +253,11 @@ export default function MemberFormModal({ isOpen, onClose, editingMember, famili
                 />
               </label>
             </div>
-            <div className="space-y-1.5">
+            <div className="space-y-1.5 min-w-0">
               <label className="text-xs font-bold text-gray-500">Assign to Family</label>
               <select
                 name="family_id" value={form.family_id} onChange={handleChange}
-                className="w-full bg-gray-50 border border-gray-200 focus:border-[#5B3DF5] rounded-xl px-3 py-3 text-xs text-gray-800 font-bold focus:outline-none cursor-pointer"
+                className="w-full bg-gray-50 border border-gray-200 focus:border-[#5B3DF5] rounded-xl px-3 py-2.5 text-xs text-gray-800 font-bold focus:outline-none cursor-pointer"
               >
                 <option value="">-- No Family (Individual) --</option>
                 {families.map(f => (
@@ -334,22 +334,22 @@ export default function MemberFormModal({ isOpen, onClose, editingMember, famili
 
           {/* Date of Birth / Birth Certificate */}
           <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-1.5">
+            <div className="space-y-1.5 min-w-0">
               <label className="text-xs font-bold text-gray-700">Date of Birth</label>
               <input
                 name="dob" type="date" value={form.dob} onChange={handleChange}
-                className="w-full bg-white border border-gray-200 focus:border-[#5B3DF5] rounded-xl px-4 py-2.5 text-xs text-slate-900 font-semibold focus:outline-none min-h-[40px] shadow-sm"
+                className="w-full min-w-0 max-w-full bg-white border border-gray-200 focus:border-[#5B3DF5] rounded-xl px-3 py-2 text-xs text-slate-900 font-semibold focus:outline-none min-h-[42px] shadow-sm box-border"
               />
             </div>
-            <div className="space-y-1.5">
+            <div className="space-y-1.5 min-w-0">
               <label className="text-xs font-bold text-gray-500">Birth Certificate</label>
-              <label className="flex items-center gap-3 border border-dashed border-gray-300 hover:border-[#5B3DF5] hover:bg-gray-50/50 rounded-xl px-4 py-2.5 cursor-pointer transition-colors group">
-                <div className="h-8 w-8 rounded-lg bg-gray-100 group-hover:bg-indigo-50 flex items-center justify-center text-gray-400 group-hover:text-[#5B3DF5]">
+              <label className="flex items-center gap-2.5 border border-dashed border-gray-300 hover:border-[#5B3DF5] hover:bg-gray-50/50 rounded-xl px-3 py-2 cursor-pointer transition-colors group min-h-[42px] min-w-0 max-w-full bg-white">
+                <div className="h-7 w-7 rounded-lg bg-gray-100 group-hover:bg-indigo-50 flex items-center justify-center text-gray-400 group-hover:text-[#5B3DF5] shrink-0">
                   {birthCertFile ? <FileText className="h-4 w-4" /> : <UploadCloud className="h-4 w-4" />}
                 </div>
-                <div className="flex-1 overflow-hidden">
+                <div className="flex-1 min-w-0 overflow-hidden">
                   <p className="text-[10px] font-bold text-gray-700 truncate">{birthCertFile ? birthCertFile.name : 'Upload File'}</p>
-                  <p className="text-[9px] text-gray-400">PDF, JPG, PNG (5MB)</p>
+                  <p className="text-[9px] text-gray-400 truncate">PDF, JPG, PNG (5MB)</p>
                 </div>
                 <input
                   type="file" className="hidden"
@@ -497,21 +497,22 @@ export default function MemberFormModal({ isOpen, onClose, editingMember, famili
                   </div>
                 </div>
                 <div className="grid grid-cols-2 gap-3">
-                  <div className="space-y-1">
-                    <label className="text-[9px] font-bold text-gray-700 uppercase">Baptism Date</label>
+                  <div className="space-y-1 min-w-0">
+                    <label className="text-[9px] font-bold text-gray-700 uppercase tracking-wider">Baptism Date</label>
                     <input
                       name="baptism_date" type="date" value={form.baptism_date} onChange={handleChange}
-                      className="w-full bg-white border border-gray-200 focus:border-[#5B3DF5] rounded-xl px-3 py-2 text-xs text-slate-900 font-semibold focus:outline-none min-h-[40px] shadow-sm"
+                      className="w-full min-w-0 max-w-full bg-white border border-gray-200 focus:border-[#5B3DF5] rounded-xl px-2.5 py-1.5 text-xs text-slate-900 font-semibold focus:outline-none min-h-[38px] shadow-sm box-border"
                     />
                   </div>
-                  <div className="space-y-1">
-                    <label className="text-[9px] font-bold text-gray-500 uppercase">Baptism Certificate</label>
-                    <label className="flex items-center gap-2 border border-dashed border-gray-300 hover:border-[#5B3DF5] hover:bg-gray-50/50 rounded-xl px-3 py-2 cursor-pointer transition-colors group min-h-[40px]">
-                      <div className="h-6 w-6 rounded bg-gray-100 group-hover:bg-indigo-50 flex items-center justify-center text-gray-400 group-hover:text-[#5B3DF5]">
-                        {baptismCertFile ? <FileText className="h-3 w-3" /> : <UploadCloud className="h-3 w-3" />}
+                  <div className="space-y-1 min-w-0">
+                    <label className="text-[9px] font-bold text-gray-500 uppercase tracking-wider">Baptism Certificate</label>
+                    <label className="flex items-center gap-2 border border-dashed border-gray-300 hover:border-[#5B3DF5] hover:bg-gray-50/50 rounded-xl px-2.5 py-1.5 cursor-pointer transition-colors group min-h-[38px] min-w-0 max-w-full bg-white">
+                      <div className="h-6 w-6 rounded bg-gray-100 group-hover:bg-indigo-50 flex items-center justify-center text-gray-400 group-hover:text-[#5B3DF5] shrink-0">
+                        {baptismCertFile ? <FileText className="h-3.5 w-3.5" /> : <UploadCloud className="h-3.5 w-3.5" />}
                       </div>
-                      <div className="flex-1 overflow-hidden">
-                        <p className="text-[9px] font-bold text-gray-700 truncate">{baptismCertFile ? baptismCertFile.name : 'Upload File'}</p>
+                      <div className="flex-1 min-w-0 overflow-hidden">
+                        <p className="text-[10px] font-bold text-gray-700 truncate">{baptismCertFile ? baptismCertFile.name : 'Upload File'}</p>
+                        <p className="text-[9px] text-gray-400 truncate">PDF, JPG, PNG (5MB)</p>
                       </div>
                       <input
                         type="file" className="hidden"
@@ -540,21 +541,22 @@ export default function MemberFormModal({ isOpen, onClose, editingMember, famili
             {form.marital_status === 'married' && (
               <div className="space-y-3 pt-3 border-t border-slate-200/60">
                 <div className="grid grid-cols-2 gap-3">
-                  <div className="space-y-1">
-                    <label className="text-[9px] font-bold text-gray-700 uppercase">Marriage Date</label>
+                  <div className="space-y-1 min-w-0">
+                    <label className="text-[9px] font-bold text-gray-700 uppercase tracking-wider">Marriage Date</label>
                     <input
                       name="marriage_date" type="date" value={form.marriage_date} onChange={handleChange}
-                      className="w-full bg-white border border-gray-200 focus:border-[#5B3DF5] rounded-xl px-3 py-2 text-xs text-slate-900 font-semibold focus:outline-none min-h-[40px] shadow-sm"
+                      className="w-full min-w-0 max-w-full bg-white border border-gray-200 focus:border-[#5B3DF5] rounded-xl px-2.5 py-1.5 text-xs text-slate-900 font-semibold focus:outline-none min-h-[38px] shadow-sm box-border"
                     />
                   </div>
-                  <div className="space-y-1">
-                    <label className="text-[9px] font-bold text-gray-500 uppercase">Marriage Certificate</label>
-                    <label className="flex items-center gap-2 border border-dashed border-gray-300 hover:border-[#5B3DF5] hover:bg-gray-50/50 rounded-xl px-3 py-2 cursor-pointer transition-colors group">
-                      <div className="h-6 w-6 rounded bg-gray-100 group-hover:bg-indigo-50 flex items-center justify-center text-gray-400 group-hover:text-[#5B3DF5]">
-                        {marriageCertFile ? <FileText className="h-3 w-3" /> : <UploadCloud className="h-3 w-3" />}
+                  <div className="space-y-1 min-w-0">
+                    <label className="text-[9px] font-bold text-gray-500 uppercase tracking-wider">Marriage Certificate</label>
+                    <label className="flex items-center gap-2 border border-dashed border-gray-300 hover:border-[#5B3DF5] hover:bg-gray-50/50 rounded-xl px-2.5 py-1.5 cursor-pointer transition-colors group min-h-[38px] min-w-0 max-w-full bg-white">
+                      <div className="h-6 w-6 rounded bg-gray-100 group-hover:bg-indigo-50 flex items-center justify-center text-gray-400 group-hover:text-[#5B3DF5] shrink-0">
+                        {marriageCertFile ? <FileText className="h-3.5 w-3.5" /> : <UploadCloud className="h-3.5 w-3.5" />}
                       </div>
-                      <div className="flex-1 overflow-hidden">
-                        <p className="text-[9px] font-bold text-gray-700 truncate">{marriageCertFile ? marriageCertFile.name : 'Upload File'}</p>
+                      <div className="flex-1 min-w-0 overflow-hidden">
+                        <p className="text-[10px] font-bold text-gray-700 truncate">{marriageCertFile ? marriageCertFile.name : 'Upload File'}</p>
+                        <p className="text-[9px] text-gray-400 truncate">PDF, JPG, PNG (5MB)</p>
                       </div>
                       <input
                         type="file" className="hidden"
