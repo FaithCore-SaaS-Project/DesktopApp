@@ -131,11 +131,32 @@ export default function FinanceEReceiptsPage() {
     setIsModalOpen(true);
   };
 
+  const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    if (!val) {
+      setAmount('');
+      return;
+    }
+    const clean = val.replace(/[^0-9.]/g, '');
+    if (!clean) {
+      setAmount('');
+      return;
+    }
+    const parts = clean.split('.');
+    const intNumber = parts[0] === '' ? '' : parseInt(parts[0], 10).toLocaleString('en-US');
+    if (parts.length > 1) {
+      const dec = parts.slice(1).join('').slice(0, 2);
+      setAmount(`${intNumber}.${dec}`);
+    } else {
+      setAmount(intNumber);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!currentTenant) return;
 
-    const parsedAmount = parseFloat(amount);
+    const parsedAmount = parseFloat(amount.replace(/,/g, ''));
     if (isNaN(parsedAmount) || parsedAmount <= 0) {
       alert('Please enter a valid amount');
       return;
@@ -260,7 +281,7 @@ export default function FinanceEReceiptsPage() {
       {/* Create New Receipt Dialog Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="w-full max-w-md bg-white border border-gray-150 rounded-3xl overflow-hidden shadow-2xl animate-scale-in">
+          <div className="w-full max-w-lg bg-white border border-gray-150 rounded-3xl overflow-hidden shadow-2xl animate-scale-in">
             <div className="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
               <h2 className="text-lg font-extrabold text-gray-900">Create New Receipt</h2>
               <button 
@@ -337,16 +358,17 @@ export default function FinanceEReceiptsPage() {
                 </div>
 
                 {/* Amount */}
-                <div className="space-y-1.5">
+                <div className="space-y-1.5 min-w-0">
                   <label htmlFor="form-receipt-amount" className="text-xs font-bold text-gray-400 uppercase">Amount (Rs.)</label>
                   <input
                     id="form-receipt-amount"
-                    type="number"
+                    type="text"
+                    inputMode="decimal"
                     required
                     value={amount}
-                    onChange={(e) => setAmount(e.target.value)}
+                    onChange={handleAmountChange}
                     placeholder="0.00"
-                    className="w-full bg-gray-50/50 border border-gray-250 focus:border-[#5B3DF5] rounded-xl px-4 py-2.5 text-xs font-semibold text-gray-800 focus:outline-none"
+                    className="w-full min-w-0 max-w-full bg-gray-50/50 border border-gray-250 focus:border-[#5B3DF5] rounded-xl px-4 py-2.5 text-xs font-semibold text-gray-800 focus:outline-none box-border"
                   />
                 </div>
               </div>
@@ -354,7 +376,7 @@ export default function FinanceEReceiptsPage() {
               {/* Method & Date */}
               <div className="grid grid-cols-2 gap-4">
                 {/* Method */}
-                <div className="space-y-1.5">
+                <div className="space-y-1.5 min-w-0">
                   <label htmlFor="form-receipt-method" className="text-xs font-bold text-gray-400 uppercase">Payment Method</label>
                   <select
                     id="form-receipt-method"
@@ -370,7 +392,7 @@ export default function FinanceEReceiptsPage() {
                 </div>
 
                 {/* Date */}
-                <div className="space-y-1.5">
+                <div className="space-y-1.5 min-w-0">
                   <label htmlFor="form-receipt-date" className="text-xs font-bold text-gray-400 uppercase">Billing Date</label>
                   <input
                     id="form-receipt-date"
@@ -378,7 +400,7 @@ export default function FinanceEReceiptsPage() {
                     required
                     value={date}
                     onChange={(e) => setDate(e.target.value)}
-                    className="w-full bg-gray-50/50 border border-gray-250 focus:border-[#5B3DF5] rounded-xl px-4 py-2.5 text-xs font-semibold text-gray-800 focus:outline-none"
+                    className="w-full min-w-0 max-w-full bg-gray-50/50 border border-gray-250 focus:border-[#5B3DF5] rounded-xl px-3 py-2.5 text-xs font-semibold text-gray-800 focus:outline-none box-border"
                   />
                 </div>
               </div>
