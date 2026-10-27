@@ -92,7 +92,7 @@ export default function ReceiptStats({ receipts }: ReceiptStatsProps) {
                 <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">
                   {item.title}
                 </p>
-                <h3 className="text-2xl font-black text-gray-900 mt-1">
+                <h3 className="text-xl xl:text-2xl font-black text-gray-900 mt-1 whitespace-nowrap truncate" title={item.value}>
                   {item.value}
                 </h3>
                 <p className="text-xs mt-1.5">

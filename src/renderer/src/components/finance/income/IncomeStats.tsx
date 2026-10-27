@@ -95,7 +95,7 @@ export default function IncomeStats({
                 <p className="text-xs font-bold text-gray-400 uppercase tracking-wider truncate">
                   {item.title}
                 </p>
-                <h3 className="mt-1 text-lg font-black text-gray-800 tracking-tight leading-none truncate">
+                <h3 className="mt-1 text-base xl:text-lg font-black text-gray-800 tracking-tight leading-none whitespace-nowrap truncate" title={item.value}>
                   {item.value}
                 </h3>
               </div>
