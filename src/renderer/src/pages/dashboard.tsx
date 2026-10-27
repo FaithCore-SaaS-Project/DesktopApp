@@ -86,7 +86,7 @@ export default function DashboardPage() {
         <div className="lg:col-span-2">
           <MonthlyOverview />
         </div>
-        <div>
+        <div className="h-full">
           <QuickActions />
         </div>
       </div>

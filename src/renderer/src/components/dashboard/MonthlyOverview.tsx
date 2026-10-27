@@ -43,48 +43,48 @@ export default function MonthlyOverview({
       
       <div className="grid lg:grid-cols-12 gap-6 pt-5">
         {/* Metric summary */}
-        <div className="lg:col-span-4 flex flex-col justify-between space-y-4">
+        <div className="lg:col-span-5 xl:col-span-4 flex flex-col justify-between space-y-4">
           <div className="p-3.5 rounded-lg border border-slate-100 bg-slate-50/60">
-            <div className="flex items-center justify-between text-xs text-slate-500 font-medium mb-1">
-              <span>Total Income</span>
-              <span className="text-emerald-600 font-semibold flex items-center text-[11px]">
+            <div className="flex items-center justify-between text-xs text-slate-500 font-medium mb-1 gap-2">
+              <span className="whitespace-nowrap">Total Income</span>
+              <span className="text-emerald-600 font-semibold flex items-center text-[11px] whitespace-nowrap shrink-0">
                 <ArrowUpRight size={14} /> +12.4%
               </span>
             </div>
-            <h3 className="text-xl font-bold text-slate-900 tracking-tight">
+            <h3 className="text-lg xl:text-xl font-bold text-slate-900 tracking-tight whitespace-nowrap">
               {income}
             </h3>
           </div>
 
           <div className="p-3.5 rounded-lg border border-slate-100 bg-slate-50/60">
-            <div className="flex items-center justify-between text-xs text-slate-500 font-medium mb-1">
-              <span>Total Expenses</span>
-              <span className="text-rose-500 font-semibold flex items-center text-[11px]">
+            <div className="flex items-center justify-between text-xs text-slate-500 font-medium mb-1 gap-2">
+              <span className="whitespace-nowrap">Total Expenses</span>
+              <span className="text-rose-500 font-semibold flex items-center text-[11px] whitespace-nowrap shrink-0">
                 <ArrowDownRight size={14} /> -4.1%
               </span>
             </div>
-            <h3 className="text-xl font-bold text-slate-900 tracking-tight">
+            <h3 className="text-lg xl:text-xl font-bold text-slate-900 tracking-tight whitespace-nowrap">
               {expenses}
             </h3>
           </div>
 
           <div className="p-3.5 rounded-lg border border-blue-100 bg-blue-50/40">
-            <div className="flex items-center justify-between text-xs text-blue-700 font-medium mb-1">
-              <span className="flex items-center gap-1.5">
+            <div className="flex items-center justify-between text-xs text-blue-700 font-medium mb-1 gap-2">
+              <span className="flex items-center gap-1.5 whitespace-nowrap">
                 <Wallet size={13} /> Net Reserve
               </span>
-              <span className="text-[11px] font-semibold text-blue-600 bg-blue-100/60 px-1.5 py-0.5 rounded">
+              <span className="text-[11px] font-semibold text-blue-600 bg-blue-100/60 px-1.5 py-0.5 rounded whitespace-nowrap shrink-0">
                 Healthy
               </span>
             </div>
-            <h3 className="text-xl font-bold text-blue-950 tracking-tight">
+            <h3 className="text-lg xl:text-xl font-bold text-blue-950 tracking-tight whitespace-nowrap">
               {balance}
             </h3>
           </div>
         </div>
 
         {/* Crisp vector chart */}
-        <div className="lg:col-span-8 flex flex-col justify-between">
+        <div className="lg:col-span-7 xl:col-span-8 flex flex-col justify-between">
           <div className="h-[210px] w-full relative flex flex-col justify-between pt-2">
             {/* Horizontal guide lines */}
             <div className="absolute inset-0 flex flex-col justify-between text-[10px] font-medium text-slate-400 pointer-events-none select-none">
