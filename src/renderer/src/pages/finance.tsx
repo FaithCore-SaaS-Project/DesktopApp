@@ -19,7 +19,7 @@ export default function FinancePage() {
   
   // Pagination State
   const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 5;
+  const [pageSize, setPageSize] = useState(5);
 
   // Add Transaction Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -188,12 +188,14 @@ export default function FinancePage() {
           ) : (
             <RecentTransactions 
               transactions={paginatedRecords}
+              allTransactions={sortedRecords}
               onDeleteClick={handleDelete}
               currentPage={currentPage}
               totalPages={totalPages}
               onPageChange={setCurrentPage}
               totalTransactionsCount={records.length}
               pageSize={pageSize}
+              onPageSizeChange={setPageSize}
             />
           )}
         </div>

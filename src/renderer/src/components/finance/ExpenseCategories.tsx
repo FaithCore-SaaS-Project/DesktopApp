@@ -1,12 +1,14 @@
 import React from 'react';
 import { FinanceMock } from '../../services/mockData';
 import { Church, Zap, Users, Wrench, MoreHorizontal } from 'lucide-react';
+import { useRouter } from 'next/router';
 
 interface ExpenseCategoriesProps {
   transactions: FinanceMock[];
 }
 
 export default function ExpenseCategories({ transactions }: ExpenseCategoriesProps) {
+  const router = useRouter();
   // Base seeds matching client's screenshot
   const seeds: Record<string, number> = {
     Ministry: 450000,
@@ -106,7 +108,11 @@ export default function ExpenseCategories({ transactions }: ExpenseCategoriesPro
         })}
       </div>
 
-      <button className="mt-8 w-full text-center border border-gray-200 hover:border-gray-300 py-3 rounded-xl text-[#5B3DF5] font-semibold text-sm transition-colors hover:bg-gray-50 cursor-pointer">
+      <button 
+        type="button"
+        onClick={() => router.push('/finance/expenses')}
+        className="mt-8 w-full text-center border border-gray-200 hover:border-gray-300 py-3 rounded-xl text-[#5B3DF5] font-semibold text-sm transition-colors hover:bg-gray-50 cursor-pointer active:scale-[0.99]"
+      >
         View All Expenses
       </button>
     </div>
