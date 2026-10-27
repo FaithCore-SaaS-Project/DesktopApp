@@ -36,21 +36,23 @@ export default function ExpenseTableRow({
 
   return (
     <tr className="border-b border-gray-100 hover:bg-gray-55/30 transition-colors">
-      <td className="py-4 pl-4 text-xs font-semibold text-gray-600">
+      <td className="py-4 pl-4 text-xs font-semibold text-gray-600 whitespace-nowrap">
         {transaction.date}
       </td>
-      <td className="py-4 text-xs font-mono font-bold text-gray-700">
-        {transaction.receipt || 'EXP-2025-0000'}
+      <td className="py-4 text-xs font-mono font-bold text-gray-700 whitespace-nowrap">
+        <span className="bg-slate-100 px-2 py-0.5 rounded border border-slate-200/80 inline-block">
+          {transaction.receipt || 'EXP-2025-0000'}
+        </span>
       </td>
-      <td className="py-4 text-xs font-bold text-gray-850">
+      <td className="py-4 text-xs font-bold text-gray-850 max-w-[180px] truncate" title={transaction.description}>
         {transaction.description}
       </td>
-      <td className="py-4">
+      <td className="py-4 whitespace-nowrap">
         <span className={`rounded-xl px-2.5 py-1 text-[10px] font-bold border uppercase tracking-wider ${getCategoryBadge(transaction.category)}`}>
           {transaction.category}
         </span>
       </td>
-      <td className="py-4 text-sm font-black text-rose-600">
+      <td className="py-4 text-xs font-bold text-rose-600 whitespace-nowrap">
         Rs. {formatLKR(transaction.amount)}
       </td>
       <td className="py-4">

@@ -7,6 +7,7 @@ import {
   TrendingUp,
   TrendingDown
 } from "lucide-react";
+import { formatCurrency, formatNumber } from '../../../lib/format';
 
 interface ExpenseStatsProps {
   totalExpenses: number;
@@ -23,15 +24,10 @@ export default function ExpenseStats({
   topCategoryName,
   topCategoryPct
 }: ExpenseStatsProps) {
-  
-  const formatLKR = (val: number | string) => {
-    return "Rs. " + Number(val || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-  };
-
   const stats = [
     {
       title: "Total Expenses",
-      value: formatLKR(totalExpenses),
+      value: formatCurrency(totalExpenses),
       subtext: "+7.3% from last month",
       isTrend: true,
       trendType: 'up-bad', // Up in expenses is usually negative
@@ -40,7 +36,7 @@ export default function ExpenseStats({
     },
     {
       title: "Total Transactions",
-      value: totalTransactionsCount.toString(),
+      value: formatNumber(totalTransactionsCount),
       subtext: "+14 from last month",
       isTrend: true,
       trendType: 'up-good',
@@ -49,7 +45,7 @@ export default function ExpenseStats({
     },
     {
       title: "Avg Expense / Day",
-      value: formatLKR(avgExpensePerDay),
+      value: formatCurrency(avgExpensePerDay),
       subtext: "This month",
       isTrend: false,
       icon: Calculator,
@@ -66,47 +62,51 @@ export default function ExpenseStats({
   ];
 
   return (
-    <div className="grid gap-5 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+    <div className="grid gap-4 sm:gap-5 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
       {stats.map((item, index) => {
         const Icon = item.icon;
         return (
           <div
             key={index}
-            className="rounded-3xl border border-gray-150 bg-white p-6 shadow-sm flex flex-col justify-between"
+            className="rounded-2xl border border-slate-200/80 bg-white p-4 sm:p-5 shadow-sm hover:-translate-y-0.5 hover:shadow-md transition-all duration-200 flex flex-col justify-between group"
           >
-            <div className="flex items-center gap-4">
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider truncate">
+                {item.title}
+              </span>
               <div
-                className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl ${item.color}`}
+                className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${item.color} transition-transform duration-200 group-hover:scale-110`}
               >
-                <Icon size={22} />
+                <Icon size={16} strokeWidth={2.2} />
               </div>
-              <div className="min-w-0">
-                <p className="text-xs font-bold text-gray-400 uppercase tracking-wider truncate">
-                  {item.title}
-                </p>
-                <h3 className="mt-1 text-base xl:text-lg font-black text-gray-800 tracking-tight leading-none whitespace-nowrap truncate" title={item.value}>
-                  {item.value}
-                </h3>
-              </div>
+            </div>
+
+            <div className="mt-3">
+              <h3
+                className="text-base sm:text-lg xl:text-xl font-bold text-slate-800 tracking-tight whitespace-nowrap leading-none"
+                title={item.value}
+              >
+                {item.value}
+              </h3>
             </div>
             
             {/* Meta trends or ratios */}
-            <div className="mt-4 pt-3 border-t border-gray-50 flex items-center gap-1">
+            <div className="mt-4 pt-2.5 border-t border-slate-100/80 flex items-center gap-1.5">
               {item.isTrend ? (
                 <>
                   {item.trendType === 'up-bad' ? (
-                    <TrendingUp size={14} className="text-rose-500" />
+                    <TrendingDown size={13} className="text-rose-500 shrink-0" />
                   ) : (
-                    <TrendingUp size={14} className="text-emerald-500" />
+                    <TrendingUp size={13} className="text-emerald-500 shrink-0" />
                   )}
-                  <span className={`text-[10px] font-extrabold ${
+                  <span className={`text-[10px] font-bold truncate ${
                     item.trendType === 'up-bad' ? 'text-rose-600' : 'text-emerald-600'
                   }`}>
                     {item.subtext}
                   </span>
                 </>
               ) : (
-                <span className="text-[10px] font-bold text-gray-400">
+                <span className="text-[10px] font-semibold text-slate-400 truncate">
                   {item.subtext}
                 </span>
               )}

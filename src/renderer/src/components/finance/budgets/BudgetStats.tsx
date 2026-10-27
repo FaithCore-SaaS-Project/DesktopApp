@@ -77,35 +77,36 @@ export default function BudgetStats({ budgets }: BudgetStatsProps) {
   ];
 
   return (
-    <div className="mb-8 grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
+    <div className="mb-8 grid gap-4 sm:gap-5 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
       {stats.map((item, index) => {
         const Icon = item.icon;
         return (
           <div
             key={index}
-            className="rounded-3xl border border-gray-150 bg-white p-5 shadow-sm hover:shadow-md transition-all duration-300 group relative overflow-hidden"
+            className="rounded-2xl border border-slate-200/80 bg-white p-4 sm:p-5 shadow-sm hover:-translate-y-0.5 hover:shadow-md transition-all duration-200 flex flex-col justify-between group"
           >
-            <div className="flex flex-col h-full justify-between">
-              <div className="flex items-center gap-4">
-                <div
-                  className={`flex h-12 w-12 items-center justify-center rounded-2xl ${item.color} ${item.iconColor} shadow-lg transition-transform duration-300 group-hover:scale-105`}
-                >
-                  <Icon size={22} />
-                </div>
-                <div>
-                  <h2 className="text-2xl font-black text-gray-900 leading-tight">
-                    {item.value}
-                  </h2>
-                  <p className="text-gray-400 text-xs font-bold mt-0.5 leading-none">
-                    {item.title}
-                  </p>
-                </div>
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider truncate">
+                {item.title}
+              </span>
+              <div
+                className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${item.color} ${item.iconColor} transition-transform duration-200 group-hover:scale-110`}
+              >
+                <Icon size={16} strokeWidth={2.2} />
               </div>
-              <div className="mt-4 pt-3 border-t border-gray-50 flex items-center justify-between">
-                <span className={`text-xs font-bold ${item.subtextColor}`}>
-                  {item.subtext}
-                </span>
-              </div>
+            </div>
+
+            <div className="mt-3">
+              <h2 className="text-base sm:text-lg xl:text-xl font-bold text-slate-900 tracking-tight whitespace-nowrap leading-none" title={item.value}>
+                {item.value}
+              </h2>
+            </div>
+            
+            <div className="mt-4 pt-2.5 border-t border-slate-100/80 flex items-center justify-between">
+              <span className={`text-[10px] font-bold truncate ${item.subtextColor}`}>
+                {item.subtext}
+              </span>
+              <span className="text-[10px] text-slate-400 font-medium">Updated live</span>
             </div>
           </div>
         );

@@ -7,6 +7,7 @@ import {
   MoreHorizontal,
   TrendingUp
 } from "lucide-react";
+import { formatCurrency } from '../../../lib/format';
 
 interface IncomeStatsProps {
   totalIncome: number;
@@ -23,20 +24,15 @@ export default function IncomeStats({
   donations,
   others
 }: IncomeStatsProps) {
-  
-  const formatLKR = (val: number | string) => {
-    return "Rs. " + Number(val || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-  };
-
   const calculatePct = (val: number) => {
     if (totalIncome === 0) return "0%";
-    return Math.round((val / totalIncome) * 100) + "% of total income";
+    return Math.round((val / totalIncome) * 100) + "% of total";
   };
 
   const stats = [
     {
       title: "Total Income",
-      value: formatLKR(totalIncome),
+      value: formatCurrency(totalIncome),
       subtext: "+18.6% from last month",
       isTrend: true,
       icon: Wallet,
@@ -44,7 +40,7 @@ export default function IncomeStats({
     },
     {
       title: "Tithes",
-      value: formatLKR(tithes),
+      value: formatCurrency(tithes),
       subtext: calculatePct(tithes),
       isTrend: false,
       icon: HandCoins,
@@ -52,7 +48,7 @@ export default function IncomeStats({
     },
     {
       title: "Offerings",
-      value: formatLKR(offerings),
+      value: formatCurrency(offerings),
       subtext: calculatePct(offerings),
       isTrend: false,
       icon: Gift,
@@ -60,7 +56,7 @@ export default function IncomeStats({
     },
     {
       title: "Donations",
-      value: formatLKR(donations),
+      value: formatCurrency(donations),
       subtext: calculatePct(donations),
       isTrend: false,
       icon: CircleDollarSign,
@@ -68,7 +64,7 @@ export default function IncomeStats({
     },
     {
       title: "Other Income",
-      value: formatLKR(others),
+      value: formatCurrency(others),
       subtext: calculatePct(others),
       isTrend: false,
       icon: MoreHorizontal,
@@ -77,41 +73,45 @@ export default function IncomeStats({
   ];
 
   return (
-    <div className="grid gap-5 grid-cols-1 sm:grid-cols-2 lg:grid-cols-5">
+    <div className="grid gap-3 sm:gap-4 grid-cols-2 md:grid-cols-3 xl:grid-cols-5">
       {stats.map((item, index) => {
         const Icon = item.icon;
         return (
           <div
             key={index}
-            className="rounded-3xl border border-gray-150 bg-white p-6 shadow-sm flex flex-col justify-between"
+            className="rounded-2xl border border-slate-200/80 bg-white p-4 sm:p-5 shadow-sm hover:-translate-y-0.5 hover:shadow-md transition-all duration-200 flex flex-col justify-between group"
           >
-            <div className="flex items-center gap-4">
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider truncate">
+                {item.title}
+              </span>
               <div
-                className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl ${item.color}`}
+                className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${item.color} transition-transform duration-200 group-hover:scale-110`}
               >
-                <Icon size={22} />
+                <Icon size={16} strokeWidth={2.2} />
               </div>
-              <div className="min-w-0">
-                <p className="text-xs font-bold text-gray-400 uppercase tracking-wider truncate">
-                  {item.title}
-                </p>
-                <h3 className="mt-1 text-base xl:text-lg font-black text-gray-800 tracking-tight leading-none whitespace-nowrap truncate" title={item.value}>
-                  {item.value}
-                </h3>
-              </div>
+            </div>
+
+            <div className="mt-3">
+              <h3
+                className="text-base sm:text-lg xl:text-xl font-bold text-slate-800 tracking-tight whitespace-nowrap leading-none"
+                title={item.value}
+              >
+                {item.value}
+              </h3>
             </div>
             
             {/* Meta trends or ratios */}
-            <div className="mt-4 pt-3 border-t border-gray-50 flex items-center gap-1">
+            <div className="mt-4 pt-2.5 border-t border-slate-100/80 flex items-center gap-1.5">
               {item.isTrend ? (
                 <>
-                  <TrendingUp size={14} className="text-emerald-500" />
-                  <span className="text-[10px] font-extrabold text-emerald-600">
+                  <TrendingUp size={13} className="text-emerald-500 shrink-0" />
+                  <span className="text-[10px] font-bold text-emerald-600 truncate">
                     {item.subtext}
                   </span>
                 </>
               ) : (
-                <span className="text-[10px] font-bold text-gray-400">
+                <span className="text-[10px] font-semibold text-slate-400 truncate">
                   {item.subtext}
                 </span>
               )}

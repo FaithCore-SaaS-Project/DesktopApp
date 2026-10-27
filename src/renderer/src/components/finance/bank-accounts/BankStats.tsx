@@ -85,34 +85,39 @@ export default function BankStats({ accounts, financeRecords }: BankStatsProps) 
   ];
 
   return (
-    <div className="mb-8 grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
+    <div className="mb-8 grid gap-4 sm:gap-5 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
       {stats.map((item, index) => {
         const Icon = item.icon;
         return (
           <div
             key={index}
-            className="bg-white rounded-[2rem] p-6 border border-slate-100 shadow-sm shadow-slate-100/50 hover:-translate-y-1 hover:shadow-md transition-all duration-300 relative overflow-hidden group"
+            className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm hover:-translate-y-0.5 hover:shadow-md transition-all duration-200 flex flex-col justify-between group"
           >
-            <div className="flex justify-between items-start">
-              <div>
-                <p className="text-slate-400 text-[10px] font-bold uppercase tracking-wider">
-                  {item.title}
-                </p>
-                <h3 className="text-2xl font-black text-slate-800 tracking-tight mt-3 leading-none">
-                  {item.value}
-                </h3>
-              </div>
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider truncate">
+                {item.title}
+              </span>
               <div
-                className={`h-11 w-11 rounded-xl flex items-center justify-center ${item.iconBg} ${item.textColor} transition-all duration-300 group-hover:scale-105`}
+                className={`h-8 w-8 rounded-lg flex items-center justify-center ${item.iconBg} ${item.textColor} shrink-0 transition-transform duration-200 group-hover:scale-110`}
               >
-                <Icon size={20} />
+                <Icon size={16} strokeWidth={2.2} />
               </div>
             </div>
+
+            <div className="mt-3">
+              <h3
+                className="text-base sm:text-lg xl:text-xl font-bold text-slate-800 tracking-tight whitespace-nowrap leading-none"
+                title={item.value}
+              >
+                {item.value}
+              </h3>
+            </div>
             
-            <div className="mt-5 flex items-center">
-              <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider bg-slate-50 border border-slate-100 rounded-lg px-2 py-0.5 select-none">
+            <div className="mt-4 pt-2.5 border-t border-slate-100/80 flex items-center justify-between">
+              <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider bg-slate-50 border border-slate-200/60 rounded px-1.5 py-0.5 select-none">
                 {item.subtext}
               </span>
+              <span className="text-[10px] text-slate-400 font-medium">Updated live</span>
             </div>
           </div>
         );
