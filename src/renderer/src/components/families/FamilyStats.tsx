@@ -1,5 +1,5 @@
 import React from 'react';
-import { Users, UserPlus, Home, Phone, MapPin } from "lucide-react";
+import { Users, UserPlus, Home, Phone, MapPin, ArrowUpRight, ChevronRight } from "lucide-react";
 
 interface FamilyStatsProps {
   totalFamilies: number;
@@ -24,8 +24,12 @@ export default function FamilyStats({
       title: "Total Families",
       value: totalFamilies.toString(),
       growth: "+12 this month",
+      subLabel: "All Households",
       icon: Users,
-      color: "bg-purple-500 shadow-purple-150",
+      color: "text-[#5B3DF5]",
+      bg: "bg-[#5B3DF5]/10",
+      borderHover: "hover:border-[#5B3DF5]/40",
+      badgeStyle: "bg-emerald-50 text-emerald-700 border border-emerald-150/60",
       isAction: false,
       filterType: 'all' as const
     },
@@ -33,8 +37,12 @@ export default function FamilyStats({
       title: "New Families",
       value: newFamilies.toString(),
       growth: "+7 this month",
+      subLabel: "Recent Additions",
       icon: UserPlus,
-      color: "bg-emerald-500 shadow-emerald-150",
+      color: "text-emerald-600",
+      bg: "bg-emerald-50",
+      borderHover: "hover:border-emerald-300",
+      badgeStyle: "bg-emerald-50 text-emerald-700 border border-emerald-150/60",
       isAction: false,
       filterType: 'all' as const
     },
@@ -42,8 +50,12 @@ export default function FamilyStats({
       title: "Total Members",
       value: totalMembers.toString(),
       growth: "+18 this month",
+      subLabel: "All Individuals",
       icon: Home,
-      color: "bg-indigo-500 shadow-indigo-150",
+      color: "text-blue-600",
+      bg: "bg-blue-50",
+      borderHover: "hover:border-blue-300",
+      badgeStyle: "bg-blue-50 text-blue-700 border border-blue-150/60",
       isAction: false,
       filterType: 'all' as const
     },
@@ -51,8 +63,12 @@ export default function FamilyStats({
       title: "Without Address",
       value: withoutAddress.toString(),
       growth: "View List",
+      subLabel: withoutAddress > 0 ? "Needs Address" : "All Updated",
       icon: MapPin,
-      color: "bg-amber-500 shadow-amber-150",
+      color: "text-amber-600",
+      bg: "bg-amber-50",
+      borderHover: "hover:border-amber-300",
+      badgeStyle: withoutAddress > 0 ? "bg-amber-50 text-amber-700 border border-amber-150/60" : "bg-slate-50 text-slate-500 border border-slate-200/60",
       isAction: true,
       filterType: 'no-address' as const
     },
@@ -60,52 +76,73 @@ export default function FamilyStats({
       title: "Without Phone",
       value: withoutPhone.toString(),
       growth: "View List",
+      subLabel: withoutPhone > 0 ? "Needs Contact" : "All Updated",
       icon: Phone,
-      color: "bg-rose-500 shadow-rose-150",
+      color: "text-rose-600",
+      bg: "bg-rose-50",
+      borderHover: "hover:border-rose-300",
+      badgeStyle: withoutPhone > 0 ? "bg-rose-50 text-rose-700 border border-rose-150/60" : "bg-slate-50 text-slate-500 border border-slate-200/60",
       isAction: true,
       filterType: 'no-phone' as const
     },
   ];
 
   return (
-    <div className="mb-8 grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-5">
+    <div className="mb-8 grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-5 gap-3.5 sm:gap-4">
       {statsList.map((item, i) => {
         const Icon = item.icon;
         return (
           <div
             key={i}
-            className="rounded-3xl border border-gray-150 bg-white p-5 shadow-sm hover:shadow-md transition-all duration-300 group relative overflow-hidden"
+            onClick={() => item.isAction && onViewFilter ? onViewFilter(item.filterType) : undefined}
+            className={`rounded-2xl border border-gray-200/90 bg-white p-4 sm:p-5 shadow-xs hover:shadow-md transition-all duration-200 flex flex-col justify-between group min-w-0 relative ${
+              item.isAction ? 'cursor-pointer hover:-translate-y-0.5 ' + item.borderHover : 'hover:border-gray-300'
+            }`}
           >
-            <div className="flex flex-col h-full justify-between">
-              <div className="flex items-center gap-4">
-                <div
-                  className={`flex h-12 w-12 items-center justify-center rounded-2xl text-white ${item.color} shadow-lg transition-transform duration-300 group-hover:scale-105`}
-                >
-                  <Icon size={22} />
-                </div>
-                <div>
-                  <h2 className="text-2xl font-black text-gray-900 leading-tight">
-                    {item.value}
-                  </h2>
-                  <p className="text-gray-400 text-xs font-bold mt-0.5 leading-none">
-                    {item.title}
-                  </p>
-                </div>
+            {/* Top Row: Title + Icon Badge */}
+            <div className="flex items-center justify-between gap-1.5 mb-2.5">
+              <span 
+                className="text-[11px] font-bold text-gray-500 uppercase tracking-wider truncate"
+                title={item.title}
+              >
+                {item.title}
+              </span>
+              <div
+                className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 ${item.bg} ${item.color} shadow-xs transition-transform duration-200 group-hover:scale-105`}
+              >
+                <Icon size={16} strokeWidth={2.2} />
               </div>
-              <div className="mt-4 pt-3 border-t border-gray-50 flex items-center justify-between">
-                {item.isAction && onViewFilter ? (
-                  <button 
-                    onClick={() => onViewFilter(item.filterType)}
-                    className="text-xs font-extrabold text-[#5B3DF5] hover:underline transition-all cursor-pointer"
-                  >
-                    {item.growth} →
-                  </button>
-                ) : (
-                  <span className="text-emerald-500 text-xs font-semibold">
+            </div>
+
+            {/* Middle Row: Large Bold Value */}
+            <div className="my-1.5">
+              <h2 className="text-2xl sm:text-[28px] font-black text-gray-900 leading-none tracking-tight">
+                {item.value}
+              </h2>
+            </div>
+
+            {/* Bottom Row: Badge / Action Link */}
+            <div className="pt-2.5 border-t border-gray-100 flex items-center justify-between min-w-0">
+              {item.isAction ? (
+                <>
+                  <span className={`inline-flex items-center px-1.5 py-0.5 rounded-md text-[10px] font-bold truncate ${item.badgeStyle}`}>
+                    {item.subLabel}
+                  </span>
+                  <span className="inline-flex items-center gap-0.5 text-xs font-bold text-[#5B3DF5] group-hover:text-[#4526d1] transition-colors ml-1 shrink-0">
+                    View List <ChevronRight size={13} className="group-hover:translate-x-0.5 transition-transform" />
+                  </span>
+                </>
+              ) : (
+                <>
+                  <span className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[10px] font-bold truncate ${item.badgeStyle}`}>
+                    <ArrowUpRight size={11} strokeWidth={2.5} className="shrink-0" />
                     {item.growth}
                   </span>
-                )}
-              </div>
+                  <span className="text-[10px] text-gray-400 font-medium truncate ml-1 shrink-0 hidden sm:inline">
+                    Updated live
+                  </span>
+                </>
+              )}
             </div>
           </div>
         );
