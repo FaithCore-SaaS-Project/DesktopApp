@@ -16,8 +16,8 @@ export default function BudgetSidebar({ budgets }: BudgetSidebarProps) {
     ? Math.min(100, Math.round((totalSpent / totalBudgeted) * 100))
     : 0;
 
-  const formatCurrency = (val: number) => {
-    return `Rs. ${val.toLocaleString('en-US', {
+  const formatCurrency = (val: number | string) => {
+    return `Rs. ${Number(val || 0).toLocaleString('en-US', {
       maximumFractionDigits: 0,
     })}`;
   };

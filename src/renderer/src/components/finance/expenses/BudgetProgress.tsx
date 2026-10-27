@@ -14,8 +14,8 @@ export default function BudgetProgress({
   
   const percent = budget > 0 ? Math.min(100, Math.round((spent / budget) * 1000) / 10) : 0;
 
-  const formatLKR = (val: number) => {
-    return "Rs. " + val.toLocaleString('en-LK', { maximumFractionDigits: 0 });
+  const formatLKR = (val: number | string) => {
+    return "Rs. " + Number(val || 0).toLocaleString('en-US', { maximumFractionDigits: 0 });
   };
 
   return (

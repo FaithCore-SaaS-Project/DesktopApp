@@ -6,6 +6,7 @@ import {
   Users,
   Calendar
 } from 'lucide-react';
+import { formatCurrency, formatNumber } from '../../lib/format';
 
 interface ReportStatsProps {
   incomeAmount: number;
@@ -25,7 +26,7 @@ export default function ReportStats({
   const stats = [
     {
       title: "Total Income (This Year)",
-      value: `Rs. ${incomeAmount.toLocaleString()}`,
+      value: formatCurrency(incomeAmount),
       subtext: "↑ 18.6% vs last year",
       subtextColor: "text-green-600",
       valueColor: "text-green-600",
@@ -35,7 +36,7 @@ export default function ReportStats({
     },
     {
       title: "Total Expenses (This Year)",
-      value: `Rs. ${expensesAmount.toLocaleString()}`,
+      value: formatCurrency(expensesAmount),
       subtext: "↑ 12.4% vs last year",
       subtextColor: "text-green-600",
       valueColor: "text-red-500",
@@ -45,7 +46,7 @@ export default function ReportStats({
     },
     {
       title: "Net Surplus (This Year)",
-      value: `Rs. ${surplusAmount.toLocaleString()}`,
+      value: formatCurrency(surplusAmount),
       subtext: "↑ 26.3% vs last year",
       subtextColor: "text-green-600",
       valueColor: "text-green-600",
@@ -55,7 +56,7 @@ export default function ReportStats({
     },
     {
       title: "Total Members",
-      value: membersCount.toLocaleString(),
+      value: formatNumber(membersCount),
       subtext: "↑ 5.2% vs last year",
       subtextColor: "text-green-600",
       valueColor: "text-gray-900",

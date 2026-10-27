@@ -44,8 +44,8 @@ export default function ExpenseCategoryChart({
   const offsetOffice = 100 - ministryPct - utilitiesPct - salariesPct - maintenancePct;
   const offsetOthers = 100 - ministryPct - utilitiesPct - salariesPct - maintenancePct - officePct;
 
-  const formatLKR = (val: number) => {
-    return "Rs. " + val.toLocaleString('en-LK', { maximumFractionDigits: 0 });
+  const formatLKR = (val: number | string) => {
+    return "Rs. " + Number(val || 0).toLocaleString('en-US', { maximumFractionDigits: 0 });
   };
 
   return (

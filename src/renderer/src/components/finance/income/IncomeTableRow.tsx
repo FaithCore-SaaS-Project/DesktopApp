@@ -14,8 +14,8 @@ export default function IncomeTableRow({
   onViewClick
 }: IncomeTableRowProps) {
   
-  const formatLKR = (val: number) => {
-    return val.toLocaleString('en-LK', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const formatLKR = (val: number | string) => {
+    return Number(val || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   };
 
   const getCategoryBadge = (cat: string) => {

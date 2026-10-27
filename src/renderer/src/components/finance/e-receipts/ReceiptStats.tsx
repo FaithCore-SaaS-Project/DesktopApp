@@ -22,8 +22,8 @@ export default function ReceiptStats({ receipts }: ReceiptStatsProps) {
   const emailedPercentage = totalReceipts > 0 ? ((totalEmailed / totalReceipts) * 100).toFixed(1) : "0.0";
   const printedPercentage = totalReceipts > 0 ? ((totalPrinted / totalReceipts) * 100).toFixed(1) : "0.0";
 
-  const formatLKR = (val: number) => {
-    return "Rs. " + val.toLocaleString('en-LK', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const formatLKR = (val: number | string) => {
+    return "Rs. " + Number(val || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   };
 
   const stats = [

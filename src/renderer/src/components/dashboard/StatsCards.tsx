@@ -7,6 +7,7 @@ import {
   ArrowUpRight,
   ArrowDownRight,
 } from "lucide-react";
+import { formatCurrency, formatNumber } from '../../lib/format';
 
 interface StatsCardsProps {
   totalMembers?: number;
@@ -25,7 +26,7 @@ export default function StatsCards({
     {
       icon: Users,
       title: "Total Members",
-      value: totalMembers.toLocaleString(),
+      value: formatNumber(totalMembers),
       badge: "Active Roster",
       badgeColor: "text-blue-700 bg-blue-50 border-blue-200/60",
       iconColor: "text-blue-600 bg-blue-50",
@@ -33,7 +34,7 @@ export default function StatsCards({
     {
       icon: Home,
       title: "Registered Families",
-      value: families.toLocaleString(),
+      value: formatNumber(families),
       badge: "Family Units",
       badgeColor: "text-violet-700 bg-violet-50 border-violet-200/60",
       iconColor: "text-violet-600 bg-violet-50",
@@ -41,7 +42,7 @@ export default function StatsCards({
     {
       icon: TrendingUp,
       title: "Monthly Income",
-      value: `Rs. ${monthlyIncome.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+      value: formatCurrency(monthlyIncome),
       badge: "This Month",
       badgeColor: "text-emerald-700 bg-emerald-50 border-emerald-200/60",
       iconColor: "text-emerald-600 bg-emerald-50",
@@ -51,7 +52,7 @@ export default function StatsCards({
     {
       icon: TrendingDown,
       title: "Monthly Expense",
-      value: `Rs. ${monthlyExpense.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+      value: formatCurrency(monthlyExpense),
       badge: "This Month",
       badgeColor: "text-slate-700 bg-slate-50 border-slate-200/60",
       iconColor: "text-rose-600 bg-rose-50",

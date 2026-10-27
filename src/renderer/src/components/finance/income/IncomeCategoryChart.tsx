@@ -39,8 +39,8 @@ export default function IncomeCategoryChart({
   const offsetThanks = 100 - tithePct - offeringPct - donationPct;
   const offsetOther = 100 - tithePct - offeringPct - donationPct - thanksPct;
 
-  const formatLKR = (val: number) => {
-    return "Rs. " + val.toLocaleString('en-LK', { maximumFractionDigits: 0 });
+  const formatLKR = (val: number | string) => {
+    return "Rs. " + Number(val || 0).toLocaleString('en-US', { maximumFractionDigits: 0 });
   };
 
   return (

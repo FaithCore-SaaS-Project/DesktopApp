@@ -66,8 +66,8 @@ export default function CategoryDetails({
   const totalAmount = seed.amount + dbAmountSum;
 
   // Format amount
-  const formatCurrency = (val: number) => {
-    return `Rs. ${val.toLocaleString('en-US', {
+  const formatCurrency = (val: number | string) => {
+    return `Rs. ${Number(val || 0).toLocaleString('en-US', {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     })}`;

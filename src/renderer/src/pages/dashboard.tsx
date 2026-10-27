@@ -105,7 +105,7 @@ export default function DashboardPage() {
           <RecentReceipts receipts={dashboardData?.recent_donations?.map((d: any) => ({
             number: `RCP-${new Date(d.income_date).getFullYear()}-${d.id}`,
             member: d.description || d.category?.name || 'General Donation',
-            amount: `Rs. ${Number(d.amount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+            amount: d.amount,
             date: new Date(d.income_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
           }))} />
         </div>

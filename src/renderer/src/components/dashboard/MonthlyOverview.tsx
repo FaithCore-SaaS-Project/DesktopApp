@@ -1,16 +1,17 @@
 import React from 'react';
 import { ArrowUpRight, ArrowDownRight, Wallet } from 'lucide-react';
+import { formatCurrency } from '../../lib/format';
 
 interface MonthlyOverviewProps {
-  income?: string;
-  expenses?: string;
-  balance?: string;
+  income?: string | number;
+  expenses?: string | number;
+  balance?: string | number;
 }
 
 export default function MonthlyOverview({
-  income = "Rs. 2,450,000",
-  expenses = "Rs. 1,120,000",
-  balance = "Rs. 1,330,000"
+  income = 2450000,
+  expenses = 1120000,
+  balance = 1330000
 }: MonthlyOverviewProps) {
   return (
     <div className="bg-white rounded-xl border border-slate-200/80 p-5 shadow-sm">
@@ -52,7 +53,7 @@ export default function MonthlyOverview({
               </span>
             </div>
             <h3 className="text-lg xl:text-xl font-bold text-slate-900 tracking-tight whitespace-nowrap">
-              {income}
+              {formatCurrency(income)}
             </h3>
           </div>
 
@@ -64,7 +65,7 @@ export default function MonthlyOverview({
               </span>
             </div>
             <h3 className="text-lg xl:text-xl font-bold text-slate-900 tracking-tight whitespace-nowrap">
-              {expenses}
+              {formatCurrency(expenses)}
             </h3>
           </div>
 
@@ -78,7 +79,7 @@ export default function MonthlyOverview({
               </span>
             </div>
             <h3 className="text-lg xl:text-xl font-bold text-blue-950 tracking-tight whitespace-nowrap">
-              {balance}
+              {formatCurrency(balance)}
             </h3>
           </div>
         </div>

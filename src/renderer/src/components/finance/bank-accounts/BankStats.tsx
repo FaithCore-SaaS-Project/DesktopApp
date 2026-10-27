@@ -42,8 +42,8 @@ export default function BankStats({ accounts, financeRecords }: BankStatsProps) 
   const thisMonthIn = 1200000.00 + dbIn;
   const thisMonthOut = 850000.00 + dbOut;
 
-  const formatCurrency = (val: number) => {
-    return `Rs. ${val.toLocaleString('en-US', {
+  const formatCurrency = (val: number | string) => {
+    return `Rs. ${Number(val || 0).toLocaleString('en-US', {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     })}`;

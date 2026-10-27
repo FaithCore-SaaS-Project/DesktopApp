@@ -67,8 +67,8 @@ export default function BudgetRow({
 }: BudgetRowProps) {
   const { icon: Icon, bg: iconBg, color: progressColor } = getBudgetIconInfo(item.name, item.type);
 
-  const formatCurrency = (val: number) => {
-    return val.toLocaleString('en-US', {
+  const formatCurrency = (val: number | string) => {
+    return Number(val || 0).toLocaleString('en-US', {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     });

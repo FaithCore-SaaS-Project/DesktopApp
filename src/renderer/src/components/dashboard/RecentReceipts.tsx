@@ -1,11 +1,12 @@
 import React from 'react';
 import Link from 'next/link';
 import { FileText, ChevronRight } from 'lucide-react';
+import { formatCurrency } from '../../lib/format';
 
 interface Receipt {
   number: string;
   member: string;
-  amount: string;
+  amount: string | number;
   date: string;
 }
 
@@ -17,25 +18,25 @@ const defaultReceipts: Receipt[] = [
   {
     number: "RCP-2025-1058",
     member: "Saman Perera",
-    amount: "Rs. 25,000",
+    amount: 25000,
     date: "24 May 2025",
   },
   {
     number: "RCP-2025-1057",
     member: "Kumara Family",
-    amount: "Rs. 15,000",
+    amount: 15000,
     date: "24 May 2025",
   },
   {
     number: "RCP-2025-1056",
     member: "Nadeesha Fernando",
-    amount: "Rs. 10,000",
+    amount: 10000,
     date: "23 May 2025",
   },
   {
     number: "RCP-2025-1055",
     member: "Isuru Jayasinghe",
-    amount: "Rs. 20,000",
+    amount: 20000,
     date: "23 May 2025",
   },
 ];
@@ -92,7 +93,7 @@ export default function RecentReceipts({ receipts = defaultReceipts }: RecentRec
                 </div>
                 <div className="text-right shrink-0">
                   <span className="font-bold text-emerald-600 text-xs block whitespace-nowrap">
-                    {receipt.amount}
+                    {formatCurrency(receipt.amount)}
                   </span>
                   <span className="text-[10px] text-slate-400 font-medium whitespace-nowrap block mt-0.5">
                     {receipt.date}

@@ -51,8 +51,8 @@ export default function ExpenseCategories({ transactions }: ExpenseCategoriesPro
     };
   }).sort((a, b) => b.amount - a.amount); // Sort by highest expense
 
-  const formatLKR = (val: number) => {
-    return "Rs. " + val.toLocaleString('en-LK', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const formatLKR = (val: number | string) => {
+    return "Rs. " + Number(val || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   };
 
   return (
