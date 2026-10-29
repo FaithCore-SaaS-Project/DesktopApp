@@ -59,15 +59,23 @@ export default function FamiliesPage() {
   const fetchMembers = async () => {
     try {
       const res = await api.get('/members');
-      // Extract members for dropdown (can filter out those already in a family if preferred)
-      const mapped = (res.data?.data || []).map((m: any) => ({
-        id: m.id,
-        name: `${m.first_name} ${m.last_name}`,
+      const apiData = res.data?.data || (Array.isArray(res.data) ? res.data : []);
+      const localRaw = typeof window !== 'undefined' ? localStorage.getItem('fc_members_local') : null;
+      const localMembers = localRaw ? JSON.parse(localRaw) : [];
+      const combined = [...localMembers, ...apiData.filter((m: any) => !localMembers.some((lm: any) => lm.id === m.id))];
+      const mapped = combined.map((m: any) => ({
+        id: (m.id || '').toString(),
+        name: m.name || `${m.first_name || ''} ${m.last_name || ''}`.trim(),
       }));
       setAvailableMembers(mapped);
     } catch (err) {
       console.error('Error fetching members:', err);
-      setAvailableMembers([]);
+      const localRaw = typeof window !== 'undefined' ? localStorage.getItem('fc_members_local') : null;
+      const localMembers = localRaw ? JSON.parse(localRaw) : [];
+      setAvailableMembers(localMembers.map((m: any) => ({
+        id: (m.id || '').toString(),
+        name: m.name || `${m.first_name || ''} ${m.last_name || ''}`.trim(),
+      })));
     }
   };
 
@@ -82,6 +90,7 @@ export default function FamiliesPage() {
   }, []);
 
   const handleOpenAddModal = () => {
+    fetchMembers();
     setEditingFamily(null);
     setFamilyName('');
     setSelectedMembers([]);

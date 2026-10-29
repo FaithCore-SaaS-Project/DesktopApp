@@ -261,7 +261,7 @@ export default function MemberFormModal({ isOpen, onClose, editingMember, famili
               >
                 <option value="">-- No Family (Individual) --</option>
                 {families.map(f => (
-                  <option key={f.id} value={f.id}>{f.family_name}</option>
+                  <option key={f.id} value={f.id}>{f.family_name || f.name}</option>
                 ))}
               </select>
             </div>
