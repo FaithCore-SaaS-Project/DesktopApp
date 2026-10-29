@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useApp } from '../../context/AppContext';
-import { apiService } from '../../services/api';
-import { FinanceMock } from '../../services/mockData';
-import { X, Info } from 'lucide-react';
+import { apiService, api } from '../../services/api';
+import { FinanceMock, mockMembers } from '../../services/mockData';
+import { X, Info, User, MessageSquare } from 'lucide-react';
 
 import IncomeHeader from '../../components/finance/income/IncomeHeader';
 import IncomeStats from '../../components/finance/income/IncomeStats';
@@ -33,6 +33,32 @@ export default function FinanceIncomePage() {
   const [description, setDescription] = useState('');
   const [method, setMethod] = useState<'Cash' | 'Bank Transfer'>('Cash');
   const [receipt, setReceipt] = useState('');
+  const [selectedMemberId, setSelectedMemberId] = useState('');
+  const [sendSms, setSendSms] = useState(true);
+  const [members, setMembers] = useState<{ id: string; name: string; phone: string }[]>([]);
+
+  useEffect(() => {
+    const fetchMembers = async () => {
+      try {
+        const res = await api.get('/members');
+        const apiData = res.data?.data || (Array.isArray(res.data) ? res.data : []);
+        const localRaw = typeof window !== 'undefined' ? localStorage.getItem('fc_members_local') : null;
+        const localMembers = localRaw ? JSON.parse(localRaw) : [];
+        const combined = [...localMembers, ...apiData.filter((m: any) => !localMembers.some((lm: any) => lm.id === m.id))];
+        setMembers(combined.map((m: any) => ({
+          id: (m.id || '').toString(),
+          name: m.name || `${m.first_name || ''} ${m.last_name || ''}`.trim(),
+          phone: m.phone || ''
+        })));
+      } catch (err) {
+        setMembers(mockMembers.map(m => ({ id: m.id, name: m.name, phone: m.phone || '' })));
+      }
+    };
+    fetchMembers();
+  }, [currentTenant]);
+
+  const selectedMember = members.find(m => m.id === selectedMemberId);
+  const activeChurchName = currentTenant?.name || 'Beracah Christian Ministry';
 
   const loadIncomeRecords = async () => {
     if (!currentTenant) return;
@@ -60,6 +86,8 @@ export default function FinanceIncomePage() {
     setDescription('');
     setMethod('Cash');
     setReceipt(`RCP-2025-${Math.floor(1000 + Math.random() * 9000)}`);
+    setSelectedMemberId('');
+    setSendSms(true);
     setIsModalOpen(true);
   };
 
@@ -103,7 +131,11 @@ export default function FinanceIncomePage() {
       description: description.trim() || `${category} - General`,
       tenantId: currentTenant.id,
       method,
-      receipt
+      receipt,
+      memberId: selectedMemberId || undefined,
+      memberName: selectedMember?.name,
+      memberPhone: selectedMember?.phone,
+      sendSms: Boolean(selectedMember?.phone) && sendSms
     };
 
     try {
@@ -295,6 +327,67 @@ export default function FinanceIncomePage() {
                   <option value="Other Income">Other Income</option>
                 </select>
               </div>
+
+              {/* Donor Member Selection */}
+              <div className="space-y-1.5">
+                <label htmlFor="income-member" className="text-xs font-bold text-gray-500 uppercase flex items-center justify-between">
+                  <span className="flex items-center gap-1.5"><User size={13} className="text-[#5B3DF5]" /> Donor / Contributor</span>
+                  <span className="text-[10px] text-gray-400 font-normal lowercase">(optional for general giving)</span>
+                </label>
+                <select
+                  id="income-member"
+                  value={selectedMemberId}
+                  onChange={(e) => setSelectedMemberId(e.target.value)}
+                  className="w-full bg-gray-50/50 border border-gray-250 focus:border-[#5B3DF5] rounded-xl px-3 py-2.5 text-xs font-bold text-gray-700 focus:outline-none cursor-pointer"
+                >
+                  <option value="">-- General / Anonymous Offering --</option>
+                  {members.map(m => (
+                    <option key={m.id} value={m.id}>
+                      {m.name} {m.phone ? `(${m.phone})` : '(No Phone)'}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Automatic SMS Receipt Preview Card */}
+              {selectedMember && (
+                <div className="p-3.5 bg-gradient-to-br from-indigo-50/90 to-purple-50/60 border border-indigo-100 rounded-2xl space-y-2">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <MessageSquare size={14} className="text-[#5B3DF5]" />
+                      <span className="text-xs font-bold text-gray-800">Automatic Thank-You SMS</span>
+                    </div>
+                    {selectedMember.phone ? (
+                      <label className="flex items-center gap-1.5 cursor-pointer text-xs font-bold text-[#5B3DF5]">
+                        <input
+                          type="checkbox"
+                          checked={sendSms}
+                          onChange={(e) => setSendSms(e.target.checked)}
+                          className="w-3.5 h-3.5 text-[#5B3DF5] rounded border-gray-300 focus:ring-[#5B3DF5] cursor-pointer"
+                        />
+                        <span>Send SMS Receipt</span>
+                      </label>
+                    ) : (
+                      <span className="text-[10px] font-semibold text-amber-600 bg-amber-50 px-2 py-0.5 rounded-md border border-amber-200">
+                        No Phone on Record
+                      </span>
+                    )}
+                  </div>
+
+                  {selectedMember.phone && sendSms && (
+                    <div className="text-[11px] text-gray-600 bg-white/90 p-3 rounded-xl border border-indigo-100/70 font-sans leading-relaxed shadow-xs space-y-1.5">
+                      <div className="text-[10px] text-gray-400 font-bold flex items-center justify-between pb-1 border-b border-gray-100">
+                        <span>Recipient: <strong className="text-gray-700">{selectedMember.name}</strong> ({selectedMember.phone})</span>
+                        <span className="text-[9px] bg-[#5B3DF5]/10 text-[#5B3DF5] px-1.5 py-0.5 rounded font-mono font-bold">Sender: {activeChurchName}</span>
+                      </div>
+                      <p className="italic text-gray-700">
+                        Dear {selectedMember.name}, we gratefully acknowledge receipt of your contribution of LKR {amount || '0'}. Thank you for your faithfulness and generosity in supporting the work of God. May the Lord bless you abundantly and reward your kindness according to His riches in glory. (Philippians 4:19)
+                      </p>
+                      <p className="text-[10px] font-semibold text-gray-500">— {activeChurchName}</p>
+                    </div>
+                  )}
+                </div>
+              )}
 
               {/* Amount and Receipt */}
               <div className="grid grid-cols-2 gap-4">

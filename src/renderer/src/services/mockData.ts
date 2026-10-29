@@ -56,6 +56,10 @@ export interface FinanceMock {
   tenantId: string;
   method?: string;
   receipt?: string;
+  memberId?: string;
+  memberName?: string;
+  memberPhone?: string;
+  sendSms?: boolean;
 }
 
 export interface CategoryMock {

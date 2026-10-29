@@ -22,7 +22,9 @@ export const financeService = {
         description: r.description || '',
         tenantId: r.church_id ? r.church_id.toString() : tenantId,
         method: r.method,
-        receipt: r.receipt || ''
+        receipt: r.receipt || '',
+        memberId: r.member_id ? r.member_id.toString() : undefined,
+        memberName: r.member_name || undefined
       }));
 
       if (isElectron()) {
@@ -77,7 +79,9 @@ export const financeService = {
       amount: record.amount,
       description: record.description,
       method: record.method || (record.type === 'income' ? 'Cash' : 'Bank Transfer'),
-      receipt: record.receipt
+      receipt: record.receipt,
+      member_id: record.memberId ? record.memberId : undefined,
+      send_sms: record.sendSms ?? true
     };
 
     try {
