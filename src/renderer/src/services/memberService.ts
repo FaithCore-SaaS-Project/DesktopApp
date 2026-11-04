@@ -107,7 +107,7 @@ export const memberService = {
       console.warn('Failed to fetch families. Backend might be offline.');
       if (isElectron()) {
         try {
-          return await window.electronAPI.getFamilies(tenantId);
+          return await (window.electronAPI as any).getFamilies(tenantId);
         } catch (e) {
           // Ignore
         }

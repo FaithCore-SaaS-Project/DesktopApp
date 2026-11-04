@@ -51,7 +51,7 @@ export default function FinanceIncomePage() {
           phone: m.phone || ''
         })));
       } catch (err) {
-        setMembers(mockMembers.map(m => ({ id: m.id, name: m.name, phone: m.phone || '' })));
+        setMembers(mockMembers.map(m => ({ id: m.id, name: m.name || '', phone: m.phone || '' })));
       }
     };
     fetchMembers();

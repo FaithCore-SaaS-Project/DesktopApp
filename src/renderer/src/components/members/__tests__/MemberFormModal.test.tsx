@@ -19,8 +19,6 @@ describe('MemberFormModal', () => {
       <MemberFormModal 
         isOpen={true} 
         onClose={() => {}} 
-        onSaved={() => {}} 
-        tenantId="10" 
         editingMember={null}
         families={[]}
         onSuccess={() => {}}
