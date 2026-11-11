@@ -4,7 +4,7 @@ import { useRouter } from 'next/router';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Shield, Building2, User, Lock, Eye, ArrowRight, Users, WifiOff, AlertCircle } from 'lucide-react';
+import { Shield, Building2, User, Lock, Eye, ArrowRight, Users, WifiOff, AlertCircle, X, KeyRound, CheckCircle2, Mail } from 'lucide-react';
 import api from '../lib/axios';
 
 const loginSchema = z.object({
@@ -24,6 +24,17 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [serverError, setServerError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+
+  // Forgot password modal state
+  const [forgotModalOpen, setForgotModalOpen] = useState(false);
+  const [forgotStep, setForgotStep] = useState<'email' | 'otp' | 'success'>('email');
+  const [forgotEmail, setForgotEmail] = useState('');
+  const [forgotChurchId, setForgotChurchId] = useState('');
+  const [forgotOtp, setForgotOtp] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [forgotLoading, setForgotLoading] = useState(false);
+  const [forgotError, setForgotError] = useState('');
+  const [forgotSuccessMsg, setForgotSuccessMsg] = useState('');
 
   const { register, handleSubmit, formState: { errors }, reset } = useForm<LoginSchema>({
     resolver: zodResolver(loginSchema),
@@ -253,7 +264,15 @@ export default function LoginPage() {
                 />
                 <span className="text-xs font-semibold text-gray-400 group-hover:text-gray-300 transition-colors">Remember me</span>
               </label>
-              <button type="button" className="text-xs font-bold text-violet-400 hover:text-violet-300 transition-colors">
+              <button 
+                type="button" 
+                onClick={() => {
+                  setForgotModalOpen(true);
+                  setForgotStep('email');
+                  setForgotError('');
+                }}
+                className="text-xs font-bold text-violet-400 hover:text-violet-300 transition-colors"
+              >
                 Forgot Password?
               </button>
             </div>
@@ -289,6 +308,207 @@ export default function LoginPage() {
         </div>
       </div>
       </div>
+
+      {/* ── FORGOT PASSWORD MODAL ────────────────────────────────────── */}
+      {forgotModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-md p-4 animate-in fade-in duration-200">
+          <div className="relative w-full max-w-md rounded-3xl border border-white/10 bg-[#0E1528] p-7 shadow-2xl text-white">
+            <button
+              onClick={() => setForgotModalOpen(false)}
+              className="absolute top-5 right-5 h-8 w-8 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center text-gray-400 hover:text-white transition-colors"
+            >
+              <X size={16} />
+            </button>
+
+            {forgotStep === 'email' && (
+              <div>
+                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-violet-600/20 text-violet-400 mb-4">
+                  <KeyRound size={22} />
+                </div>
+                <h3 className="text-xl font-bold text-white">Reset Your Password</h3>
+                <p className="mt-1.5 text-xs text-gray-400 leading-relaxed">
+                  Enter your Church ID and account email address to receive a secure 6-digit verification code.
+                </p>
+
+                {forgotError && (
+                  <div className="mt-4 rounded-xl border border-red-500/20 bg-red-500/10 p-3 text-xs text-red-400">
+                    {forgotError}
+                  </div>
+                )}
+
+                <div className="mt-5 space-y-4">
+                  <div>
+                    <label className="text-[10px] font-bold uppercase tracking-wider text-gray-400 block mb-1">
+                      Church ID / Activation ID
+                    </label>
+                    <div className="flex h-12 items-center rounded-xl border border-white/10 bg-[#090E1A] px-3.5 focus-within:border-violet-500">
+                      <Building2 size={16} className="text-gray-500" />
+                      <input
+                        type="text"
+                        value={forgotChurchId}
+                        onChange={(e) => setForgotChurchId(e.target.value)}
+                        placeholder="e.g. FC-489195"
+                        className="ml-2.5 flex-1 bg-transparent text-xs text-white outline-none placeholder:text-gray-600"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="text-[10px] font-bold uppercase tracking-wider text-gray-400 block mb-1">
+                      Account Email
+                    </label>
+                    <div className="flex h-12 items-center rounded-xl border border-white/10 bg-[#090E1A] px-3.5 focus-within:border-violet-500">
+                      <Mail size={16} className="text-gray-500" />
+                      <input
+                        type="email"
+                        value={forgotEmail}
+                        onChange={(e) => setForgotEmail(e.target.value)}
+                        placeholder="john@example.com"
+                        className="ml-2.5 flex-1 bg-transparent text-xs text-white outline-none placeholder:text-gray-600"
+                      />
+                    </div>
+                  </div>
+
+                  <button
+                    type="button"
+                    disabled={forgotLoading || !forgotEmail}
+                    onClick={async () => {
+                      setForgotLoading(true);
+                      setForgotError('');
+                      try {
+                        const res = await api.post('/forgot-password', {
+                          email: forgotEmail.trim(),
+                          church_id: forgotChurchId.trim() || undefined
+                        });
+                        setForgotStep('otp');
+                      } catch (err: any) {
+                        setForgotError(err.response?.data?.message || 'Failed to send OTP. Please check details.');
+                      } finally {
+                        setForgotLoading(false);
+                      }
+                    }}
+                    className="w-full mt-2 flex h-12 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 text-xs font-bold text-white shadow-lg hover:from-violet-500 hover:to-indigo-500 disabled:opacity-50 transition-all"
+                  >
+                    {forgotLoading ? (
+                      <div className="h-4 w-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+                    ) : (
+                      'Send Verification OTP'
+                    )}
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {forgotStep === 'otp' && (
+              <div>
+                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-indigo-600/20 text-indigo-400 mb-4">
+                  <Mail size={22} />
+                </div>
+                <h3 className="text-xl font-bold text-white">Enter OTP & New Password</h3>
+                <p className="mt-1.5 text-xs text-gray-400 leading-relaxed">
+                  We sent a 6-digit code to <strong className="text-violet-400">{forgotEmail}</strong>. Enter it below with your new password.
+                </p>
+
+                {forgotError && (
+                  <div className="mt-4 rounded-xl border border-red-500/20 bg-red-500/10 p-3 text-xs text-red-400">
+                    {forgotError}
+                  </div>
+                )}
+
+                <div className="mt-5 space-y-4">
+                  <div>
+                    <label className="text-[10px] font-bold uppercase tracking-wider text-gray-400 block mb-1">
+                      6-Digit OTP Code
+                    </label>
+                    <input
+                      type="text"
+                      maxLength={6}
+                      value={forgotOtp}
+                      onChange={(e) => setForgotOtp(e.target.value)}
+                      placeholder="123456"
+                      className="h-12 w-full text-center tracking-[8px] font-mono text-lg rounded-xl border border-white/10 bg-[#090E1A] text-violet-300 outline-none focus:border-violet-500"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-[10px] font-bold uppercase tracking-wider text-gray-400 block mb-1">
+                      New Password (Min 6 Characters)
+                    </label>
+                    <div className="flex h-12 items-center rounded-xl border border-white/10 bg-[#090E1A] px-3.5 focus-within:border-violet-500">
+                      <Lock size={16} className="text-gray-500" />
+                      <input
+                        type="password"
+                        value={newPassword}
+                        onChange={(e) => setNewPassword(e.target.value)}
+                        placeholder="••••••••"
+                        className="ml-2.5 flex-1 bg-transparent text-xs text-white outline-none placeholder:text-gray-600"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="flex gap-2 pt-2">
+                    <button
+                      type="button"
+                      onClick={() => setForgotStep('email')}
+                      className="h-12 px-4 rounded-xl border border-white/10 text-xs font-semibold text-gray-400 hover:text-white transition-colors"
+                    >
+                      Back
+                    </button>
+                    <button
+                      type="button"
+                      disabled={forgotLoading || forgotOtp.length !== 6 || newPassword.length < 6}
+                      onClick={async () => {
+                        setForgotLoading(true);
+                        setForgotError('');
+                        try {
+                          const res = await api.post('/reset-password', {
+                            email: forgotEmail.trim(),
+                            otp: forgotOtp.trim(),
+                            password: newPassword
+                          });
+                          setForgotSuccessMsg(res.data.message || 'Password reset successfully!');
+                          setForgotStep('success');
+                        } catch (err: any) {
+                          setForgotError(err.response?.data?.message || 'Verification failed. Please check your OTP.');
+                        } finally {
+                          setForgotLoading(false);
+                        }
+                      }}
+                      className="flex-1 h-12 flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 text-xs font-bold text-white shadow-lg hover:from-violet-500 hover:to-indigo-500 disabled:opacity-50 transition-all"
+                    >
+                      {forgotLoading ? (
+                        <div className="h-4 w-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+                      ) : (
+                        'Reset Password'
+                      )}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {forgotStep === 'success' && (
+              <div className="text-center py-4">
+                <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-emerald-500/20 text-emerald-400 mb-4">
+                  <CheckCircle2 size={32} />
+                </div>
+                <h3 className="text-xl font-bold text-white">Password Updated!</h3>
+                <p className="mt-2 text-xs text-gray-400 leading-relaxed">
+                  {forgotSuccessMsg}
+                </p>
+                <button
+                  type="button"
+                  onClick={() => setForgotModalOpen(false)}
+                  className="mt-6 w-full h-12 rounded-xl bg-emerald-600 text-xs font-bold text-white hover:bg-emerald-500 transition-colors"
+                >
+                  Return to Sign In
+                </button>
+              </div>
+            )}
+
+          </div>
+        </div>
+      )}
     </div>
   );
 }
